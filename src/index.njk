@@ -1,15 +1,25 @@
 ---
 layout: base.njk
-title: Making Math Irresistible
+title: Make Math Irresistible
 ---
 
 {# Hero Section #}
-<section class="bg-gradient-to-br from-primary/10 to-secondary/10 py-16 lg:py-24">
-  <div class="max-w-7xl mx-auto px-4">
+<section class="relative py-16 lg:py-24">
+  {# Background image for large screens only #}
+  <div class="hidden lg:block absolute inset-0 z-0">
+    <img src="/images/CAMT 3.jpg" alt="Math classroom" class="w-full h-full object-cover">
+    <div class="absolute inset-0 bg-gradient-to-r from-base-100/0 via-base-100/50 to-base-100/80"></div>
+  </div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
-      <div class="aspect-video bg-base-300 rounded-lg flex items-center justify-center">
-        <p class="text-base-content/50">Hero Image/Video Placeholder</p>
+      {# Image shows on mobile, hidden on large screens #}
+      <div class="aspect-video rounded-lg overflow-hidden lg:hidden">
+        <img src="/images/CAMT 3.jpg" alt="Math classroom" class="w-full h-full object-cover">
       </div>
+      {# Empty left column on large screens #}
+      <div class="hidden lg:block"></div>
+      {# Text in right column #}
       <div>
         <h1 class="text-4xl lg:text-6xl font-bold mb-4">{{ site.title }}</h1>
         <h2 class="text-2xl lg:text-3xl font-semibold mb-6">Get kids EXCITED about Math</h2>
@@ -25,7 +35,7 @@ title: Making Math Irresistible
 
 {# Trust Logos Bar #}
 <section class="bg-base-200 py-8">
-  <div class="max-w-7xl mx-auto px-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-wrap justify-center items-center gap-8 lg:gap-16">
       {% for logo in trust_logos %}
       <div class="text-2xl lg:text-4xl font-bold text-base-content/30">{{ logo.name }}</div>
@@ -36,7 +46,7 @@ title: Making Math Irresistible
 
 {# Services Section #}
 <section class="py-16 lg:py-24">
-  <div class="max-w-7xl mx-auto px-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid md:grid-cols-3 gap-8">
       {% for service in services %}
       <div class="card bg-base-100 shadow-xl">
@@ -52,7 +62,7 @@ title: Making Math Irresistible
 
 {# Testimonials Section #}
 <section class="bg-base-200 py-16 lg:py-24">
-  <div class="max-w-7xl mx-auto px-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid md:grid-cols-2 gap-8">
       {% for testimonial in testimonials %}
       <div class="card bg-base-100 shadow-xl">
@@ -76,7 +86,7 @@ title: Making Math Irresistible
 
 {# Philosophy Section #}
 <section class="bg-gradient-to-br from-secondary/10 to-accent/10 py-16 lg:py-24">
-  <div class="max-w-7xl mx-auto px-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid md:grid-cols-3 gap-8">
       {% for pillar in philosophy %}
       <div class="card bg-base-100 shadow-xl">
@@ -92,14 +102,12 @@ title: Making Math Irresistible
 
 {# About Section #}
 <section class="py-16 lg:py-24">
-  <div class="max-w-7xl mx-auto px-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid lg:grid-cols-3 gap-12 items-start">
       <div class="lg:col-span-1">
         <div class="avatar">
-          <div class="w-64 rounded-full bg-base-300 mx-auto">
-            <div class="flex items-center justify-center h-full">
-              <p class="text-base-content/50">Photo Placeholder</p>
-            </div>
+          <div class="w-64 rounded-full mx-auto">
+            <img src="/images/Raj-Shah-headshot.png" alt="Dr. Raj Shah">
           </div>
         </div>
       </div>
@@ -116,7 +124,7 @@ title: Making Math Irresistible
 
 {# Book a Workshop Section #}
 <section id="book" class="bg-primary text-primary-content py-16 lg:py-24">
-  <div class="max-w-3xl mx-auto px-4 text-center">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Math Classroom?</h2>
     <p class="text-xl mb-8">Book a workshop or keynote to bring joy, curiosity, and rigor to your school or conference.</p>
     <a href="mailto:{{ site.author.email }}" class="btn btn-secondary btn-lg">Get in Touch</a>
