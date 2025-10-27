@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title or site.title }}</title>
+  <meta name="description" content="{{ description or site.description }}">
+  <link rel="stylesheet" href="/styles/output.css">
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="bg-base-100 border-b">
+    <nav class="navbar max-w-7xl mx-auto px-4">
+      <div class="navbar-start">
+        <div class="dropdown">
+          <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+            </svg>
+          </div>
+          <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+            <li><a href="/about">About</a></li>
+            <li><a href="/classroom-resources">Classroom Resources</a></li>
+            <li><a href="/speaking">Speaking</a></li>
+            <li><a href="/professional-development">Professional Development</a></li>
+          </ul>
+        </div>
+        <a href="/" class="text-xl font-bold">{{ site.name }}</a>
+      </div>
+      <div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+          <li><a href="/about">About</a></li>
+          <li><a href="/classroom-resources">Classroom Resources</a></li>
+          <li><a href="/speaking">Speaking</a></li>
+          <li><a href="/professional-development">Professional Development</a></li>
+        </ul>
+      </div>
+      <div class="navbar-end">
+        <a href="#book" class="btn btn-primary text-primary-content btn-sm lg:btn-md">Book a Workshop</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="flex-grow">
+    {{ content | safe }}
+  </main>
+
+  <footer class="bg-base-200 py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>&copy; 2025 {{ site.name }}. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

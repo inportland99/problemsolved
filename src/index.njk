@@ -1,0 +1,124 @@
+---
+layout: base.njk
+title: Making Math Irresistible
+---
+
+{# Hero Section #}
+<section class="bg-gradient-to-br from-primary/10 to-secondary/10 py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="aspect-video bg-base-300 rounded-lg flex items-center justify-center">
+        <p class="text-base-content/50">Hero Image/Video Placeholder</p>
+      </div>
+      <div>
+        <h1 class="text-4xl lg:text-6xl font-bold mb-4">{{ site.title }}</h1>
+        <h2 class="text-2xl lg:text-3xl font-semibold mb-6">Get kids EXCITED about Math</h2>
+        <p class="text-xl mb-8">{{ site.description }}</p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#book" class="btn btn-primary btn-lg">Book a Workshop</a>
+          <a href="/classroom-resources" class="btn btn-outline btn-lg">Classroom Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Trust Logos Bar #}
+<section class="bg-base-200 py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex flex-wrap justify-center items-center gap-8 lg:gap-16">
+      {% for logo in trust_logos %}
+      <div class="text-2xl lg:text-4xl font-bold text-base-content/30">{{ logo.name }}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Services Section #}
+<section class="py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid md:grid-cols-3 gap-8">
+      {% for service in services %}
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title text-2xl">{{ service.title }}</h3>
+          <p>{{ service.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Testimonials Section #}
+<section class="bg-base-200 py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid md:grid-cols-2 gap-8">
+      {% for testimonial in testimonials %}
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <div class="flex mb-2">
+            {% for i in range(0, testimonial.rating) %}
+            <span class="text-warning text-xl">★</span>
+            {% endfor %}
+          </div>
+          <p class="text-lg mb-4">"{{ testimonial.quote }}"</p>
+          <div class="text-sm">
+            <p class="font-semibold">– {{ testimonial.author }}</p>
+            <p class="text-base-content/70">– {{ testimonial.organization }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Philosophy Section #}
+<section class="bg-gradient-to-br from-secondary/10 to-accent/10 py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid md:grid-cols-3 gap-8">
+      {% for pillar in philosophy %}
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title text-2xl">{{ pillar.title }}</h3>
+          <p>{{ pillar.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# About Section #}
+<section class="py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid lg:grid-cols-3 gap-12 items-start">
+      <div class="lg:col-span-1">
+        <div class="avatar">
+          <div class="w-64 rounded-full bg-base-300 mx-auto">
+            <div class="flex items-center justify-center h-full">
+              <p class="text-base-content/50">Photo Placeholder</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lg:col-span-2">
+        <h2 class="text-3xl font-bold mb-6">I'm on a mission to make math irresistible for kids.</h2>
+        <div class="prose lg:prose-lg">
+          <p>Every day computation skills become less valuable and thinking become more valuable. School math over values memorization and under emphasizes thinking skills.</p>
+          <p>I have always had an affinity for math. Powered by my love of math, I earned a Ph.D. in Physics in 1999 which led to a decade in R&D at Intel. In 2008, I quit my job and founded Math Plus Academy, an after-school STEM enrichment program. I'm also proud to be a founding member of The Global Math Project.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Book a Workshop Section #}
+<section id="book" class="bg-primary text-primary-content py-16 lg:py-24">
+  <div class="max-w-3xl mx-auto px-4 text-center">
+    <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Math Classroom?</h2>
+    <p class="text-xl mb-8">Book a workshop or keynote to bring joy, curiosity, and rigor to your school or conference.</p>
+    <a href="mailto:{{ site.author.email }}" class="btn btn-secondary btn-lg">Get in Touch</a>
+  </div>
+</section>
