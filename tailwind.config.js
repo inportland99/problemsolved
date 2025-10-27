@@ -9,6 +9,15 @@ module.exports = {
     require('daisyui'),
   ],
   daisyui: {
-    themes: ["light", "dark"],
+    themes: [
+      {
+        light: {
+          ...require("daisyui/src/theming/themes")["light"],
+          primary: "#5741AC",
+          secondary: "#00A2FF",
+        },
+      },
+      "dark",
+    ],
   },
 }

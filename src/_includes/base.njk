@@ -44,8 +44,12 @@
     {{ content | safe }}
   </main>
 
-  <footer class="bg-base-200 py-8 mt-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+  <footer class="relative bg-base-200 py-8 mt-16">
+    <div class="absolute inset-0 z-0">
+      <img src="/images/website-footer.png" alt="" class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-base-200/80"></div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
       <p>&copy; 2025 {{ site.name }}. All rights reserved.</p>
     </div>
   </footer>
