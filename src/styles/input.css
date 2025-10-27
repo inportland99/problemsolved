@@ -1,4 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 @import "tailwindcss";
 
 @plugin "@tailwindcss/typography";
 @plugin "daisyui";
+
+
+@utility btn {
+  @apply rounded-full;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-primary: #5741AC;
+  --color-secondary: #00A2FF;
+}
+
+@theme {
+  --font-family: "Montserrat", sans-serif; 
+}
