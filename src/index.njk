@@ -21,12 +21,12 @@ title: Making Math Irresistible
       <div class="hidden lg:block"></div>
       {# Text in right column #}
       <div>
-        <h1 class="text-4xl lg:text-6xl font-[Open Sans] font-bold mb-4 text-primary">{{ site.title }}</h1>
+        <h1 class="text-4xl lg:text-6xl font-bold mb-4 text-primary">{{ site.title }}</h1>
         <h2 class="text-2xl lg:text-3xl font-semibold mb-6 text-primary">Get kids EXCITED about Math</h2>
-        <p class="text-xl mb-8">{{ site.description }}</p>
+        <p class="text-xl text-primary mb-8">{{ site.description }}</p>
         <div class="flex flex-wrap gap-4">
           <a href="#book" class="btn btn-primary btn-lg">Book a Workshop</a>
-          <a href="/classroom-resources" class="btn btn-lg btn-secondary">Classroom Resources</a>
+          <a href="/classroom-resources" class="btn btn-outline btn-lg btn-secondary">Classroom Resources</a>
         </div>
       </div>
     </div>
@@ -37,9 +37,12 @@ title: Making Math Irresistible
 <section class="bg-base-200 py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-wrap justify-center items-center gap-8 lg:gap-16">
-      {% for logo in trust_logos %}
-      <div class="text-2xl lg:text-4xl font-bold text-base-content/30">{{ logo.name }}</div>
-      {% endfor %}
+      <img src="/images/logo/MPA.png" alt="Math Plus Academy" class="h-12 w-auto">
+      <img src="/images/logo/MHE.png" alt="McGraw Hill Education" class="h-12 w-auto">
+      <img src="/images/logo/TEDx.png" alt="TEDx" class="h-12 w-auto">
+      <img src="/images/logo/GMP.png" alt="Global Math Project" class="h-12 w-auto">
+      <img src="/images/logo/RDSD.png" alt="Reynoldsburg Schools" class="h-12 w-auto">
+      <img src="/images/logo/NCTM.png" alt="National Council of Teachers of Mathematics" class="h-12 w-auto">
     </div>
   </div>
 </section>
