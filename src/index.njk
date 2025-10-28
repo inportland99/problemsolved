@@ -23,7 +23,7 @@ title: Making Math Irresistible
       <div>
         <h1 class="text-4xl lg:text-6xl font-bold mb-4 text-primary">{{ site.title }}</h1>
         <h2 class="text-2xl lg:text-3xl font-semibold mb-6 text-primary">Get kids EXCITED about Math</h2>
-        <p class="text-xl text-primary mb-8">{{ site.description }}</p>
+        <p class="text-xl text-primary mb-8">{{ site.description | safe }}</p>
         <div class="flex flex-wrap gap-4">
           <a href="#book" class="btn btn-primary btn-lg">Book a Workshop</a>
           <a href="/classroom-resources" class="btn btn-outline btn-lg btn-secondary">Classroom Resources</a>
@@ -54,13 +54,13 @@ title: Making Math Irresistible
       {% for service in services %}
       <div class="card bg-base-100 shadow-xl rounded-2xl">
         <div class="card-body">
-          <h3 class="card-title text-2xl flex items-start gap-3">
+          <h3 class="card-title text-2xl text-primary flex items-start gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-primary flex-shrink-0">
               <path stroke-linecap="round" stroke-linejoin="round" d="{{ service.icon }}" />
             </svg>
             {{ service.title }}
           </h3>
-          <p>{{ service.description }}</p>
+          <p>{{ service.description | safe }}</p>
         </div>
       </div>
       {% endfor %}
@@ -68,29 +68,89 @@ title: Making Math Irresistible
   </div>
 </section>
 
-{# Testimonials Section #}
+{# Testimonials Carousel #}
 <section class="bg-base-200 py-16 lg:py-24">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid md:grid-cols-2 gap-8">
-      {% for testimonial in testimonials %}
-      <div class="card bg-base-100 shadow-xl rounded-2xl">
-        <div class="card-body">
-          <div class="flex mb-2">
-            {% for i in range(0, testimonial.rating) %}
-            <span class="text-warning text-xl">★</span>
-            {% endfor %}
-          </div>
-          <p class="text-lg mb-4">"{{ testimonial.quote }}"</p>
-          <div class="text-sm">
-            <p class="font-semibold">– {{ testimonial.author }}</p>
-            <p class="text-base-content/70">– {{ testimonial.organization }}</p>
+    <div class="relative overflow-hidden">
+      <div id="testimonial-carousel" class="flex transition-transform duration-500 ease-in-out">
+        {% for testimonial in testimonials %}
+        <div class="w-full md:w-1/2 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <div class="flex mb-2">
+                {% for i in range(0, testimonial.rating) %}
+                <span class="text-warning text-xl">★</span>
+                {% endfor %}
+              </div>
+              <p class="text-lg mb-4">"{{ testimonial.quote }}"</p>
+              <div class="text-sm">
+                <p class="font-semibold">– {{ testimonial.author }}</p>
+                <p class="text-base-content/70">– {{ testimonial.organization }}</p>
+              </div>
+            </div>
           </div>
         </div>
+        {% endfor %}
+        {# Duplicate testimonials for infinite loop #}
+        {% for testimonial in testimonials %}
+        <div class="w-full md:w-1/2 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <div class="flex mb-2">
+                {% for i in range(0, testimonial.rating) %}
+                <span class="text-warning text-xl">★</span>
+                {% endfor %}
+              </div>
+              <p class="text-lg mb-4">"{{ testimonial.quote }}"</p>
+              <div class="text-sm">
+                <p class="font-semibold">– {{ testimonial.author }}</p>
+                <p class="text-base-content/70">– {{ testimonial.organization }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
   </div>
 </section>
+
+<script>
+  (function() {
+    const carousel = document.getElementById('testimonial-carousel');
+    const totalSlides = {{ testimonials | length }};
+    let currentIndex = 0;
+    let isTransitioning = false;
+
+    function nextSlide() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      
+      currentIndex++;
+      carousel.style.transition = 'transform 500ms ease-in-out';
+      carousel.style.transform = `translateX(-${currentIndex * 50}%)`;
+      
+      // Reset to beginning when we reach the duplicate set
+      if (currentIndex >= totalSlides) {
+        setTimeout(() => {
+          carousel.style.transition = 'none';
+          currentIndex = 0;
+          carousel.style.transform = 'translateX(0)';
+          setTimeout(() => {
+            isTransitioning = false;
+          }, 50);
+        }, 500);
+      } else {
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 500);
+      }
+    }
+
+    // Auto-advance every 5 seconds
+    setInterval(nextSlide, 5000);
+  })();
+</script>
 
 {# Philosophy Section #}
 <section class="bg-gradient-to-br from-secondary/10 to-accent/10 py-16 lg:py-24">
@@ -112,9 +172,9 @@ title: Making Math Irresistible
 <section class="py-16 lg:py-24">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid lg:grid-cols-3 gap-12 items-start">
-      <div class="lg:col-span-1">
+      <div class="lg:col-span-1 flex justify-center items-center">
         <div class="avatar">
-          <div class="w-64 rounded-full mx-auto">
+          <div class="w-64 rounded-full">
             <img src="/images/Raj-Shah-headshot.png" alt="Dr. Raj Shah">
           </div>
         </div>
