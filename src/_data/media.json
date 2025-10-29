@@ -1,0 +1,146 @@
+{
+  "videos": [
+    {
+      "title": "Video Game Design to Make Math Fun",
+      "description": "TEDx Talk exploring how video game design principles can revolutionize math learning",
+      "platform": "youtube",
+      "videoId": "HmsA0-ZvbfU",
+      "date": "2019",
+      "keyMoments": [
+        {
+          "time": "2:15",
+          "seconds": 135,
+          "description": "The problem with traditional math education"
+        },
+        {
+          "time": "6:30",
+          "seconds": 390,
+          "description": "Video game principles that engage learners"
+        },
+        {
+          "time": "11:45",
+          "seconds": 705,
+          "description": "Implementing game design in math classrooms"
+        }
+      ]
+    },
+    {
+      "title": "Why is Math Different Now",
+      "description": "Understanding the shift in how we teach and learn mathematics today",
+      "platform": "vimeo",
+      "videoId": "110807219",
+      "date": "2014",
+      "keyMoments": [
+        {
+          "time": "1:30",
+          "seconds": 90,
+          "description": "How math instruction has evolved"
+        },
+        {
+          "time": "4:20",
+          "seconds": 260,
+          "description": "The shift from memorization to understanding"
+        },
+        {
+          "time": "7:10",
+          "seconds": 430,
+          "description": "Why parents might feel confused"
+        }
+      ]
+    }
+  ],
+  "podcasts": [
+    {
+      "title": "Why Math Sucks and How to Fix It",
+      "podcastName": "Math Therapy Podcast",
+      "date": "October 16, 2024",
+      "url": "https://podcasts.apple.com/us/podcast/math-therapy/id1481726743?i=1000732124819",
+      "keyMoments": [
+        {
+          "time": "5:00",
+          "seconds": 300,
+          "description": "Why memorization alone fails in math education"
+        },
+        {
+          "time": "20:00",
+          "seconds": 1200,
+          "description": "Teaching math like we teach reading: a new approach"
+        },
+        {
+          "time": "40:00",
+          "seconds": 2400,
+          "description": "Making math learning joyful and puzzle-like"
+        }
+      ]
+    },
+    {
+      "title": "Unlocking Life's Equations: Personal Growth Through Math",
+      "podcastName": "Beyond Hope Project with Jason Tharp",
+      "date": "October 4, 2023",
+      "url": "https://podcasts.apple.com/us/podcast/beyond-hope-project-with-jason-tharp/id1697199486?i=1000630157546",
+      "keyMoments": [
+        {
+          "time": "3:00",
+          "seconds": 180,
+          "description": "Math as a tool for personal transformation"
+        },
+        {
+          "time": "15:00",
+          "seconds": 900,
+          "description": "How we use math in daily life without realizing it"
+        },
+        {
+          "time": "25:00",
+          "seconds": 1500,
+          "description": "The mission to make everyone fall in love with math"
+        }
+      ]
+    },
+    {
+      "title": "Making Math Irresistible",
+      "podcastName": "Making Math Moments That Matter Podcast",
+      "date": "April 1, 2019",
+      "url": "https://podcasts.apple.com/us/podcast/18-how-to-make-math-irresistible-an-interview-with-raj-shah/id1447014030?i=1000433861917",
+      "keyMoments": [
+        {
+          "time": "7:00",
+          "seconds": 420,
+          "description": "Opening arguments: The case against rote memorization"
+        },
+        {
+          "time": "30:00",
+          "seconds": 1800,
+          "description": "What should students actually memorize?"
+        },
+        {
+          "time": "45:00",
+          "seconds": 2700,
+          "description": "Finding balance between understanding and fluency"
+        }
+      ]
+    },
+    {
+      "title": "Stop Making Students Memorize Math",
+      "podcastName": "DebateMath Podcast",
+      "date": "February 3, 2022",
+      "url": "https://podcasts.apple.com/us/podcast/debatemath-podcast/id1596735280?i=1000549880931",
+      "keyMoments": [
+        {
+          "time": "7:00",
+          "seconds": 420,
+          "description": "Opening arguments: The case against rote memorization"
+        },
+        {
+          "time": "30:00",
+          "seconds": 1800,
+          "description": "What should students actually memorize?"
+        },
+        {
+          "time": "45:00",
+          "seconds": 2700,
+          "description": "Finding balance between understanding and fluency"
+        }
+      ]
+    }
+  ]
+}

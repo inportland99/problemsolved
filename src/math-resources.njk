@@ -1,0 +1,270 @@
+---
+layout: base.njk
+title: Math Resources
+description: Explore engaging math puzzles, problems, and challenges with Math Treats
+---
+
+<section class="py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-4xl lg:text-5xl font-bold mb-4 text-primary">Math Treats</h1>
+    <p class="text-xl mb-12">Explore fun math puzzles and challenges that inspire curiosity and problem-solving</p>
+    
+    {# Download Section #}
+    <div class="card bg-gradient-to-br from-secondary/10 to-accent/10 shadow-xl rounded-2xl mb-16">
+      <div class="card-body lg:py-12">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="text-3xl lg:text-4xl font-bold mb-6 text-primary">Get My Favorite Math Problems</h2>
+          <div class="prose lg:prose-lg mx-auto mb-8">
+            <p>I travel the country talking to K-12 teachers about sparking curiosity and encouraging productive struggle. In the process, I use several math tasks so teachers can re-experience how fun math can be for themselves.</p>
+            <p>The question I get most at these seminars and workshops is, "Where do you get these great problems? Are they in a book somewhere?"</p>
+            <p>The truth is that I have stumbled upon these problems over years of doing puzzles, searching for unique math problems, and testing them with students and teachers.</p>
+          </div>
+          <a data-formkit-toggle="5273167f02" href="https://dr-raj-shah.kit.com/5273167f02" class="btn btn-primary btn-lg">
+            Get My Favorite Problems
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    {# Video Carousel #}
+    <div class="relative overflow-hidden mb-8">
+      <div id="video-carousel" class="flex transition-transform duration-500 ease-in-out">
+        {% for video in math_treats %}
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">{{ video.title }}</h2>
+              
+              {# Video embed #}
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                {% if video.platform == "youtube" %}
+                <iframe 
+                  src="https://www.youtube.com/embed/{{ video.videoId }}" 
+                  title="{{ video.title }}"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                {% elif video.platform == "vimeo" %}
+                <iframe 
+                  src="https://player.vimeo.com/video/{{ video.videoId }}" 
+                  title="{{ video.title }}"
+                  frameborder="0" 
+                  allow="autoplay; fullscreen; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                {% endif %}
+              </div>
+              
+              <p>{{ video.description }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        
+        {# Duplicate videos for infinite loop #}
+        {% for video in math_treats %}
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">{{ video.title }}</h2>
+              
+              {# Video embed #}
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                {% if video.platform == "youtube" %}
+                <iframe 
+                  src="https://www.youtube.com/embed/{{ video.videoId }}" 
+                  title="{{ video.title }}"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                {% elif video.platform == "vimeo" %}
+                <iframe 
+                  src="https://player.vimeo.com/video/{{ video.videoId }}" 
+                  title="{{ video.title }}"
+                  frameborder="0" 
+                  allow="autoplay; fullscreen; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                {% endif %}
+              </div>
+              
+              <p>{{ video.description }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      {# Navigation buttons #}
+      <button id="prev-btn" class="absolute left-0 top-1/2 -translate-y-1/2 btn btn-circle btn-primary z-10 ml-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>
+      <button id="next-btn" class="absolute right-0 top-1/2 -translate-y-1/2 btn btn-circle btn-primary z-10 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
+    </div>
+    
+    {# Carousel indicators #}
+    <div id="carousel-indicators" class="flex justify-center gap-2 mt-8">
+      {% for video in math_treats %}
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="{{ loop.index0 }}"></button>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function() {
+    const carousel = document.getElementById('video-carousel');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    const totalSlides = {{ math_treats | length }};
+    let currentIndex = 0;
+    let isTransitioning = false;
+    let autoPlayInterval;
+    
+    // Calculate slides per view based on screen size
+    function getSlidesPerView() {
+      if (window.innerWidth >= 1024) return 3; // lg breakpoint
+      if (window.innerWidth >= 768) return 2;  // md breakpoint
+      return 1;
+    }
+    
+    function updateCarousel(instant = false) {
+      const slidesPerView = getSlidesPerView();
+      const translatePercent = (currentIndex * 100) / slidesPerView;
+      
+      if (instant) {
+        carousel.style.transition = 'none';
+      } else {
+        carousel.style.transition = 'transform 500ms ease-in-out';
+      }
+      carousel.style.transform = `translateX(-${translatePercent}%)`;
+      
+      // Update indicators
+      indicators.forEach((indicator, index) => {
+        if (index === currentIndex % totalSlides) {
+          indicator.classList.add('bg-primary');
+          indicator.classList.remove('bg-base-300');
+        } else {
+          indicator.classList.remove('bg-primary');
+          indicator.classList.add('bg-base-300');
+        }
+      });
+    }
+    
+    function nextSlide() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      
+      currentIndex++;
+      updateCarousel();
+      
+      // Reset to beginning when we reach the duplicate set
+      if (currentIndex >= totalSlides) {
+        setTimeout(() => {
+          currentIndex = 0;
+          updateCarousel(true);
+          setTimeout(() => {
+            isTransitioning = false;
+          }, 50);
+        }, 500);
+      } else {
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 500);
+      }
+    }
+    
+    function prevSlide() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      
+      if (currentIndex === 0) {
+        currentIndex = totalSlides;
+        updateCarousel(true);
+        setTimeout(() => {
+          currentIndex--;
+          updateCarousel();
+          setTimeout(() => {
+            isTransitioning = false;
+          }, 50);
+        }, 50);
+      } else {
+        currentIndex--;
+        updateCarousel();
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 500);
+      }
+    }
+    
+    function goToSlide(index) {
+      if (isTransitioning) return;
+      currentIndex = index;
+      updateCarousel();
+      resetAutoPlay();
+    }
+    
+    function startAutoPlay() {
+      autoPlayInterval = setInterval(nextSlide, 6000);
+    }
+    
+    function stopAutoPlay() {
+      clearInterval(autoPlayInterval);
+    }
+    
+    function resetAutoPlay() {
+      stopAutoPlay();
+      startAutoPlay();
+    }
+    
+    // Event listeners
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+      resetAutoPlay();
+    });
+    
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+      resetAutoPlay();
+    });
+    
+    indicators.forEach((indicator) => {
+      indicator.addEventListener('click', () => {
+        const index = parseInt(indicator.dataset.index);
+        goToSlide(index);
+      });
+    });
+    
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        updateCarousel(true);
+      }, 100);
+    });
+    
+    // Pause autoplay when hovering over carousel
+    carousel.addEventListener('mouseenter', stopAutoPlay);
+    carousel.addEventListener('mouseleave', startAutoPlay);
+    
+    // Initialize
+    updateCarousel(true);
+    startAutoPlay();
+  })();
+</script>
+
+<script async data-uid="5273167f02" src="https://dr-raj-shah.kit.com/5273167f02/index.js"></script>

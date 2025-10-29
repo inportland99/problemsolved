@@ -1,0 +1,149 @@
+[
+  {
+    "title": "Locker Problem",
+    "description": "A classic math teaser - the locker problem. Imagine a row of 100 closed lockers numbered sequentially. 100 people walk by the lockers. The first person changes the state of every locker -- in this case they open every locker. The second person changes the state of every second locker -- they will close lockers 2, 4, 6, 8, and so on. The third person changes every 3rd locker -- closing locker 3, opening 6, and so on. This continues until all 100 people walk by. The 100th person just touches the 100th locker. Which lockers are open?\n\nSee more problems and view the extensions here: www.mathplusacademy.com/at-home",
+    "platform": "youtube",
+    "videoId": "X0dLzl95k1I",
+    "date": "2020"
+  },
+  {
+    "title": "Beat the Tax Collector",
+    "description": "Can you beat the tax collector? Learn the rules and take on the challenge!\n\nThanks to Dan Finkel of www.mathforlove.com for introducing me to this problem. Check out his website which has great math games and puzzles as well as resources for parents and teachers.",
+    "platform": "youtube",
+    "videoId": "Gngbk7jkd2I",
+    "date": "2020"
+  },
+  {
+    "title": "Can You Make a Spot It! Deck?",
+    "description": "Spot It! (TM Blue Orange Games) is a fun game to play, but what's fascinating is how the deck of cards is created. Every card has exactly one matching symbol with every other card in the deck! How do they do it?",
+    "platform": "youtube",
+    "videoId": "bj-y6evJFZ8",
+    "date": "2020"
+  },
+  {
+    "title": "What shapes can you make with folds and one straight cut?",
+    "description": "Explore an amazing result in mathematics about which shapes you cut out from a piece of paper using just ONE straight cut.\n\nLearn more here from Erik Demaine who proved a theorem about this:https://erikdemaine.org/foldcut/\n\nThe first proof of the fold-and-cut theorem, solving the problem, was published in 1999 by Erik Demaine, Martin Demaine, and Anna Lubiw.",
+    "platform": "youtube",
+    "videoId": "P0G7bAzHI4E",
+    "date": "2020"
+  },
+  {
+    "title": "4x4 Magic Square Hint",
+    "description": "Ned help with this puzzle https://www.youtube.com/watch?v=tMbFrQZXAmM  Check out this hint.",
+    "platform": "youtube",
+    "videoId": "hLzrvroie6s",
+    "date": "2021"
+  },
+  {
+    "title": "How Many Squares in the Grid?",
+    "description": "Try this fun math challenge for all ages.",
+    "platform": "youtube",
+    "videoId": "9GsF4QTfVaU",
+    "date": "2020"
+  },
+  {
+    "title": "Diagonal on a Grid",
+    "description": "Draw a rectangle, then draw a diagonal. How many squares will it pass through? Can you make predictions for just the dimensions? What patterns can you find? Here a Desmos graph to help you explore this treat: https://www.desmos.com/calculator/7dserlms1j",
+    "platform": "youtube",
+    "videoId": "iEshPZJ7l_Q",
+    "date": "2021"
+  },
+  {
+    "title": "Explore the Collatz Conjecture or the 3N+1 Problem",
+    "description": "Pick a number. If it's even, halve it. If it's odd, triple it and add 1 (3N+1). Repeat. Will you always end in a 4-2-1 loop? Starting from a number less than 100, what's the highest number you can reach? What's the longest series you can create? So many questions to explore. Mathematicians still don't have all the answers! Enjoy.",
+    "platform": "youtube",
+    "videoId": "fUfbUANN6e8",
+    "date": "2020"
+  },
+  {
+    "title": "Multiplication Circles",
+    "description": "Represent multiplication tables inside circles and get some really cool pictures along with a some curious questions to ponder!\n\nUse this 30 point circle template: https://www.mathplusacademy.com/wp-content/uploads/2020/07/30-point-circles.pdf",
+    "platform": "youtube",
+    "videoId": "KvMMlXfFMiU",
+    "date": "2020"
+  },
+  {
+    "title": "Pancake Flipping",
+    "description": "Imagine a stack of all different size (diameter) pancakes. Can you get them into a stack from largest to smallest? Rule: You can insert your flipper between any two pancakes (or at the bottom) and flip all the pancakes above the flipper. Is it always possible to flip them into a nice stack? Is there an optimal number of flips for every configuration of pancakes? Can you find any patterns or strategies to flip pancakes efficiently?\n\nNumberphile has a nice video on this featuring Katie Steckles. https://www.youtube.com/watch?v=m3drS_8BpU0",
+    "platform": "youtube",
+    "videoId": "1g4FdifDwuw",
+    "date": "2021"
+  },
+  {
+    "title": "Squaresville - How Many Ways from A to B?",
+    "description": "In Squaresville, you must follow the streets on the grid. How many ways are there to get from A to B? The only rule is that you must follow the street grid only going right or up at all times. Good luck!",
+    "platform": "youtube",
+    "videoId": "21ySz3LvsFE",
+    "date": "2020"
+  },
+  {
+    "title": "Polyominoes",
+    "description": "What's a polyomino? Watch to find out then try to figure out how many triominoes there are? tetrominoes? pentominoes? Is there a pattern?",
+    "platform": "youtube",
+    "videoId": "-l5-aKeGpfg",
+    "date": "2021"
+  },
+  {
+    "title": "Find the Maximum Product",
+    "description": "Take any positive whole number. Write it as a sum of positive whole numbers (addends). Now multiply the addends together. What is the maximum product you can achieve?",
+    "platform": "youtube",
+    "videoId": "t-zzShrH2BY",
+    "date": "2021"
+  },
+  {
+    "title": "4x4 Magic Trick",
+    "description": "Check out this trick. Can you figure out how it works?\n\nI'll have follow up videos with hints and a solution. Stay tuned.\nHint: https://youtu.be/904mtnHtT0A",
+    "platform": "youtube",
+    "videoId": "tMbFrQZXAmM",
+    "date": "2020"
+  },
+  {
+    "title": "Which Pocket Will the Billiard Ball End Up In?",
+    "description": "A billiard ball leaves from A at a 45degree angle. It reflects off the walls until it ends up in a pocket. Can you predict which pocket based on the dimensions of the billiard table?",
+    "platform": "youtube",
+    "videoId": "r-CsGMkgVgQ",
+    "date": "2020"
+  },
+  {
+    "title": "Rep-Tiles",
+    "description": "Can you use triominoes, tetrominoes, and pentonimoes to create scale versions of each shape? Which scale factors are possible, which ones are not? How many copies of the shape to you need to cover each scale factor? Are there any shapes that can't be \"rep-tiled\"?\n\nUse mathigon.org/polypad to help you explore this math threat.",
+    "platform": "youtube",
+    "videoId": "TtXDmGmwhQ4",
+    "date": "2021"
+  },
+  {
+    "title": "Five Rooms - Can your go through all the doors exactly once?",
+    "description": "Another classic problem related to the Seven Bridges problem from a prior #MathTreat. Try it and see what you can figure out.",
+    "platform": "youtube",
+    "videoId": "Mcy_BkVLscA",
+    "date": "2020"
+  },
+  {
+    "title": "Folding Fractions",
+    "description": "Explore fractions between zero and one by folding a strip a paper! What fractions can you fold? Can you fold 1/3? If you were given a sequence like LRRLM, could you tell with fraction that was without folding it?",
+    "platform": "youtube",
+    "videoId": "mBtEhzXJT30",
+    "date": "2021"
+  },
+  {
+    "title": "Eight Queens",
+    "description": "Can you place 8 queens on a chess board in a way where no queen attacks another? It may seem impossible at first... but keep at it. You might try starting with smaller boards like 3x3 or 4x4 before you work up to 8x8.\n\nHere is a little tool to help you explore the problem and find solutions: bit.ly/chessqueens",
+    "platform": "youtube",
+    "videoId": "5elkaS77VQk",
+    "date": "2020"
+  },
+  {
+    "title": "The Lost Ticket",
+    "description": "100 people board a plane. Each one has an assigned seat. The first person on board lost their ticket and chooses a seat a random. The rest board one at a time taking their assigned seat if it is open. If someone is in their seat, they choose a random empty seat. What is the probability that the last person sits in their assigned seat?",
+    "platform": "youtube",
+    "videoId": "DtLicuh7Njg",
+    "date": "2020"
+  },
+  {
+    "title": "Tips for Math at Home",
+    "description": "Helpful tips for parents struggling to help their child with math at home during while schools are closed during the Coronavirus lockdown.",
+    "platform": "youtube",
+    "videoId": "cHwdmu3y_nI",
+    "date": "2020"
+  }
+]
