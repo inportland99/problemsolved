@@ -6,7 +6,7 @@ description: Explore engaging math puzzles, problems, and challenges with Math T
 
 <section class="py-16 lg:py-24">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h1 class="text-4xl lg:text-5xl font-bold mb-4 text-primary">Math Treats</h1>
+    <h1 class="text-4xl lg:text-5xl font-bold mb-4 text-primary">Math Resources</h1>
     <p class="text-xl mb-12">Explore fun math puzzles and challenges that inspire curiosity and problem-solving</p>
     
     {# Download Section #}
@@ -28,6 +28,8 @@ description: Explore engaging math puzzles, problems, and challenges with Math T
     
     {# Video Carousel #}
     <div class="relative overflow-hidden mb-8">
+      <h3 class="text-4xl lg:text-5xl font-bold mb-4 text-primary">Math Resources</h3>
+      <p>Explore these short "Math Treat" videos with fun, open, math explorations. You these in your classroom to inspire curiosity and problem-solving</p>
       <div id="video-carousel" class="flex transition-transform duration-500 ease-in-out">
         {% for video in math_treats %}
         <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
@@ -58,43 +60,7 @@ description: Explore engaging math puzzles, problems, and challenges with Math T
                 {% endif %}
               </div>
               
-              <p>{{ video.description }}</p>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-        
-        {# Duplicate videos for infinite loop #}
-        {% for video in math_treats %}
-        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
-          <div class="card bg-base-100 shadow-xl rounded-2xl">
-            <div class="card-body">
-              <h2 class="card-title text-2xl">{{ video.title }}</h2>
-              
-              {# Video embed #}
-              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
-                {% if video.platform == "youtube" %}
-                <iframe 
-                  src="https://www.youtube.com/embed/{{ video.videoId }}" 
-                  title="{{ video.title }}"
-                  frameborder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowfullscreen
-                  class="w-full h-full">
-                </iframe>
-                {% elif video.platform == "vimeo" %}
-                <iframe 
-                  src="https://player.vimeo.com/video/{{ video.videoId }}" 
-                  title="{{ video.title }}"
-                  frameborder="0" 
-                  allow="autoplay; fullscreen; picture-in-picture" 
-                  allowfullscreen
-                  class="w-full h-full">
-                </iframe>
-                {% endif %}
-              </div>
-              
-              <p>{{ video.description }}</p>
+              <p>{{ video.description | safe }}</p>
             </div>
           </div>
         </div>
@@ -166,68 +132,38 @@ description: Explore engaging math puzzles, problems, and challenges with Math T
     
     function nextSlide() {
       if (isTransitioning) return;
-      isTransitioning = true;
+      const slidesPerView = getSlidesPerView();
+      const maxIndex = totalSlides - slidesPerView;
       
+      if (currentIndex >= maxIndex) return; // Don't go past the end
+      
+      isTransitioning = true;
       currentIndex++;
       updateCarousel();
       
-      // Reset to beginning when we reach the duplicate set
-      if (currentIndex >= totalSlides) {
-        setTimeout(() => {
-          currentIndex = 0;
-          updateCarousel(true);
-          setTimeout(() => {
-            isTransitioning = false;
-          }, 50);
-        }, 500);
-      } else {
-        setTimeout(() => {
-          isTransitioning = false;
-        }, 500);
-      }
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 500);
     }
     
     function prevSlide() {
       if (isTransitioning) return;
-      isTransitioning = true;
       
-      if (currentIndex === 0) {
-        currentIndex = totalSlides;
-        updateCarousel(true);
-        setTimeout(() => {
-          currentIndex--;
-          updateCarousel();
-          setTimeout(() => {
-            isTransitioning = false;
-          }, 50);
-        }, 50);
-      } else {
-        currentIndex--;
-        updateCarousel();
-        setTimeout(() => {
-          isTransitioning = false;
-        }, 500);
-      }
+      if (currentIndex === 0) return; // Don't go before the beginning
+      
+      isTransitioning = true;
+      currentIndex--;
+      updateCarousel();
+      
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 500);
     }
     
     function goToSlide(index) {
       if (isTransitioning) return;
       currentIndex = index;
       updateCarousel();
-      resetAutoPlay();
-    }
-    
-    function startAutoPlay() {
-      autoPlayInterval = setInterval(nextSlide, 6000);
-    }
-    
-    function stopAutoPlay() {
-      clearInterval(autoPlayInterval);
-    }
-    
-    function resetAutoPlay() {
-      stopAutoPlay();
-      startAutoPlay();
     }
     
     // Event listeners
