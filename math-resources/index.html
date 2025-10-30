@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Resources</title>
+  <meta name="description" content="Explore engaging math puzzles, problems, and challenges with Math Treats">
+  <link rel="stylesheet" href="/styles/output.css">
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="sticky top-0 z-50 relative bg-base-100">
+    <div class="absolute inset-0 z-0">
+      <img src="/images/website-header.png" alt="" class="w-full h-full object-cover">
+    </div>
+    <nav class="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="navbar-start">
+        <div class="dropdown">
+          <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+            </svg>
+          </div>
+          <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
+            <li>
+              <details>
+                <summary>About</summary>
+                <ul>
+                  <li><a href="/about">About</a></li>
+                  <li><a href="/media">Media</a></li>
+                </ul>
+              </details>
+            </li>
+            <li><a href="/math-resources">Math Resources</a></li>
+            <li><a href="/speaking">Speaking</a></li>
+            <li><a href="/professional-development">Professional Development</a></li>
+          </ul>
+        </div>
+        <a href="/" class="text-xl font-bold">Dr. Raj Shah</a>
+      </div>
+      <div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+          <li>
+            <details>
+              <summary>About</summary>
+              <ul class="bg-base-100 rounded-box z-50 p-2 shadow">
+                <li><a href="/about">About</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/contact">Contact</a></li>
+              </ul>
+            </details>
+          </li>
+          <li><a href="/math-resources">Math Resources</a></li>
+          <li><a href="/speaking">Speaking</a></li>
+          <li><a href="/professional-development">Professional Development</a></li>
+        </ul>
+      </div>
+      <div class="navbar-end">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScbW6oliF8YjPR-RWB9DSp0u71hHI0H4t-uJBevoIdJqKLPNw/viewform?usp=sf_link" class="btn btn-primary text-primary-content btn-sm lg:btn-md">Book a Workshop</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="flex-grow">
+    
+<section class="py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-4xl lg:text-5xl font-bold mb-4 text-primary">Math Resources</h1>
+    <p class="text-xl mb-12">Explore fun math puzzles and challenges that inspire curiosity and problem-solving</p>
+    
+    
+    <div class="card bg-gradient-to-br from-secondary/10 to-accent/10 shadow-xl rounded-2xl mb-16">
+      <div class="card-body lg:py-12">
+        <h2 class="text-3xl lg:text-4xl font-bold mb-6 text-primary text-center">Get My Favorite Math Problems</h2>
+        
+        <div class="grid grid-cols-2 gap-8 mb-8 items-start">
+          <div class="prose lg:prose-lg">
+            <p>I travel the country talking to K-12 teachers about sparking curiosity and encouraging productive struggle. In the process, I use several math tasks so teachers can re-experience how fun math can be for themselves.</p>
+            <p>The question I get most at these seminars and workshops is, "Where do you get these great problems? Are they in a book somewhere?"</p>
+            <p>The truth is that I have stumbled upon these problems over years of doing puzzles, searching for unique math problems, and testing them with students and teachers.</p>
+          </div>
+          <div class="overflow-hidden h-full">
+            <img src="/images/favorites.png" alt="My Favorite Math Problems" class="w-full h-full object-cover">
+          </div>
+        </div>
+        
+        <div class="text-center">
+          <a data-formkit-toggle="5273167f02" href="https://dr-raj-shah.kit.com/5273167f02" class="btn btn-primary btn-lg">
+            Get My Favorite Problems
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="relative overflow-hidden mb-8">
+      <h3 class="text-4xl lg:text-5xl font-bold mb-4 text-primary">Math Resources</h3>
+      <p>Explore these short "Math Treat" videos with fun, open, math explorations. You these in your classroom to inspire curiosity and problem-solving</p>
+      <div id="video-carousel" class="flex transition-transform duration-500 ease-in-out">
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Locker Problem</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/X0dLzl95k1I" 
+                  title="Locker Problem"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>A classic math teaser - the locker problem. Imagine a row of 100 closed lockers numbered sequentially. 100 people walk by the lockers. The first person changes the state of every locker -- in this case they open every locker. The second person changes the state of every second locker -- they will close lockers 2, 4, 6, 8, and so on. The third person changes every 3rd locker -- closing locker 3, opening 6, and so on. This continues until all 100 people walk by. The 100th person just touches the 100th locker. Which lockers are open?
+
+See more problems and view the extensions here: www.mathplusacademy.com/at-home</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Beat the Tax Collector</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/Gngbk7jkd2I" 
+                  title="Beat the Tax Collector"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Can you beat the tax collector? Learn the rules and take on the challenge!
+
+Thanks to Dan Finkel of www.mathforlove.com for introducing me to this problem. Check out his website which has great math games and puzzles as well as resources for parents and teachers.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Can You Make a Spot It! Deck?</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/bj-y6evJFZ8" 
+                  title="Can You Make a Spot It! Deck?"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Spot It! (TM Blue Orange Games) is a fun game to play, but what's fascinating is how the deck of cards is created. Every card has exactly one matching symbol with every other card in the deck! How do they do it?</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">What shapes can you make with folds and one straight cut?</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/P0G7bAzHI4E" 
+                  title="What shapes can you make with folds and one straight cut?"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Explore an amazing result in mathematics about which shapes you cut out from a piece of paper using just ONE straight cut.
+
+Learn more here from Erik Demaine who proved a theorem about this:https://erikdemaine.org/foldcut/
+
+The first proof of the fold-and-cut theorem, solving the problem, was published in 1999 by Erik Demaine, Martin Demaine, and Anna Lubiw.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">4x4 Magic Square Hint</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/hLzrvroie6s" 
+                  title="4x4 Magic Square Hint"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Ned help with this puzzle https://www.youtube.com/watch?v=tMbFrQZXAmM  Check out this hint.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">How Many Squares in the Grid?</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/9GsF4QTfVaU" 
+                  title="How Many Squares in the Grid?"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Try this fun math challenge for all ages.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Diagonal on a Grid</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/iEshPZJ7l_Q" 
+                  title="Diagonal on a Grid"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Draw a rectangle, then draw a diagonal. How many squares will it pass through? Can you make predictions for just the dimensions? What patterns can you find? Here a Desmos graph to help you explore this treat: https://www.desmos.com/calculator/7dserlms1j</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Explore the Collatz Conjecture or the 3N+1 Problem</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/fUfbUANN6e8" 
+                  title="Explore the Collatz Conjecture or the 3N+1 Problem"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Pick a number. If it's even, halve it. If it's odd, triple it and add 1 (3N+1). Repeat. Will you always end in a 4-2-1 loop? Starting from a number less than 100, what's the highest number you can reach? What's the longest series you can create? So many questions to explore. Mathematicians still don't have all the answers! Enjoy.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Multiplication Circles</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/KvMMlXfFMiU" 
+                  title="Multiplication Circles"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Represent multiplication tables inside circles and get some really cool pictures along with a some curious questions to ponder!
+
+Use this 30 point circle template: https://www.mathplusacademy.com/wp-content/uploads/2020/07/30-point-circles.pdf</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Pancake Flipping</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/1g4FdifDwuw" 
+                  title="Pancake Flipping"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Imagine a stack of all different size (diameter) pancakes. Can you get them into a stack from largest to smallest? Rule: You can insert your flipper between any two pancakes (or at the bottom) and flip all the pancakes above the flipper. Is it always possible to flip them into a nice stack? Is there an optimal number of flips for every configuration of pancakes? Can you find any patterns or strategies to flip pancakes efficiently?
+
+Numberphile has a nice video on this featuring Katie Steckles. https://www.youtube.com/watch?v=m3drS_8BpU0</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Squaresville - How Many Ways from A to B?</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/21ySz3LvsFE" 
+                  title="Squaresville - How Many Ways from A to B?"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>In Squaresville, you must follow the streets on the grid. How many ways are there to get from A to B? The only rule is that you must follow the street grid only going right or up at all times. Good luck!</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Polyominoes</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/-l5-aKeGpfg" 
+                  title="Polyominoes"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>What's a polyomino? Watch to find out then try to figure out how many triominoes there are? tetrominoes? pentominoes? Is there a pattern?</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Find the Maximum Product</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/t-zzShrH2BY" 
+                  title="Find the Maximum Product"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Take any positive whole number. Write it as a sum of positive whole numbers (addends). Now multiply the addends together. What is the maximum product you can achieve?</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">4x4 Magic Trick</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/tMbFrQZXAmM" 
+                  title="4x4 Magic Trick"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Check out this trick. Can you figure out how it works?
+
+I'll have follow up videos with hints and a solution. Stay tuned.
+Hint: https://youtu.be/904mtnHtT0A</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Which Pocket Will the Billiard Ball End Up In?</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/r-CsGMkgVgQ" 
+                  title="Which Pocket Will the Billiard Ball End Up In?"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>A billiard ball leaves from A at a 45degree angle. It reflects off the walls until it ends up in a pocket. Can you predict which pocket based on the dimensions of the billiard table?</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Rep-Tiles</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/TtXDmGmwhQ4" 
+                  title="Rep-Tiles"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Can you use triominoes, tetrominoes, and pentonimoes to create scale versions of each shape? Which scale factors are possible, which ones are not? How many copies of the shape to you need to cover each scale factor? Are there any shapes that can't be "rep-tiled"?
+
+Use mathigon.org/polypad to help you explore this math threat.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Five Rooms - Can your go through all the doors exactly once?</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/Mcy_BkVLscA" 
+                  title="Five Rooms - Can your go through all the doors exactly once?"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Another classic problem related to the Seven Bridges problem from a prior #MathTreat. Try it and see what you can figure out.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Folding Fractions</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/mBtEhzXJT30" 
+                  title="Folding Fractions"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Explore fractions between zero and one by folding a strip a paper! What fractions can you fold? Can you fold 1/3? If you were given a sequence like LRRLM, could you tell with fraction that was without folding it?</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Eight Queens</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/5elkaS77VQk" 
+                  title="Eight Queens"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Can you place 8 queens on a chess board in a way where no queen attacks another? It may seem impossible at first... but keep at it. You might try starting with smaller boards like 3x3 or 4x4 before you work up to 8x8.
+
+Here is a little tool to help you explore the problem and find solutions: bit.ly/chessqueens</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">The Lost Ticket</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/DtLicuh7Njg" 
+                  title="The Lost Ticket"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>100 people board a plane. Each one has an assigned seat. The first person on board lost their ticket and chooses a seat a random. The rest board one at a time taking their assigned seat if it is open. If someone is in their seat, they choose a random empty seat. What is the probability that the last person sits in their assigned seat?</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Tips for Math at Home</h2>
+              
+              
+              <div class="aspect-video mb-4 rounded-lg overflow-hidden">
+                
+                <iframe 
+                  src="https://www.youtube.com/embed/cHwdmu3y_nI" 
+                  title="Tips for Math at Home"
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                  class="w-full h-full">
+                </iframe>
+                
+              </div>
+              
+              <p>Helpful tips for parents struggling to help their child with math at home during while schools are closed during the Coronavirus lockdown.</p>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+      
+      <button id="prev-btn" class="absolute left-0 top-1/2 -translate-y-1/2 btn btn-circle btn-primary z-10 ml-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>
+      <button id="next-btn" class="absolute right-0 top-1/2 -translate-y-1/2 btn btn-circle btn-primary z-10 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
+    </div>
+    
+    
+    <div id="carousel-indicators" class="flex justify-center gap-2 mt-8">
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="0"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="1"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="2"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="3"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="4"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="5"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="6"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="7"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="8"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="9"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="10"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="11"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="12"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="13"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="14"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="15"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="16"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="17"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="18"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="19"></button>
+      
+      <button class="carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="20"></button>
+      
+    </div>
+  </div>
+</section>
+
+<script>
+  (function() {
+    const carousel = document.getElementById('video-carousel');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    const totalSlides = 21;
+    let currentIndex = 0;
+    let isTransitioning = false;
+    
+    // Calculate slides per view based on screen size
+    function getSlidesPerView() {
+      if (window.innerWidth >= 1024) return 3; // lg breakpoint
+      if (window.innerWidth >= 768) return 2;  // md breakpoint
+      return 1;
+    }
+    
+    function updateCarousel(instant = false) {
+      const slidesPerView = getSlidesPerView();
+      const translatePercent = (currentIndex * 100) / slidesPerView;
+      
+      if (instant) {
+        carousel.style.transition = 'none';
+      } else {
+        carousel.style.transition = 'transform 500ms ease-in-out';
+      }
+      carousel.style.transform = `translateX(-${translatePercent}%)`;
+      
+      // Update indicators
+      indicators.forEach((indicator, index) => {
+        if (index === currentIndex % totalSlides) {
+          indicator.classList.add('bg-primary');
+          indicator.classList.remove('bg-base-300');
+        } else {
+          indicator.classList.remove('bg-primary');
+          indicator.classList.add('bg-base-300');
+        }
+      });
+    }
+    
+    function nextSlide() {
+      if (isTransitioning) return;
+      const slidesPerView = getSlidesPerView();
+      const maxIndex = totalSlides - slidesPerView;
+      
+      if (currentIndex >= maxIndex) return; // Don't go past the end
+      
+      isTransitioning = true;
+      currentIndex++;
+      updateCarousel();
+      
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 500);
+    }
+    
+    function prevSlide() {
+      if (isTransitioning) return;
+      
+      if (currentIndex === 0) return; // Don't go before the beginning
+      
+      isTransitioning = true;
+      currentIndex--;
+      updateCarousel();
+      
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 500);
+    }
+    
+    function goToSlide(index) {
+      if (isTransitioning) return;
+      currentIndex = index;
+      updateCarousel();
+    }
+    
+    // Event listeners
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+    });
+    
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+    });
+    
+    indicators.forEach((indicator) => {
+      indicator.addEventListener('click', () => {
+        const index = parseInt(indicator.dataset.index);
+        goToSlide(index);
+      });
+    });
+    
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        updateCarousel(true);
+      }, 100);
+    });
+    
+    // Initialize
+    updateCarousel(true);
+  })();
+</script>
+
+<script async data-uid="5273167f02" src="https://dr-raj-shah.kit.com/5273167f02/index.js"></script>
+  </main>
+
+  <footer class="relative bg-base-200 py-8 mt-16">
+    <div class="absolute inset-0 z-0">
+      <img src="/images/website-footer.png" alt="" class="w-full h-full object-cover">
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white relative z-10">
+      <p>&copy; 2025 Dr. Raj Shah. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  <script async data-uid="ef4ca0e9a1" src="https://dr-raj-shah.kit.com/ef4ca0e9a1/index.js"></script>
+</body>
+</html>
