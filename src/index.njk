@@ -48,7 +48,7 @@ title: Making Math Irresistible
 </section>
 
 {# Services Section #}
-<section class="bg-primary py-16 lg:py-24">
+<section class="bg-gradient-to-br from-primary/90 to-primary/30 py-16 lg:py-24">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid md:grid-cols-3 gap-8">
       {% for service in services %}
@@ -61,10 +61,58 @@ title: Making Math Irresistible
             {{ service.title }}
           </h3>
           <p>{{ service.description | safe }}</p>
+          <a href="{{ service.url | safe }}" class="btn btn-lg btn-sm btn-outline btn-primary">{{ service.button }}</a>
         </div>
       </div>
       {% endfor %}
     </div>
+  </div>
+</section>
+
+{# About Section #}
+<section class="py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-3 gap-12 items-start">
+      <div class="lg:col-span-1 flex justify-center items-center">
+        <div class="avatar">
+          <div class="w-64 rounded-full">
+            <img src="/images/Raj-Shah-headshot.png" alt="Dr. Raj Shah">
+          </div>
+        </div>
+      </div>
+      <div class="lg:col-span-2">
+        <h2 class="text-3xl text-primary font-bold mb-6">I'm on a mission to make math irresistible.</h2>
+        <div class="prose lg:prose-lg">
+          <p>Every day computation skills become less valuable and thinking become more valuable. School math over values memorization and under emphasizes thinking skills.</p>
+          <p>I have always had an affinity for math. Powered by my love of math, I earned a Ph.D. in Physics in 1999 which led to a decade in R&D at Intel. In 2008, I quit my job and founded Math Plus Academy, an after-school STEM enrichment program. I'm also proud to be a founding member of The Global Math Project.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Philosophy Section #}
+<section class="bg-gradient-to-br from-secondary/30 to-secondary/90 py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid md:grid-cols-3 gap-8">
+      {% for pillar in philosophy %}
+      <div class="card bg-base-100 shadow-xl rounded-2xl">
+        <div class="card-body">
+          <h3 class="card-title text-2xl">{{ pillar.title }}</h3>
+          <p>{{ pillar.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Book a Workshop Section #}
+<section id="book" class="bg-primary text-primary-content py-16 lg:py-24">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Math Classroom?</h2>
+    <p class="text-xl mb-8">Book a workshop or keynote to bring joy, curiosity, and rigor to your school or conference.</p>
+    <a href="mailto:{{ site.author.email }}" class="btn btn-secondary btn-lg">Get in Touch</a>
   </div>
 </section>
 
@@ -151,50 +199,3 @@ title: Making Math Irresistible
     setInterval(nextSlide, 5000);
   })();
 </script>
-
-{# Philosophy Section #}
-<section class="bg-gradient-to-br from-secondary/10 to-accent/10 py-16 lg:py-24">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid md:grid-cols-3 gap-8">
-      {% for pillar in philosophy %}
-      <div class="card bg-base-100 shadow-xl rounded-2xl">
-        <div class="card-body">
-          <h3 class="card-title text-2xl">{{ pillar.title }}</h3>
-          <p>{{ pillar.description }}</p>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-{# About Section #}
-<section class="py-16 lg:py-24">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid lg:grid-cols-3 gap-12 items-start">
-      <div class="lg:col-span-1 flex justify-center items-center">
-        <div class="avatar">
-          <div class="w-64 rounded-full">
-            <img src="/images/Raj-Shah-headshot.png" alt="Dr. Raj Shah">
-          </div>
-        </div>
-      </div>
-      <div class="lg:col-span-2">
-        <h2 class="text-3xl font-bold mb-6">I'm on a mission to make math irresistible.</h2>
-        <div class="prose lg:prose-lg">
-          <p>Every day computation skills become less valuable and thinking become more valuable. School math over values memorization and under emphasizes thinking skills.</p>
-          <p>I have always had an affinity for math. Powered by my love of math, I earned a Ph.D. in Physics in 1999 which led to a decade in R&D at Intel. In 2008, I quit my job and founded Math Plus Academy, an after-school STEM enrichment program. I'm also proud to be a founding member of The Global Math Project.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{# Book a Workshop Section #}
-<section id="book" class="bg-primary text-primary-content py-16 lg:py-24">
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Math Classroom?</h2>
-    <p class="text-xl mb-8">Book a workshop or keynote to bring joy, curiosity, and rigor to your school or conference.</p>
-    <a href="mailto:{{ site.author.email }}" class="btn btn-secondary btn-lg">Get in Touch</a>
-  </div>
-</section>

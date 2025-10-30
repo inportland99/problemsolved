@@ -12,13 +12,20 @@ description: Explore engaging math puzzles, problems, and challenges with Math T
     {# Download Section #}
     <div class="card bg-gradient-to-br from-secondary/10 to-accent/10 shadow-xl rounded-2xl mb-16">
       <div class="card-body lg:py-12">
-        <div class="max-w-3xl mx-auto text-center">
-          <h2 class="text-3xl lg:text-4xl font-bold mb-6 text-primary">Get My Favorite Math Problems</h2>
-          <div class="prose lg:prose-lg mx-auto mb-8">
+        <h2 class="text-3xl lg:text-4xl font-bold mb-6 text-primary text-center">Get My Favorite Math Problems</h2>
+        
+        <div class="grid grid-cols-2 gap-8 mb-8 items-start">
+          <div class="prose lg:prose-lg">
             <p>I travel the country talking to K-12 teachers about sparking curiosity and encouraging productive struggle. In the process, I use several math tasks so teachers can re-experience how fun math can be for themselves.</p>
             <p>The question I get most at these seminars and workshops is, "Where do you get these great problems? Are they in a book somewhere?"</p>
             <p>The truth is that I have stumbled upon these problems over years of doing puzzles, searching for unique math problems, and testing them with students and teachers.</p>
           </div>
+          <div class="overflow-hidden h-full">
+            <img src="/images/favorites.png" alt="My Favorite Math Problems" class="w-full h-full object-cover">
+          </div>
+        </div>
+        
+        <div class="text-center">
           <a data-formkit-toggle="5273167f02" href="https://dr-raj-shah.kit.com/5273167f02" class="btn btn-primary btn-lg">
             Get My Favorite Problems
           </a>
@@ -98,7 +105,6 @@ description: Explore engaging math puzzles, problems, and challenges with Math T
     const totalSlides = {{ math_treats | length }};
     let currentIndex = 0;
     let isTransitioning = false;
-    let autoPlayInterval;
     
     // Calculate slides per view based on screen size
     function getSlidesPerView() {
@@ -169,12 +175,10 @@ description: Explore engaging math puzzles, problems, and challenges with Math T
     // Event listeners
     nextBtn.addEventListener('click', () => {
       nextSlide();
-      resetAutoPlay();
     });
     
     prevBtn.addEventListener('click', () => {
       prevSlide();
-      resetAutoPlay();
     });
     
     indicators.forEach((indicator) => {
@@ -193,13 +197,8 @@ description: Explore engaging math puzzles, problems, and challenges with Math T
       }, 100);
     });
     
-    // Pause autoplay when hovering over carousel
-    carousel.addEventListener('mouseenter', stopAutoPlay);
-    carousel.addEventListener('mouseleave', startAutoPlay);
-    
     // Initialize
     updateCarousel(true);
-    startAutoPlay();
   })();
 </script>
 
