@@ -53,6 +53,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/CNAME");
 
   return {
+    pathPrefix: process.env.ELEVENTY_PATH_PREFIX || "/",
     dir: {
       input: "src",
       output: "_site",
