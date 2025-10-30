@@ -10,5 +10,29 @@
     "description": "Quickly solving problems and getting the correct answers is often seen as a sign of intelligence or genius. Yet every student possesses a unique set of abilities that extend far beyond speed and accuracy. Likewise, every teacher brings untapped superpowers to the classroom. In this uplifting session, we’ll celebrate the brilliance within ourselves and our students—and explore how to build a culture where everyone can leverage their strengths to unlock the collective brilliance of the classroom.",
     "type": "keynote",
     "image": "bulb.jpg"
+  },
+  {
+    "title": "Math is... Visual",
+    "description": "The seminar will demonstrate the power of visual diagrams in explaining school mathematics. Visual models help students develop number sense, aid in understanding difficult algorithms, and assist in problem-solving. You will discover several ways to help students bridge the gap from concrete to abstract thinking. Several models will be discussed, including number lines, area models, Exploding Dots™, and more.",
+    "type": "workshop",
+    "image": "visual.jpg"
+  },
+  {
+    "title": "Math is... Questions",
+    "description": "Questions are at the heart of mathematics and discovery. But in most math classes, the teacher asks the questions and students attempt to compute answers. We will investigate the value of flipping this script. You ’ll learn how to give students more ownership over questions, how easily craft extension and differentiation questions, and how to use questions to get kids unstuck.",
+    "type": "workshop",
+    "image": "questions.jpg"
+  },
+  {
+    "title": "Math is... Problem Solving",
+    "description": "Help your students move beyond “I’m stuck!” by equipping them with 8 powerful problem-solving strategies. In this hands-on session, we'll explore creative ways to approach math problems, discover visual models that build deep conceptual understanding, and leave with a ready-to-use problem-solving flow chart and classroom template.",
+    "type": "workshop",
+    "image": "bulb.jpg"
+  },
+  {
+    "title": "Five Practices for Orchestrating Productive Math Discussions",
+    "description": "This is an essential framework to turn discussions from random and unstructured to equitable and meaningful. We will work through several examples and then apply this to problems that the teachers are planning for students in the coming weeks. This is based on the work of Smith & Stein (2011).",
+    "type": "workshop",
+    "image": "five-practices.jpg"
   }
 ]

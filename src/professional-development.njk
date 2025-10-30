@@ -1,0 +1,190 @@
+---
+layout: base.njk
+title: Professional Development
+description: Transform your school's math instruction with customized professional development
+---
+
+{# Header Section #}
+<section class="py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-4xl lg:text-5xl font-bold mb-12 text-primary">Professional Development</h1>
+    <img src="/images/raj-ck.jpg" alt="Dr. Raj Shah speaking at Central Kitsap Schools, WA" class="float-right w-2/5 ml-6 mb-4 rounded-lg shadow-lg">
+    <img src="/images/raj-markerboard.png" alt="Dr. Raj Shah speaking to teachers" class="float-right clear-right w-2/5 ml-6 mb-4 rounded-lg shadow-lg">
+
+    <div class="prose lg:prose-lg max-w-none mb-20">
+      <p class="text-xl"><strong>Ready to change classrooms from places where students 'sit and get' to places of curiosity, exploration, and deep learning?</strong></p>
+      
+      <p>I work with K-12 schools and districts to:</p>
+      
+      <ol class="space-y-4">
+        <li><strong>Craft a unified vision for mathematics instruction</strong> across the organization by engaging leaders, administrators, and teachers in defining shared values and aspirations.</li>
+        <li><strong>Demonstrate high-leverage instructional strategies</strong> that increase student engagement, promote productive struggle, and build mathematical confidence—regardless of curriculum.</li>
+        <li><strong>Build an asset-based mindset</strong> that views every student as capable and brilliant, laying the foundation for equitable and high-achieving math classrooms.</li>
+        <li><strong>Sustain implementation through reflection</strong> by helping teachers plan, teach, and debrief lessons—recognizing that deep learning stems from intentional reflection, not just experience.</li>
+      </ol>
+    </div>
+
+    {# What to Expect Section #}
+    <div class="mb-20">
+      <h2 class="text-3xl lg:text-4xl font-bold mb-8 text-primary">What You Can Expect</h2>
+      
+      <div class="prose lg:prose-lg max-w-none">
+        <ol class="space-y-4">
+          <li>1. <strong>We will have FUN!</strong> If we're not having fun, what's the point?</li>
+          <li>2. I will work closely with your leadership team to ensure alignment with <strong>your school's or district's goals and vision</strong> for math education.</li>
+          <li>3. Your math teachers will feel <strong>seen, supported, inspired, and empowered.</strong></li>
+          <li>4. Teachers will gain <strong>practical strategies</strong> they can implement immediately to transform their math instruction.</li>
+          <li>5. We will get in the classroom together <strong>to practice new strategies and reflect on their impact.</strong></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Photo Gallery #}
+<section class="bg-gradient-to-br from-primary/90 to-primary/30 py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="card bg-base-100 shadow-xl rounded-2xl">
+        <figure class="rounded-t-2xl overflow-hidden">
+          <img src="/images/teachers-united.jpeg" alt="Teachers collaborating" class="w-full h-64 object-cover">
+        </figure>
+        <div class="card-body">
+          <p class="text-center">Teachers united around a common vision</p>
+        </div>
+      </div>
+      
+      <div class="card bg-base-100 shadow-xl rounded-2xl">
+        <figure class="rounded-t-2xl overflow-hidden">
+          <img src="/images/teachers-fun.jpg" alt="Teachers engaged in learning" class="w-full h-64 object-cover">
+        </figure>
+        <div class="card-body">
+          <p class="text-center">Teachers having fun in PD</p>
+        </div>
+      </div>
+      
+      <div class="card bg-base-100 shadow-xl rounded-2xl">
+        <figure class="rounded-t-2xl overflow-hidden">
+          <img src="/images/teachers-vnps3.jpeg" alt="Teachers in professional development" class="w-full h-64 object-cover">
+        </figure>
+        <div class="card-body">
+          <p class="text-center">Teachers becoming students and tackling math problems together</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Book a Workshop Section #}
+<section id="book" class="bg-primary text-primary-content py-16 lg:py-24">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Math Classrooms?</h2>
+    <p class="text-xl mb-8"><strong>Let's talk about how I can support your math teachers.</strong><br /> Engagements range from half-day or full-day workshops to comprehensive, long-term coaching and PD partnerships.</p>
+    <a href="{{ site.author.booking_link }}" class="btn btn-secondary btn-lg">Book a Free Consultation</a>
+  </div>
+</section>
+
+{# Popular Workshops Section #}
+<section class="py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl lg:text-4xl font-bold mb-8 text-primary text-center">Popular Workshops</h2>
+    
+    <div class="grid md:grid-cols-3 gap-8">
+      {% for talk in talks %}
+      <div class="card bg-base-100 shadow-xl rounded-2xl">
+        <figure class="rounded-t-2xl overflow-hidden">
+          <img src="/images/{{ talk.image }}" alt="{{ talk.title }}" class="w-full h-64 object-cover">
+        </figure>
+        <div class="card-body">
+          <h3 class="card-title text-2xl mb-4">{{ talk.title }}</h3>
+          <p>{{ talk.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Testimonials Carousel #}
+<section class="bg-base-200 py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative overflow-hidden">
+      <div id="testimonial-carousel" class="flex transition-transform duration-500 ease-in-out">
+        {% for testimonial in testimonials %}
+        <div class="w-full md:w-1/2 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <div class="flex mb-2">
+                {% for i in range(0, testimonial.rating) %}
+                <span class="text-warning text-xl">★</span>
+                {% endfor %}
+              </div>
+              <p class="text-lg mb-4">"{{ testimonial.quote }}"</p>
+              <div class="text-sm">
+                <p class="font-semibold">– {{ testimonial.author }}</p>
+                <p class="text-base-content/70">– {{ testimonial.organization }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {# Duplicate testimonials for infinite loop #}
+        {% for testimonial in testimonials %}
+        <div class="w-full md:w-1/2 flex-shrink-0 px-4">
+          <div class="card bg-base-100 shadow-xl rounded-2xl">
+            <div class="card-body">
+              <div class="flex mb-2">
+                {% for i in range(0, testimonial.rating) %}
+                <span class="text-warning text-xl">★</span>
+                {% endfor %}
+              </div>
+              <p class="text-lg mb-4">"{{ testimonial.quote }}"</p>
+              <div class="text-sm">
+                <p class="font-semibold">– {{ testimonial.author }}</p>
+                <p class="text-base-content/70">– {{ testimonial.organization }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function() {
+    const carousel = document.getElementById('testimonial-carousel');
+    const totalSlides = {{ testimonials | length }};
+    let currentIndex = 0;
+    let isTransitioning = false;
+
+    function nextSlide() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      
+      currentIndex++;
+      carousel.style.transition = 'transform 500ms ease-in-out';
+      carousel.style.transform = `translateX(-${currentIndex * 50}%)`;
+      
+      // Reset to beginning when we reach the duplicate set
+      if (currentIndex >= totalSlides) {
+        setTimeout(() => {
+          carousel.style.transition = 'none';
+          currentIndex = 0;
+          carousel.style.transform = 'translateX(0)';
+          setTimeout(() => {
+            isTransitioning = false;
+          }, 50);
+        }, 500);
+      } else {
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 500);
+      }
+    }
+
+    // Auto-advance every 5 seconds
+    setInterval(nextSlide, 5000);
+  })();
+</script>
