@@ -48,6 +48,9 @@ module.exports = function(eleventyConfig) {
   // Pass through images and assets
   eleventyConfig.addPassthroughCopy("src/images");
   eleventyConfig.addPassthroughCopy("src/assets");
+  
+  // Pass through CNAME for custom domain
+  eleventyConfig.addPassthroughCopy("src/CNAME");
 
   return {
     dir: {
