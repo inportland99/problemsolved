@@ -1,3 +1,5 @@
+const Modal = require('./src/_includes/components/Modal.js');
+
 module.exports = function(eleventyConfig) {
   // Video shortcode for YouTube and Vimeo
   eleventyConfig.addShortcode("video", function(platform, videoId, title = "") {
@@ -41,6 +43,10 @@ module.exports = function(eleventyConfig) {
               style="width: 100%; max-width: 660px; overflow: hidden; border-radius: 10px; background: transparent;"></iframe>
     </div>`;
   });
+
+  // Modal shortcode
+  eleventyConfig.addShortcode("Modal", Modal); // This is a shortcode/component for bootstrap modals
+  eleventyConfig.addWatchTarget("src/_includes/components/Modal.js"); // Watch for changes in the modal component
 
   // Pass through styles
   eleventyConfig.addPassthroughCopy("src/styles");

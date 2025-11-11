@@ -6,6 +6,7 @@
   <title>{{ title or site.title }}</title>
   <meta name="description" content="{{ description or site.description }}">
   <link rel="stylesheet" href="{{ '/styles/output.css' | url }}">
+  {% if pageCss %}<link rel="stylesheet" href="{{ pageCss | url }}">{% endif %}
 </head>
 <body class="min-h-screen flex flex-col">
   <header class="sticky top-0 z-50 relative bg-base-100">
