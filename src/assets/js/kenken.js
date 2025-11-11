@@ -34,50 +34,75 @@ const cageColors = [
   '#E2F0CB'  // pastel lime
 ];
 
+// Custom modal helper functions
+function showModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function hideModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
 // Show intro modal on page load
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById("daily-number").textContent = `🗓️ Daily Game: ${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
   loadGameState();
   document.getElementById('timer').innerText = ` ${Math.floor(elapsed / 60)}:${(elapsed % 60).toString().padStart(2, '0')}`;
   startTimer();
-  const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
 
   if (elapsed == 0) {
-    welcomeModal.show();
+    showModal('welcomeModal');
     pauseTimer(); // Pause the timer until the user starts
-  }
-  // Automatically start the timer when the modal is closed
-  const welcomeModalEl = document.getElementById('welcomeModal');
-  if (welcomeModalEl) {
-    welcomeModalEl.addEventListener('hidden.bs.modal', () => {
-      resumeTimer();
-    });
-  }
-
-  const pauseModalEl = document.getElementById('pauseModal');
-  if (pauseModalEl) {
-    pauseModalEl.addEventListener('hidden.bs.modal', () => {
-      resumeTimer();
-    });
   }
 
   document.getElementById('startButton').onclick = () => {
-    welcomeModal.hide();
+    hideModal('welcomeModal');
+    resumeTimer();
     startTimer();
   };
 
   document.getElementById('pauseButton').onclick = () => {
     pauseTimer();
-    const pauseModal = new bootstrap.Modal(document.getElementById('pauseModal'));
-    pauseModal.show();
+    showModal('pauseModal');
   };
 
   document.getElementById('resumeButton').onclick = () => {
-    const pauseModalEl = document.getElementById('pauseModal');
-    const pauseModal = bootstrap.Modal.getInstance(pauseModalEl);
-    pauseModal.hide();
+    hideModal('pauseModal');
     resumeTimer();
   };
+
+  // Close modals when clicking outside
+  document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        hideModal(modal.id);
+        if (modal.id === 'welcomeModal' || modal.id === 'pauseModal') {
+          resumeTimer();
+        }
+      }
+    });
+  });
+
+  // Add event listeners to all modal close buttons
+  document.querySelectorAll('[data-dismiss="modal"]').forEach(closeBtn => {
+    closeBtn.addEventListener('click', () => {
+      const modal = closeBtn.closest('[id$="Modal"]');
+      if (modal) {
+        hideModal(modal.id);
+        if (modal.id === 'welcomeModal' || modal.id === 'pauseModal') {
+          resumeTimer();
+        }
+      }
+    });
+  });
 });
 
 // Generate a seeded Latin square for the current date
@@ -342,7 +367,7 @@ window.addEventListener('blur', () => {
 window.addEventListener('focus', () => {
   // Only resume if not paused by user
   const pauseModal = document.getElementById('pauseModal');
-  if (!pauseModal.classList.contains('show') && isPaused) resumeTimer();
+  if (pauseModal.classList.contains('hidden') && isPaused) resumeTimer();
   console.log(`Timer resumed due to window focus at ${elapsed} seconds`);
 });
 
@@ -610,8 +635,13 @@ function showCheckModal() {
     default:
       modalBody.innerHTML = 'Not quite. Keep trying!';
   }
-  const bsModal = new bootstrap.Modal(modal);
-  bsModal.show();
+  showModal(modal.id);
+  
+  // Add event listener to close button if it exists
+  const closeBtn = modal.querySelector('[data-dismiss="modal"]');
+  if (closeBtn) {
+    closeBtn.onclick = () => hideModal(modal.id);
+  }
 }
 
 // Create a deep clone of the board state for undo functionality
