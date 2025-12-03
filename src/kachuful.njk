@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kachuful Score Tracker</title>
+  <link rel="stylesheet" href="{{ '/styles/output.css' | url }}">
+</head>
+<body class="min-h-screen">
+
+<section class="py-8 lg:py-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    {# Game Setup #}
+    <div id="setup-screen" class="card bg-base-100 shadow-xl mb-8">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">New Game Setup</h2>
+        
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-semibold">Number of Players (2-25)</span>
+          </label>
+          <input type="number" id="num-players" min="2" max="25" value="4" class="input input-bordered w-full max-w-xs">
+        </div>
+
+        <div id="player-names-section" class="mb-4">
+          <label class="label">
+            <span class="label-text font-semibold">Player Names</span>
+          </label>
+          <div id="player-names-inputs" class="grid gap-2">
+            <!-- Player name inputs will be generated here -->
+          </div>
+        </div>
+
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-semibold">Starting Number of Cards</span>
+          </label>
+          <input type="number" id="starting-cards" min="1" max="13" value="10" class="input input-bordered w-full max-w-xs">
+        </div>
+
+        <div class="form-control mb-6">
+          <label class="label">
+            <span class="label-text font-semibold">Scoring Method</span>
+          </label>
+          <select id="scoring-method" class="select select-bordered w-full max-w-xs">
+            <option value="simple">Simple (10 + tricks bid)</option>
+            <option value="common" selected>Common (1 per trick + 10 bonus)</option>
+          </select>
+        </div>
+
+        <button id="start-game" class="btn btn-primary">Start Game</button>
+      </div>
+    </div>
+
+    {# Game Screen #}
+    <div id="game-screen" class="hidden">
+      <div class="card bg-base-100 shadow-xl mb-6 sticky top-4 z-10">
+        <div class="card-body py-4">
+          <div class="flex justify-between items-center flex-wrap gap-4">
+            <div>
+              <h2 class="text-2xl font-bold">Hand <span id="current-hand">1</span> of <span id="total-hands">15</span></h2>
+              <p class="text-lg">Cards: <span id="cards-this-hand" class="font-semibold">10</span> | Trump: <span id="trump-suit" class="font-semibold text-primary">♠ Spades</span></p>
+            </div>
+            <button id="reset-game" class="btn btn-error btn-sm">New Game</button>
+          </div>
+        </div>
+      </div>
+
+      {# Scoreboard #}
+      <div class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body">
+          <h3 class="card-title text-xl mb-4">Scoreboard</h3>
+          <div class="overflow-x-auto overflow-y-auto max-h-96">
+            <div id="scoreboard-container" class="text-sm">
+              <p class="text-base-content/70">No scores yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Bidding Section #}
+      <div id="bidding-section" class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body">
+          <h3 class="card-title text-xl mb-4">Bidding Phase</h3>
+          <div class="overflow-y-auto max-h-96">
+            <div id="bid-inputs" class="flex flex-wrap gap-4"></div>
+          </div>
+          <button id="submit-bids" class="btn btn-primary mt-4">Submit Bids</button>
+        </div>
+      </div>
+
+      {# Results Section #}
+      <div id="results-section" class="card bg-base-100 shadow-xl mb-6 hidden">
+        <div class="card-body">
+          <h3 class="card-title text-xl mb-4">Hand Results</h3>
+          <div class="overflow-y-auto max-h-96">
+            <div id="result-inputs" class="flex flex-wrap gap-4"></div>
+          </div>
+          <div class="flex gap-2 mt-4">
+            <button id="edit-bids" class="btn btn-secondary">Edit Bids</button>
+            <button id="submit-results" class="btn btn-primary">Next Hand</button>
+          </div>
+        </div>
+      </div>
+
+      {# Winner Modal #}
+      <dialog id="winner-modal" class="modal">
+        <div class="modal-box">
+          <h3 class="font-bold text-3xl text-primary mb-4">🎉 Game Complete!</h3>
+          <p class="text-xl mb-2">Winner: <span id="winner-name" class="font-bold text-primary"></span></p>
+          <p class="text-lg">Final Score: <span id="winner-score" class="font-bold"></span></p>
+          <div class="modal-action">
+            <button id="new-game-modal" class="btn btn-primary">New Game</button>
+          </div>
+        </div>
+      </dialog>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Game state
+  let gameState = {
+    players: [],
+    numPlayers: 4,
+    scoringMethod: 'common',
+    currentHand: 1,
+    totalHands: 15,
+    cardsThisHand: 10,
+    trumpSuits: ['♠ Spades', '♦ Diamonds', '♣ Clubs', '♥ Hearts', 'No Trump'],
+    handSequence: [],
+    bids: {},
+    scores: {},
+    lastHandScore: {},
+    bidHistory: {} // { player: [{hand: 1, bid: 2, won: 2, points: 12}, ...] }
+  };
+
+  // Initialize hand sequence based on starting cards
+  function initHandSequence(startCards) {
+    const sequence = [];
+    // Descending
+    for (let i = startCards; i >= 1; i--) {
+      sequence.push(i);
+    }
+    // Ascending (skip 1 since we already have it)
+    for (let i = 2; i <= startCards; i++) {
+      sequence.push(i);
+    }
+    return sequence;
+  }
+
+  // Generate player name inputs
+  function generatePlayerNameInputs(numPlayers) {
+    const container = document.getElementById('player-names-inputs');
+    container.innerHTML = '';
+    
+    for (let i = 0; i < numPlayers; i++) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = `player-name-${i}`;
+      input.placeholder = `Player ${i + 1}`;
+      input.value = `Player ${i + 1}`;
+      input.className = 'input input-bordered w-full max-w-xs';
+      container.appendChild(input);
+    }
+  }
+
+  // Initialize player name inputs on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    generatePlayerNameInputs(4);
+  });
+
+  // Update player name inputs when number of players changes
+  document.getElementById('num-players').addEventListener('input', (e) => {
+    const numPlayers = parseInt(e.target.value);
+    if (numPlayers >= 2 && numPlayers <= 25) {
+      generatePlayerNameInputs(numPlayers);
+    }
+  })
+
+  // Start game
+  document.getElementById('start-game').addEventListener('click', () => {
+    const numPlayers = parseInt(document.getElementById('num-players').value);
+    const scoringMethod = document.getElementById('scoring-method').value;
+    const startCards = parseInt(document.getElementById('starting-cards').value);
+
+    if (numPlayers < 2 || numPlayers > 25) {
+      alert('Number of players must be between 2 and 25');
+      return;
+    }
+
+    if (startCards < 1 || startCards > 13) {
+      alert('Starting cards must be between 1 and 13');
+      return;
+    }
+
+    // Get player names
+    const playerNames = [];
+    for (let i = 0; i < numPlayers; i++) {
+      const name = document.getElementById(`player-name-${i}`).value.trim();
+      playerNames.push(name || `Player ${i + 1}`);
+    }
+
+    gameState.numPlayers = numPlayers;
+    gameState.scoringMethod = scoringMethod;
+    gameState.players = playerNames;
+    gameState.handSequence = initHandSequence(startCards);
+    gameState.totalHands = gameState.handSequence.length;
+    gameState.currentHand = 1;
+    gameState.cardsThisHand = gameState.handSequence[0];
+    gameState.bids = {};
+    gameState.scores = {};
+    gameState.lastHandScore = {};
+    gameState.bidHistory = {};
+    gameState.players.forEach(p => {
+      gameState.scores[p] = 0;
+      gameState.lastHandScore[p] = 0;
+      gameState.bidHistory[p] = [];
+    });
+
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.remove('hidden');
+    
+    updateGameDisplay();
+    showBiddingPhase();
+  });
+
+  // Update game display
+  function updateGameDisplay() {
+    document.getElementById('current-hand').textContent = gameState.currentHand;
+    document.getElementById('total-hands').textContent = gameState.totalHands;
+    document.getElementById('cards-this-hand').textContent = gameState.cardsThisHand;
+    
+    const trumpIndex = (gameState.currentHand - 1) % 5;
+    document.getElementById('trump-suit').textContent = gameState.trumpSuits[trumpIndex];
+
+    updateScoreboard();
+  }
+
+  // Show bidding phase
+  function showBiddingPhase() {
+    document.getElementById('bidding-section').classList.remove('hidden');
+    document.getElementById('results-section').classList.add('hidden');
+    
+    const bidInputsDiv = document.getElementById('bid-inputs');
+    bidInputsDiv.innerHTML = '';
+    
+    gameState.players.forEach((player, index) => {
+      const div = document.createElement('div');
+      div.className = 'form-control player-input-group';
+      // Restore previous bid if exists
+      const previousBid = gameState.bids[player] !== undefined ? gameState.bids[player] : '';
+      const valueAttr = previousBid !== '' ? `value="${previousBid}"` : 'placeholder="0"';
+      
+      div.innerHTML = `
+        <label class="label py-1">
+          <span class="label-text font-semibold text-sm truncate">${player}</span>
+        </label>
+        <input type="number" id="bid-${index}" min="0" max="${gameState.cardsThisHand}" ${valueAttr} 
+               class="input input-bordered input-sm w-full no-spinner">
+      `;
+      bidInputsDiv.appendChild(div);
+    });
+  }
+
+  // Submit bids
+  document.getElementById('submit-bids').addEventListener('click', () => {
+    gameState.bids = {};
+    
+    gameState.players.forEach((player, index) => {
+      const bid = parseInt(document.getElementById(`bid-${index}`).value) || 0;
+      gameState.bids[player] = bid;
+    });
+
+    showResultsPhase();
+  });
+
+  // Edit bids (go back to bidding phase)
+  document.getElementById('edit-bids').addEventListener('click', () => {
+    showBiddingPhase();
+  });
+
+  // Show results phase
+  function showResultsPhase() {
+    document.getElementById('bidding-section').classList.add('hidden');
+    document.getElementById('results-section').classList.remove('hidden');
+    
+    const resultInputsDiv = document.getElementById('result-inputs');
+    resultInputsDiv.innerHTML = '';
+    
+    gameState.players.forEach((player, index) => {
+      const div = document.createElement('div');
+      div.className = 'form-control player-input-group';
+      div.innerHTML = `
+        <label class="label py-1">
+          <span class="label-text font-semibold text-sm truncate" title="${player}">
+            ${player} 
+            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold ml-1">${gameState.bids[player]}</span>
+          </span>
+        </label>
+        <input type="number" id="result-${index}" min="0" max="${gameState.cardsThisHand}" placeholder="0" 
+               class="input input-bordered input-sm w-full no-spinner">
+      `;
+      resultInputsDiv.appendChild(div);
+    });
+  }
+
+  // Submit results and calculate scores
+  document.getElementById('submit-results').addEventListener('click', () => {
+    gameState.players.forEach((player, index) => {
+      const tricksWon = parseInt(document.getElementById(`result-${index}`).value) || 0;
+      const bid = gameState.bids[player];
+      
+      let points = 0;
+      if (tricksWon === bid) {
+        // Made the bid
+        if (gameState.scoringMethod === 'simple') {
+          points = 10 + bid;
+        } else {
+          points = tricksWon + 10;
+        }
+      } else if (gameState.scoringMethod === 'common') {
+        // Missed bid but still get points for tricks won
+        points = tricksWon;
+      }
+      
+      gameState.scores[player] += points;
+      gameState.lastHandScore[player] = points;
+      
+      // Add to bid history
+      gameState.bidHistory[player].push({
+        hand: gameState.currentHand,
+        bid: bid,
+        won: tricksWon,
+        points: points
+      });
+    });
+
+    // Check if game is complete
+    if (gameState.currentHand >= gameState.totalHands) {
+      showWinner();
+      return;
+    }
+
+    // Move to next hand
+    gameState.currentHand++;
+    gameState.cardsThisHand = gameState.handSequence[gameState.currentHand - 1];
+    
+    updateGameDisplay();
+    showBiddingPhase();
+  });
+
+  // Update scoreboard display
+  function updateScoreboard() {
+    const container = document.getElementById('scoreboard-container');
+    
+    if (gameState.players.length === 0 || gameState.bidHistory[gameState.players[0]].length === 0) {
+      container.innerHTML = '<p class="text-base-content/70">No scores yet</p>';
+      return;
+    }
+    
+    // Get the number of completed hands
+    const completedHands = gameState.bidHistory[gameState.players[0]].length;
+    
+    // Sort players by total score (descending)
+    const sortedPlayers = [...gameState.players].sort((a, b) => 
+      gameState.scores[b] - gameState.scores[a]
+    );
+    
+    // Find the highest score
+    const highestScore = gameState.scores[sortedPlayers[0]];
+    
+    let html = '<table class="table table-sm table-pin-rows">';
+    html += '<thead><tr><th class="bg-base-100">Player</th>';
+    html += '<th class="bg-base-100 text-center">Total</th>';
+    
+    // Add hand columns in reverse order (most recent first)
+    for (let i = completedHands - 1; i >= 0; i--) {
+      html += `<th class="bg-base-100 text-center">H${i + 1}</th>`;
+    }
+    
+    html += '</tr></thead><tbody>';
+    
+    // Add a row for each player (sorted by score)
+    sortedPlayers.forEach(player => {
+      const isLeader = gameState.scores[player] === highestScore;
+      const leaderClass = isLeader ? 'text-success' : '';
+      
+      html += `<tr><td class="font-semibold ${leaderClass}">${player}</td>`;
+      html += `<td class="text-center font-bold ${leaderClass}">${gameState.scores[player]}</td>`;
+      
+      // Add cells in reverse order (most recent first)
+      for (let i = completedHands - 1; i >= 0; i--) {
+        const handData = gameState.bidHistory[player][i];
+        const bidMatch = handData.bid === handData.won;
+        const cellClass = bidMatch ? 'text-success font-semibold' : '';
+        html += `<td class="${cellClass} text-center">${handData.bid}/${handData.won}<br><span class="text-xs">(${handData.points})</span></td>`;
+      }
+      
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  // Show winner
+  function showWinner() {
+    const winner = gameState.players.reduce((prev, curr) => 
+      gameState.scores[curr] > gameState.scores[prev] ? curr : prev
+    );
+    
+    document.getElementById('winner-name').textContent = winner;
+    document.getElementById('winner-score').textContent = gameState.scores[winner];
+    document.getElementById('winner-modal').showModal();
+  }
+
+  // Reset game
+  document.getElementById('reset-game').addEventListener('click', resetGame);
+  document.getElementById('new-game-modal').addEventListener('click', () => {
+    document.getElementById('winner-modal').close();
+    resetGame();
+  });
+
+  function resetGame() {
+    document.getElementById('game-screen').classList.add('hidden');
+    document.getElementById('setup-screen').classList.remove('hidden');
+  }
+</script>
+
+<style>
+  .modal-box {
+    text-align: center;
+  }
+  
+  /* Remove number input spinner arrows */
+  .no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  .no-spinner[type=number] {
+    -moz-appearance: textfield;
+  }
+  
+  /* Consistent width for player input groups */
+  .player-input-group {
+    min-width: 140px;
+    max-width: 200px;
+    flex: 1;
+  }
+</style>
+
+</body>
+</html>
