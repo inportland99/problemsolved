@@ -1,0 +1,84 @@
+---
+layout: base.njk
+title: KenKen 5x5 Puzzle
+navtitle: KenKen
+pageCss: "/assets/css/kenken.css"
+---
+<div class="flex flex-col items-center">
+  <div class="flex items-center gap-2 mb-3">
+    <div id="stopwatch"><i class="fa-solid fa-stopwatch"></i><span id="timer"> 0:00</span></div>
+    <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded" id='checkPuzzle' onclick="showCheckModal()">Check Puzzle</button>
+  </div>
+  <div id="kenken"></div>
+  <div class="mb-3" id="tiles">
+    <button class="tile" data-number="1">1</button>
+    <button class="tile" data-number="2">2</button>
+    <button class="tile" data-number="3">3</button>
+    <button class="tile" data-number="4">4</button>
+    <button class="tile" data-number="5">5</button>
+    <button class="tile eraser" data-number=""><i class="fa-solid fa-eraser"></i></button>
+  </div>
+  <div class="flex items-center gap-2 mb-3">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-paintbrush fa-xl"></i>
+      <label class="custom-switch">
+        <input type="checkbox" id="pencilModeSwitch">
+        <span class="slider"></span>
+      </label>
+      <i class="fa-solid fa-pencil fa-xl text-gray-500"></i>
+    </div>
+    <button class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded" id="undo-button"><i class="fa-solid fa-rotate-left"></i></button>
+    <button class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded" id="redo-button"><i class="fa-solid fa-rotate-right"></i></button>
+    <button id="pauseButton" class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded"><i class="fa-solid fa-pause"></i></button>
+    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded" id="clear-game">Reset</button>
+  </div>
+  <hr class="w-full my-4 border-gray-300">
+  <p class="text-center text-gray-500" id="daily-number"></p>
+  <div class="text-center">
+    <a href="mailto:raj@drrajshah.com?subject=Bug Report for KenKen Game" class="border border-red-500 text-red-500 hover:bg-red-50 font-semibold py-2 px-4 rounded inline-block">
+      Report a Bug
+    </a>
+  </div>
+  {% Modal 
+    id="help",
+    title="How to Play", 
+    body="
+      <ol>
+        <li>Fill in each cell with a number from 1 to 5
+        <li>Every row and column contains each number exactly once
+        <li>The cells in a colored region combine to make the target value using given operation (+, -, x, or ÷)
+        <br>Note: Numbers is a colored region may occur more than once as long as they don't violate rule #2
+      </ol>
+      Use the number tiles below the puzzle or keyboard to enter numbers into the grid. You may use pencil mode (<i class='fa-solid fa-pencil' style='color:gray'></i>) to mark potential numbers in a cell<br>
+      Use the Check Puzzle button to verify your solution. If you get stuck, you can reset the puzzle using the Reset Puzzle button.<br>
+      <img src='/images/kenken_sample_game.png' class='max-w-full w-1/2 block mx-auto' alt='Sample KenKen Game'>"
+  %}
+  {% Modal 
+    id="checkPuzzle",
+    title="Check Puzzle" 
+  %}
+  {% Modal 
+    id="welcome",
+    title="Welcome!", 
+    body="
+      <ol>
+        <li>Fill in each cell with a number from 1 to 5
+        <li>Every row and column contains each number exactly once
+        <li>The cells in a colored region combine to make the target value using given operation (+, -, x, or ÷)
+        <br>Note: Numbers is a colored region may occur more than once as long as they don't violate rule #2
+      </ol>
+      <img src='/images/kenken_sample_game.png' class='max-w-full w-1/2 block mx-auto' alt='Sample KenKen Game'>
+      <div class='text-center'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded'>Start</button></div>
+      "
+  %}
+  {% Modal 
+    id="pause",
+    title="Game Paused", 
+    body="
+      The game is paused.
+      <div class='text-center'><button id='resumeButton' class='border border-blue-500 text-blue-500 hover:bg-blue-50 font-semibold py-2 px-4 rounded'>Resume</button></div>
+      "
+  %}
+
+</div>
+<script src="/assets/js/kenken.js"></script>

@@ -1,0 +1,190 @@
+    .card-box {
+        font-size: 3rem;
+        margin: 0.5rem;
+        padding: 1rem;
+        width: 125px;
+        height: 125px;
+        border: 2px solid #0d6efd;
+        border-radius: 10px;
+        text-align: center;
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: move;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+    }
+
+    .highlight {
+        background-color: #0d6efd;
+        color: white
+    }
+
+    #operationModal .modal-dialog {
+        max-width: 300px;
+    }
+
+    .endgame-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+    }
+
+    .endgame-modal.hidden {
+        display: none;
+    }
+
+    #endgame-Modal .modal-body {
+        text-align: center;
+        /* display: flex; */
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #endgame-Modal .modal-body p,
+    #endgame-Modal .modal-body #attempts-matrix,
+    #endgame-Modal .modal-body #share-button {
+        margin-bottom: 1rem;
+        width: 100%;
+        /* display: flex; */
+        justify-content: center;
+    }
+
+        #try-counter {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .operation-button {
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding: 0.75rem 1.25rem;
+        border-color: #30be51;
+        color: #30be51;
+    }
+
+
+    .operations-wrapper,
+    .card-grid-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: 1rem 0;
+    }
+
+    #operations,
+    #cards {
+        width: fit-content;
+    }
+
+    /* Hover effect for operations */
+    .operation-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background-color: #30be51;
+        border-color: #30be51;
+    }
+
+    .operation-button.btn-success {
+        background-color: #30be51;
+        border-color: #30be51;
+        color: white
+    }
+
+    /* Hover effect for cards */
+    .card-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background-color: #0d6efd;
+        color: white
+    }
+
+    /* Active effect for operations */
+    @keyframes shake {
+        0% {
+            transform: translate(0, 0);
+        }
+
+        25% {
+            transform: translate(-5px, 0);
+        }
+
+        50% {
+            transform: translate(5px, 0);
+        }
+
+        75% {
+            transform: translate(-5px, 0);
+        }
+
+        100% {
+            transform: translate(0, 0);
+        }
+    }
+
+    .shake {
+        animation: shake 0.4s;
+    }
+
+    @keyframes flash {
+        0% {
+            background-color: #07ff34;
+        }
+
+        /* Bright yellow flash */
+        100% {
+            background-color: transparent;
+        }
+    }
+
+    /* Flashing colors animation for the winning card */
+    @keyframes flashColors {
+        0% {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        50% {
+            background-color: white;
+            color: #0d6efd;
+        }
+
+        100% {
+            background-color: #0d6efd;
+            color: white;
+        }
+    }
+
+    .flash {
+        animation: flashColors 0.5s ease-in-out 3;
+    }
+
+    .attempt-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-bottom: 4px;
+    }
+
+    .attempt-cell {
+        width: 40px;
+        height: 40px;
+        margin: 2px;
+        background-color: #eee;
+        border: 1px solid blue;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        text-align: center;
+        line-height: 40px;
+        border-radius: 6px;
+    }
