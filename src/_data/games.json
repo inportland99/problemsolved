@@ -1,0 +1,14 @@
+[
+  {
+    "name": "KenKen",
+    "description": "A daily 5×5 logic puzzle that combines sudoku-style rules with arithmetic operations. Fill the grid so each row and column contains 1-5, while making sure each cage's numbers produce the target using the given operation.",
+    "link": "/games/kenken",
+    "thumbnail": "/images/kenken_sample_game.png"
+  },
+  {
+    "name": "Crack the Code",
+    "description": "Use logic and deduction to crack the secret 3-digit code. Each guess gives you clues about which digits are correct and in the right position.",
+    "link": "/games/crack-the-code",
+    "thumbnail": "/images/games.jpg"
+  }
+]
