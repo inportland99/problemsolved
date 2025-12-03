@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crack the Code - Daily Number Game</title>
+  <meta name="description" content="Guess the hidden 5-digit number in 6 tries. A new puzzle is available each day.">
+  <link rel="stylesheet" href="/styles/output.css">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="sticky top-0 z-50 relative bg-base-100">
+    <div class="absolute inset-0 z-0">
+      <img src="/images/website-header.png" alt="" class="w-full h-full object-cover">
+    </div>
+    <nav class="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="navbar-start">
+        <div class="dropdown">
+          <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+            </svg>
+          </div>
+          <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
+            <li>
+              <details>
+                <summary>About</summary>
+                <ul>
+                  <li><a href="/about">About</a></li>
+                  <li><a href="/media">Media</a></li>
+                </ul>
+              </details>
+            </li>
+            <li><a href="/math-resources">Math Resources</a></li>
+            <li><a href="/speaking">Speaking</a></li>
+            <li><a href="/professional-development">Professional Development</a></li>
+          </ul>
+        </div>
+        <a href="/" class="text-xl font-bold">Dr. Raj Shah</a>
+      </div>
+      <div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+          <li>
+            <details>
+              <summary>About</summary>
+              <ul class="bg-base-100 rounded-box z-50 p-2 shadow">
+                <li><a href="/about">About</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/contact">Contact</a></li>
+              </ul>
+            </details>
+          </li>
+          <li><a href="/math-resources">Math Resources</a></li>
+          <li><a href="/speaking">Speaking</a></li>
+          <li><a href="/professional-development">Professional Development</a></li>
+        </ul>
+      </div>
+      <div class="navbar-end">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScbW6oliF8YjPR-RWB9DSp0u71hHI0H4t-uJBevoIdJqKLPNw/viewform?usp=sf_link" class="btn btn-primary text-primary-content btn-sm lg:btn-md">Book a Workshop</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="flex-grow">
+    
+<style>
+  @font-face {
+    font-family: 'Arial';
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Arial';
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  /* Global Styles & Colors */
+  :root {
+    --green: #27b304;
+    --darkendGreen: #27b304;
+    --yellow: #e6c700;
+    --darkendYellow: #e6c700;
+    --lightGray: #d8d8d8;
+    --gray: #86888a;
+    --darkGray: #939598;
+    --white: #fff;
+    --black: #212121;
+    /* Colorblind colors */
+    --orange: #f5793a;
+    --blue: #85c0f9;
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    --header-height: 50px;
+    --keyboard-height: 200px;
+    --game-max-width: 400px;
+  }
+
+  /* Light theme colors */
+  :root {
+    --color-tone-1: #000000;
+    --color-tone-2: #787c7e;
+    --color-tone-3: #878a8c;
+    --color-tone-4: #d3d6da;
+    --color-tone-5: #edeff1;
+    --color-tone-6: #f6f7f8;
+    --color-tone-7: #ffffff;
+    --color-nav-hover: #f4f4f4;
+    --opacity-50: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Dark Theme Colors */
+  .nightmode {
+    --color-tone-1: #ffffff;
+    --color-tone-2: #818384;
+    --color-tone-3: #565758;
+    --color-tone-4: #3a3a3c;
+    --color-tone-5: #272729;
+    --color-tone-6: #1a1a1b;
+    --color-tone-7: #121213;
+    --color-nav-hover: #2f2f31;
+    --opacity-50: rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Constant colors and colors derived from theme */
+  :root,
+  .nightmode {
+    --color-background: var(--color-tone-7);
+  }
+  
+  :root {
+    --color-present: var(--yellow);
+    --color-correct: var(--green);
+    --color-absent: var(--color-tone-2);
+    --tile-text-color: var(--color-tone-7);
+    --key-text-color: var(--color-tone-1);
+    --key-evaluated-text-color: var(--color-tone-7);
+    --key-bg: var(--color-tone-4);
+    --key-bg-present: var(--color-present);
+    --key-bg-correct: var(--color-correct);
+    --key-bg-absent: var(--color-absent);
+    --modal-content-bg: var(--color-tone-7);
+  }
+  
+  .nightmode {
+    --color-present: var(--darkendYellow);
+    --color-correct: var(--darkendGreen);
+    --color-absent: var(--color-tone-4);
+    --tile-text-color: var(--color-tone-1);
+    --key-text-color: var(--color-tone-1);
+    --key-evaluated-text-color: var(--color-tone-1);
+    --key-bg: var(--color-tone-2);
+    --key-bg-present: var(--color-present);
+    --key-bg-correct: var(--color-correct);
+    --key-bg-absent: var(--color-absent);
+    --modal-content-bg: var(--color-tone-7);
+  }
+  
+  .colorblind {
+    --color-correct: var(--orange);
+    --color-present: var(--blue);
+    --tile-text-color: var(--white);
+    --key-bg-present: var(--color-present);
+    --key-bg-correct: var(--color-correct);
+    --key-bg-absent: var(--color-absent);
+  }
+
+  #crack-the-code-container {
+    background-color: var(--color-background);
+    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #crack-the-code-container game-app {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .nav-item {
+    background-color: var(--color-nav-hover);
+  }
+</style>
+
+<div id="crack-the-code-container">
+  <game-app></game-app>
+</div>
+
+<script src="/assets/js/crackthecode.js"></script>
+<script>
+  // Hide the internal game header since we're using the site's navigation
+  function applyGameStyles() {
+    const gameApp = document.querySelector('game-app');
+    if (gameApp && gameApp.shadowRoot) {
+      const header = gameApp.shadowRoot.querySelector('header');
+      if (header) {
+        header.style.display = 'none';
+      }
+      
+      // Adjust the game container to fill available space without internal header
+      const game = gameApp.shadowRoot.querySelector('#game');
+      if (game) {
+        game.style.height = 'calc(100vh - var(--header-height, 0px))';
+        game.style.maxHeight = 'calc(100vh - var(--header-height, 0px))';
+      }
+      
+      // Adjust board container to account for keyboard
+      const boardContainer = gameApp.shadowRoot.querySelector('#board-container');
+      if (boardContainer) {
+        boardContainer.style.height = 'calc(100vh - var(--header-height, 0px) - var(--keyboard-height, 200px) - 20px)';
+        boardContainer.style.maxHeight = 'calc(100vh - var(--header-height, 0px) - var(--keyboard-height, 200px) - 20px)';
+        boardContainer.style.alignItems = 'flex-start';
+        boardContainer.style.paddingTop = '20px';
+      }
+      
+      // Force the game to recalculate board size
+      requestAnimationFrame(() => {
+        window.dispatchEvent(new Event('resize'));
+        
+        // Make game visible after layout recalculation
+        setTimeout(() => {
+          gameApp.classList.add('ready');
+        }, 100);
+      });
+    }
+  }
+  
+  // Wait for the custom element to be fully defined and rendered
+  if (customElements.get('game-app')) {
+    // If already defined, wait a bit for shadow DOM to render
+    setTimeout(applyGameStyles, 100);
+  } else {
+    // Wait for custom element to be defined
+    customElements.whenDefined('game-app').then(() => {
+      setTimeout(applyGameStyles, 100);
+    });
+  }
+  
+  // Also apply on DOMContentLoaded as a fallback
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(applyGameStyles, 150);
+  });
+</script>
+
+  </main>
+
+  <footer class="relative bg-base-200 py-8 mt-16">
+    <div class="absolute inset-0 z-0">
+      <img src="/images/website-footer.png" alt="" class="w-full h-full object-cover">
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white relative z-10">
+      <p>&copy; 2025 Dr. Raj Shah. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  
+  <script async data-uid="ef4ca0e9a1" src="https://dr-raj-shah.kit.com/ef4ca0e9a1/index.js"></script>
+  
+</body>
+</html>
