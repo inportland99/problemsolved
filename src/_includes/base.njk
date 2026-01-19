@@ -28,7 +28,7 @@
               <details>
                 <summary>About</summary>
                 <ul>
-                  <li><a href="{{ '/about' | url }}">About</a></li>
+                  <li><a href="{{ '/about' | url }}">About Me</a></li>
                   <li><a href="{{ '/media' | url }}">Media</a></li>
                 </ul>
               </details>
@@ -76,7 +76,7 @@
     </div>
   </footer>
   
-  {% if page.url != '/feedback/' and page.url != '/card-survey/' %}
+  {% if page.url != '/feedback/' and page.url != '/card-survey/' and not page.url.startsWith('/games/') %}
   <script async data-uid="ef4ca0e9a1" src="https://dr-raj-shah.kit.com/ef4ca0e9a1/index.js"></script>
   {% endif %}
 </body>

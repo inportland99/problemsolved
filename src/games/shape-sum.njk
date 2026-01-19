@@ -1,0 +1,80 @@
+---
+layout: base.njk
+title: Shape Sum Puzzle
+navtitle: Shape Sum
+pageCss: "/assets/css/shape-sum.css"
+---
+<div class="flex flex-col items-center">
+  <div class="flex items-center gap-2 mb-3">
+    <div id="stopwatch"><i class="fa-solid fa-stopwatch"></i><span id="timer"> 0:00</span></div>
+    <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded" id='checkPuzzle' onclick="showCheckModal()">Check Puzzle</button>
+  </div>
+  <div class="flex items-start gap-4">
+    <div id="shape-sum-grid"></div>
+    <div class="flex flex-col gap-4">
+      <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4" style="min-width: 200px;">
+        <h3 class="font-bold text-lg mb-3">Shape Values</h3>
+        <div id="shape-tracker" class="space-y-3"></div>
+      </div>
+    </div>
+  </div>
+  <div id="test-mode-info" class="hidden mt-4">
+    <div class="bg-yellow-100 border-2 border-yellow-500 rounded-lg p-4 inline-block">
+      <h3 class="font-bold text-lg mb-2">🧪 Test Mode - Solution</h3>
+      <div id="shape-values-display"></div>
+    </div>
+  </div>
+  <div class="flex items-center gap-2 mt-3 mb-3">
+    <button class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded" id="undo-button"><i class="fa-solid fa-rotate-left"></i></button>
+    <button class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded" id="redo-button"><i class="fa-solid fa-rotate-right"></i></button>
+    <button id="pauseButton" class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded"><i class="fa-solid fa-pause"></i></button>
+    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded" id="clear-game">Reset</button>
+  </div>
+  <hr class="w-full my-4 border-gray-300">
+  <p class="text-center text-gray-500" id="daily-number"></p>
+  <div class="text-center">
+    <a href="mailto:raj@drrajshah.com?subject=Bug Report for Shape Sum Game" class="border border-red-500 text-red-500 hover:bg-red-50 font-semibold py-2 px-4 rounded inline-block">
+      Report a Bug
+    </a>
+  </div>
+  {% Modal 
+    id="help",
+    title="How to Play", 
+    body="
+      <ol>
+        <li>Each shape represents a number</li>
+        <li>The sum of shapes in each row is shown on the right</li>
+        <li>The sum of shapes in each column is shown at the bottom</li>
+        <li>One shape or one sum is hidden - find it!</li>
+      </ol>
+      Click on any shape to change it. Use the row and column sums to figure out which shape is missing or what the hidden sum is.<br>
+      Use the Check Puzzle button to verify your solution. If you get stuck, you can reset the puzzle using the Reset button."
+  %}
+  {% Modal 
+    id="checkPuzzle",
+    title="Check Puzzle" 
+  %}
+  {% Modal 
+    id="welcome",
+    title="Welcome to Shape Sum!", 
+    body="
+      <ol>
+        <li>Each shape represents a number</li>
+        <li>The sum of shapes in each row is shown on the right</li>
+        <li>The sum of shapes in each column is shown at the bottom</li>
+        <li>One shape or one sum is hidden - find it!</li>
+      </ol>
+      <div class='text-center'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded'>Start</button></div>
+      "
+  %}
+  {% Modal 
+    id="pause",
+    title="Game Paused", 
+    body="
+      The game is paused.
+      <div class='text-center'><button id='resumeButton' class='border border-blue-500 text-blue-500 hover:bg-blue-50 font-semibold py-2 px-4 rounded'>Resume</button></div>
+      "
+  %}
+
+</div>
+<script src="/assets/js/shape-sum.js"></script>
