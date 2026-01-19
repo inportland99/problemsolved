@@ -391,7 +391,7 @@ function showCheckModal() {
       const shareBtn = document.getElementById('share-shape-sum-button');
       if (shareBtn) {
         shareBtn.addEventListener('click', () => {
-          const shareText = `MPA's Daily Shape Sum Challenge\nI solved it in ${document.getElementById('timer').innerText.trim()}! https://games.mathplusacademy.com/shape-sum/`;
+          const shareText = `Dr. Shah's Daily Shape Sum Challenge\nI solved it in ${document.getElementById('timer').innerText.trim()}! https://drrajshah.com/games/shape-sum/`;
           navigator.clipboard.writeText(shareText).then(() => {
             shareBtn.innerText = "Copied!";
             setTimeout(() => shareBtn.innerHTML = `Share <i class="fa-solid fa-share-nodes"></i>`, 1500);
@@ -511,13 +511,13 @@ function displayShapeTracker() {
       const savedStates = currentBoard.shapeGuesses?.[shape] || {};
       const lockedValue = currentBoard.shapeLocks?.[shape];
       const isLocked = lockedValue !== undefined;
-      const transform = shape === 'diamond' ? 'scale(0.5) rotate(45deg)' : 'scale(0.5)';
+      const transform = shape === 'diamond' ? 'scale(0.55) rotate(45deg)' : 'scale(0.55)';
       html += `
-        <div class="flex items-center gap-2 mb-2" data-row="${shape}">
-          <div class="shape-container" style="width: 40px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
-            <div class="shape shape-${shape}" style="transform: ${transform};"></div>
+        <div class="flex items-center gap-1 mb-2 flex-nowrap" data-row="${shape}">
+          <div class="shape-container" style="width: 28px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; overflow: visible;">
+            <div class="shape shape-${shape}" style="transform: ${transform}; flex-shrink: 0;"></div>
           </div>
-          <div class="flex gap-1 flex-wrap" data-shape="${shape}">
+          <div class="flex gap-1 flex-nowrap" data-shape="${shape}">
       `;
       
       // Create toggle buttons for digits 1-9
@@ -537,7 +537,7 @@ function displayShapeTracker() {
         }
         html += `
           <button 
-            class="digit-toggle ${stateClass} w-8 h-8 text-sm font-bold border-2 rounded hover:opacity-80 transition-all"
+            class="digit-toggle ${stateClass} w-7 h-7 sm:w-8 sm:h-8 text-xs sm:text-sm font-bold border-2 rounded hover:opacity-80 transition-all"
             data-digit="${i}"
             data-state="${state}"
             ${disabled}
@@ -552,7 +552,7 @@ function displayShapeTracker() {
       html += `
           </div>
           <button 
-            class="lock-toggle ml-2 w-10 h-8 flex items-center justify-center border-2 border-gray-400 rounded hover:bg-gray-100 transition-all"
+            class="lock-toggle ml-1 w-8 h-7 sm:w-10 sm:h-8 flex items-center justify-center border-2 border-gray-400 rounded hover:bg-gray-100 transition-all"
             style="color: #5741AC;"
             data-shape="${shape}"
             data-locked="${isLocked}"
