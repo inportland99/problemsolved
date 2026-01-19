@@ -304,9 +304,9 @@
         // Remove the word "Share"
         originalText = originalText.replace(/\bShare\b\s*/g, '').trim();
         // Define title and link (in plain-text form for max compatibility)
-        const titleWithLink = "https://games.mathplusacademy.com/24game/";
+        const titleWithLink = "https://drrajshah.com/games/24game/";
         // Build plain-text output
-        const plainText = `MPA's Daily 24 Challenge\n${originalText}\n\n${titleWithLink}`;
+        const plainText = `Dr. Shah's Daily 24 Challenge\n${originalText}\n\n${titleWithLink}`;
         navigator.clipboard.writeText(plainText).then(() => {
           alert("Copied to clipboard!");
         }).catch(err => {

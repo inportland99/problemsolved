@@ -603,7 +603,7 @@ function showCheckModal() {
         const shareBtn = document.getElementById('share-kenken-button');
         if (shareBtn) {
           shareBtn.addEventListener('click', () => {
-            const shareText = `MPA's Daily KenKen Challenge\nI solved it in ${document.getElementById('timer').innerText.trim()}! https://games.mathplusacademy.com/kenken/`;
+            const shareText = `Dr. Shah's Daily KenKen Challenge\nI solved it in ${document.getElementById('timer').innerText.trim()}! https://drrajshah.com/games/kenken/`;
             navigator.clipboard.writeText(shareText).then(() => {
               shareBtn.innerText = "Copied!";
               setTimeout(() => shareBtn.innerHTML = `Share <i class="fa-solid fa-share-nodes"></i>`, 1500);
