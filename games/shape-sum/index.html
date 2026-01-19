@@ -69,14 +69,22 @@
     <div id="stopwatch"><i class="fa-solid fa-stopwatch"></i><span id="timer"> 0:00</span></div>
     <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded" id='checkPuzzle' onclick="showCheckModal()">Check Puzzle</button>
   </div>
-  <div class="flex items-start gap-4">
-    <div id="shape-sum-grid"></div>
-    <div class="flex flex-col gap-4">
-      <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4" style="min-width: 200px;">
-        <h3 class="font-bold text-lg mb-3">Shape Values</h3>
-        <div id="shape-tracker" class="space-y-3"></div>
-      </div>
+  <div id="shape-sum-grid"></div>
+  <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mt-4" style="max-width: 600px;">
+    <div class="flex items-center justify-center gap-2 mb-3">
+      <h3 class="font-bold text-lg">Notepad</h3>
+      <button id="notepad-help" class="text-gray-500 hover:text-gray-700" title="How to use the notepad">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+          <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm11.378-3.917c-.89-.777-2.366-.777-3.255 0a.75.75 0 0 1-.988-1.129c1.454-1.272 3.776-1.272 5.23 0 1.513 1.324 1.513 3.518 0 4.842a3.75 3.75 0 0 1-.837.552c-.676.328-1.028.774-1.028 1.152v.75a.75.75 0 0 1-1.5 0v-.75c0-1.279 1.06-2.107 1.875-2.502.182-.088.351-.199.503-.331.83-.727.83-1.857 0-2.584ZM12 18a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <button id="reset-notepad" class="text-red-500 hover:text-red-700" title="Reset notepad">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+        </svg>
+      </button>
     </div>
+    <div id="shape-tracker" class="space-y-3"></div>
   </div>
   <div id="test-mode-info" class="hidden mt-4">
     <div class="bg-yellow-100 border-2 border-yellow-500 rounded-lg p-4 inline-block">
@@ -141,13 +149,25 @@
     </div>
     <div class="modal-body">
       
-            <ol>
-              <li>Each shape represents a number</li>
-              <li>The sum of shapes in each row is shown on the right</li>
-              <li>The sum of shapes in each column is shown at the bottom</li>
-              <li>One shape or one sum is hidden - find it!</li>
-            </ol>
-            <div class='text-center'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded'>Start</button></div>
+            <p class='mb-3 font-semibold'>Your Goal:</p>
+            <p class='mb-4'>Each shape represents a number (1-9). Use logic and the row/column sums to figure out which shape equals which number!</p>
+            
+            <p class='mb-2 font-semibold'>The Puzzle:</p>
+            <ul class='list-disc ml-5 mb-4 space-y-1'>
+              <li>Each row's sum is shown on the right</li>
+              <li>Each column's sum is shown at the bottom</li>
+              <li>One shape or one sum is hidden - that's your mystery to solve!</li>
+            </ul>
+            
+            <p class='mb-2 font-semibold'>How to Play:</p>
+            <ul class='list-disc ml-5 mb-4 space-y-1'>
+              <li>Click the mystery shape to cycle through options</li>
+              <li>Use the Notepad below to track possible values for each shape</li>
+              <li>Lock in a shape's value when you're certain</li>
+              <li>When ready, click <strong>Check Puzzle</strong></li>
+            </ul>
+            
+            <div class='text-center'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded'>Start Puzzle</button></div>
             
     </div>
   </div>
@@ -164,6 +184,37 @@
       
             The game is paused.
             <div class='text-center'><button id='resumeButton' class='border border-blue-500 text-blue-500 hover:bg-blue-50 font-semibold py-2 px-4 rounded'>Resume</button></div>
+            
+    </div>
+  </div>
+</div>
+  <div id="notepadHelpModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="notepadHelpLabel" aria-hidden="true">
+  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h5 class="text-2xl font-bold" id="notepadHelpLabel">How to Use the Notepad</h5>
+      <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
+        &times;
+      </button>
+    </div>
+    <div class="modal-body">
+      
+            <p class='mb-3'>The notepad helps you track possible values for each shape:</p>
+            <ul class='list-disc ml-5 space-y-2'>
+              <li><strong>Click numbers</strong> to cycle through three states:</li>
+              <ul class='list-disc ml-5 mt-1'>
+                <li><span class='bg-gray-200 px-2 py-1 rounded'>Gray</span> - Unsure</li>
+                <li><span class='bg-green-200 px-2 py-1 rounded'>Green</span> - Possible</li>
+                <li><span class='bg-red-200 px-2 py-1 rounded'>Red</span> - Not possible</li>
+              </ul>
+              <li><strong>Lock a value</strong>: When a shape has exactly one green value, click the lock icon to confirm it. This will:</li>
+              <ul class='list-disc ml-5 mt-1'>
+                <li>Mark all other values for that shape as red</li>
+                <li>Display the locked value on all instances of that shape in the grid</li>
+                <li>Mark that value as red for all other shapes</li>
+              </ul>
+              <li><strong>Unlock</strong>: Click the lock again to reset that row</li>
+              <li><strong>Reset Notepad</strong>: Clear all notes and locks at once</li>
+            </ul>
             
     </div>
   </div>

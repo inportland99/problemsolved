@@ -79,6 +79,20 @@
   box-shadow: 0 0 10px rgba(0, 162, 255, 0.5);
 }
 
+.mystery-sum-input {
+  background: linear-gradient(135deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%),
+              linear-gradient(135deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%) !important;
+  background-size: 20px 20px !important;
+  background-position: 0 0, 10px 10px !important;
+  border: 3px dashed #999 !important;
+}
+
+.mystery-sum-input::placeholder {
+  color: #999;
+  font-size: 48px;
+  opacity: 1;
+}
+
 /* Shape styles */
 .shape {
   width: 50px;

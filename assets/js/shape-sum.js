@@ -145,9 +145,10 @@ function renderGrid() {
           input.dataset.row = r;
           input.dataset.type = 'rowSum';
           input.value = currentBoard.mysteryValue || '';
+          input.placeholder = '?';
+          input.classList.add('mystery-sum-input');
           input.addEventListener('input', handleSumInput);
           cell.appendChild(input);
-          cell.classList.add('mystery-sum');
         } else {
           cell.textContent = solution.rowSums[r];
         }
@@ -166,9 +167,10 @@ function renderGrid() {
           input.dataset.col = c;
           input.dataset.type = 'colSum';
           input.value = currentBoard.mysteryValue || '';
+          input.placeholder = '?';
+          input.classList.add('mystery-sum-input');
           input.addEventListener('input', handleSumInput);
           cell.appendChild(input);
-          cell.classList.add('mystery-sum');
         } else {
           cell.textContent = solution.colSums[c];
         }
@@ -187,11 +189,50 @@ function renderGrid() {
         const currentShape = currentBoard.grid[r][c];
         if (currentShape && currentShape !== '?') {
           cell.appendChild(createShape(currentShape));
+          
+          // Add locked value overlay if this shape is locked
+          const lockedValue = currentBoard.shapeLocks?.[currentShape];
+          if (lockedValue !== undefined) {
+            const overlay = document.createElement('div');
+            overlay.textContent = lockedValue;
+            overlay.style.position = 'absolute';
+            overlay.style.fontSize = '24px';
+            overlay.style.fontWeight = 'bold';
+            overlay.style.color = '#000';
+            overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            overlay.style.borderRadius = '4px';
+            overlay.style.padding = '2px 6px';
+            cell.appendChild(overlay);
+          }
+        } else if (currentShape === '?') {
+          // Show question mark until first click
+          const qMark = document.createElement('div');
+          qMark.textContent = '?';
+          qMark.style.fontSize = '48px';
+          qMark.style.fontWeight = 'bold';
+          qMark.style.color = '#999';
+          cell.appendChild(qMark);
         }
         cell.addEventListener('click', () => handleShapeClick(r, c));
       } else {
         // Known shape cell
         cell.appendChild(createShape(solution.grid[r][c]));
+        
+        // Add locked value overlay if this shape is locked
+        const shapeType = solution.grid[r][c];
+        const lockedValue = currentBoard.shapeLocks?.[shapeType];
+        if (lockedValue !== undefined) {
+          const overlay = document.createElement('div');
+          overlay.textContent = lockedValue;
+          overlay.style.position = 'absolute';
+          overlay.style.fontSize = '24px';
+          overlay.style.fontWeight = 'bold';
+          overlay.style.color = '#000';
+          overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+          overlay.style.borderRadius = '4px';
+          overlay.style.padding = '2px 6px';
+          cell.appendChild(overlay);
+        }
       }
       
       container.appendChild(cell);
@@ -214,8 +255,16 @@ function handleShapeClick(row, col) {
   
   // Cycle through available shapes
   const currentShape = currentBoard.grid[row][col];
-  let currentIdx = shapeTypes.indexOf(currentShape);
-  currentIdx = (currentIdx + 1) % shapeTypes.length;
+  let currentIdx;
+  
+  if (currentShape === '?') {
+    // First click - start with first shape
+    currentIdx = 0;
+  } else {
+    currentIdx = shapeTypes.indexOf(currentShape);
+    currentIdx = (currentIdx + 1) % shapeTypes.length;
+  }
+  
   currentBoard.grid[row][col] = shapeTypes[currentIdx];
   
   renderGrid();
@@ -363,10 +412,19 @@ function showCheckModal() {
 
 // Clone board state for undo
 function cloneBoardState(board) {
+  // Deep clone shapeGuesses
+  const clonedGuesses = {};
+  if (board.shapeGuesses) {
+    Object.keys(board.shapeGuesses).forEach(shape => {
+      clonedGuesses[shape] = { ...board.shapeGuesses[shape] };
+    });
+  }
+  
   return {
     grid: board.grid.map(row => [...row]),
     mysteryValue: board.mysteryValue,
-    shapeGuesses: { ...(board.shapeGuesses || {}) }
+    shapeGuesses: clonedGuesses,
+    shapeLocks: { ...(board.shapeLocks || {}) }
   };
 }
 
@@ -448,31 +506,185 @@ function displayShapeTracker() {
   if (trackerDiv) {
     let html = '';
     shapeTypes.forEach(shape => {
-      const savedValue = currentBoard.shapeGuesses?.[shape] || '';
+      const savedStates = currentBoard.shapeGuesses?.[shape] || {};
+      const lockedValue = currentBoard.shapeLocks?.[shape];
+      const isLocked = lockedValue !== undefined;
       const transform = shape === 'diamond' ? 'scale(0.5) rotate(45deg)' : 'scale(0.5)';
       html += `
-        <div class="flex items-start gap-2">
-          <div class="shape shape-${shape}" style="transform: ${transform}; flex-shrink: 0; margin-top: 4px;"></div>
-          <input 
-            type="text" 
-            placeholder="notes..."
-            class="shape-guess-input flex-1 px-2 py-1 text-sm border-2 border-gray-400 rounded focus:border-blue-500 focus:outline-none"
+        <div class="flex items-center gap-2 mb-2" data-row="${shape}">
+          <div class="shape-container" style="width: 40px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+            <div class="shape shape-${shape}" style="transform: ${transform};"></div>
+          </div>
+          <div class="flex gap-1 flex-wrap" data-shape="${shape}">
+      `;
+      
+      // Create toggle buttons for digits 1-9
+      // States: 'unsure' (gray/default), 'possible' (green), 'not-possible' (red)
+      for (let i = 1; i <= 9; i++) {
+        const state = savedStates[i] || 'unsure';
+        let stateClass = '';
+        const disabled = isLocked ? 'disabled' : '';
+        if (state === 'possible') {
+          stateClass = 'text-gray-800 border-green-400';
+          stateClass += ' bg-green-200';
+        } else if (state === 'not-possible') {
+          stateClass = 'text-gray-800 border-red-400';
+          stateClass += ' bg-red-200';
+        } else {
+          stateClass = 'bg-gray-200 text-gray-700 border-gray-400';
+        }
+        html += `
+          <button 
+            class="digit-toggle ${stateClass} w-8 h-8 text-sm font-bold border-2 rounded hover:opacity-80 transition-all"
+            data-digit="${i}"
+            data-state="${state}"
+            ${disabled}
+          >${i}</button>
+        `;
+      }
+      
+      // Add lock button with SVG icons
+      const lockIcon = isLocked 
+        ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" /></svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M18 1.5c2.9 0 5.25 2.35 5.25 5.25v3.75a.75.75 0 0 1-1.5 0V6.75a3.75 3.75 0 1 0-7.5 0v3a3 3 0 0 1 3 3v6.75a3 3 0 0 1-3 3H3.75a3 3 0 0 1-3-3v-6.75a3 3 0 0 1 3-3h9v-3c0-2.9 2.35-5.25 5.25-5.25Z" /></svg>';
+      html += `
+          </div>
+          <button 
+            class="lock-toggle ml-2 w-10 h-8 flex items-center justify-center border-2 border-gray-400 rounded hover:bg-gray-100 transition-all"
+            style="color: #5741AC;"
             data-shape="${shape}"
-            value="${savedValue}"
-          />
+            data-locked="${isLocked}"
+          >${lockIcon}</button>
         </div>
       `;
     });
     
     trackerDiv.innerHTML = html;
     
-    // Add event listeners to save guesses
-    trackerDiv.querySelectorAll('.shape-guess-input').forEach(input => {
-      input.addEventListener('input', (e) => {
+    // Add event listeners to lock buttons
+    trackerDiv.querySelectorAll('.lock-toggle').forEach(lockBtn => {
+      lockBtn.addEventListener('click', (e) => {
+        const button = e.currentTarget; // Use currentTarget to get the button, not the SVG
+        const shape = button.dataset.shape;
+        const isLocked = button.dataset.locked === 'true';
+        
+        if (!isLocked) {
+          // Check if there's exactly one green value
+          const shapeStates = currentBoard.shapeGuesses?.[shape] || {};
+          const greenValues = Object.entries(shapeStates)
+            .filter(([digit, state]) => state === 'possible')
+            .map(([digit]) => parseInt(digit));
+          
+          if (greenValues.length !== 1) {
+            alert('You must have exactly one green value to lock this row.');
+            return;
+          }
+          
+          // Lock the row
+          const lockedValue = greenValues[0];
+          if (!currentBoard.shapeLocks) {
+            currentBoard.shapeLocks = {};
+          }
+          currentBoard.shapeLocks[shape] = lockedValue;
+          
+          // Make all other values in this row red
+          for (let i = 1; i <= 9; i++) {
+            if (i !== lockedValue) {
+              currentBoard.shapeGuesses[shape][i] = 'not-possible';
+            }
+          }
+          
+          // Disable this locked value in other rows
+          shapeTypes.forEach(otherShape => {
+            if (otherShape !== shape) {
+              if (!currentBoard.shapeGuesses[otherShape]) {
+                currentBoard.shapeGuesses[otherShape] = {};
+              }
+              currentBoard.shapeGuesses[otherShape][lockedValue] = 'not-possible';
+            }
+          });
+        } else {
+          // Unlock the row
+          const lockedValue = currentBoard.shapeLocks[shape];
+          delete currentBoard.shapeLocks[shape];
+          
+          // Reset all values in this row to gray
+          for (let i = 1; i <= 9; i++) {
+            currentBoard.shapeGuesses[shape][i] = 'unsure';
+          }
+          
+          // Re-enable the locked value in other rows (set to gray)
+          shapeTypes.forEach(otherShape => {
+            if (otherShape !== shape) {
+              // Only reset if this row isn't also locked with the same value
+              const otherLocked = currentBoard.shapeLocks?.[otherShape];
+              if (otherLocked !== lockedValue) {
+                if (currentBoard.shapeGuesses[otherShape]?.[lockedValue] === 'not-possible') {
+                  // Check if any other locked row uses this value
+                  const otherLockedShapes = shapeTypes.filter(s => 
+                    s !== shape && s !== otherShape && currentBoard.shapeLocks?.[s] === lockedValue
+                  );
+                  if (otherLockedShapes.length === 0) {
+                    currentBoard.shapeGuesses[otherShape][lockedValue] = 'unsure';
+                  }
+                }
+              }
+            }
+          });
+        }
+        
+        saveGameState();
+        displayShapeTracker(); // Refresh the notepad
+        renderGrid(); // Re-render grid to show/hide number overlays
+      });
+    });
+    
+    // Add event listeners to toggle buttons
+    trackerDiv.querySelectorAll('.digit-toggle').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const digit = parseInt(e.target.dataset.digit);
+        const shapeContainer = e.target.closest('[data-shape]');
+        const shape = shapeContainer.dataset.shape;
+        
+        // Save state for undo
+        undoStack.push(cloneBoardState(currentBoard));
+        redoStack = [];
+        
         if (!currentBoard.shapeGuesses) {
           currentBoard.shapeGuesses = {};
         }
-        currentBoard.shapeGuesses[e.target.dataset.shape] = e.target.value;
+        if (!currentBoard.shapeGuesses[shape]) {
+          currentBoard.shapeGuesses[shape] = {};
+        }
+        
+        // Cycle through states: unsure -> possible -> not-possible -> unsure
+        const currentState = e.target.dataset.state || 'unsure';
+        let newState;
+        if (currentState === 'unsure') {
+          newState = 'possible';
+        } else if (currentState === 'possible') {
+          newState = 'not-possible';
+        } else {
+          newState = 'unsure';
+        }
+        
+        // Update state
+        e.target.dataset.state = newState;
+        currentBoard.shapeGuesses[shape][digit] = newState;
+        
+        // Update visual appearance
+        e.target.classList.remove('bg-green-200', 'text-gray-800', 'border-green-400',
+                                   'bg-red-200', 'border-red-400',
+                                   'bg-gray-200', 'text-gray-700', 'border-gray-400');
+        
+        if (newState === 'possible') {
+          e.target.classList.add('bg-green-200', 'text-gray-800', 'border-green-400');
+        } else if (newState === 'not-possible') {
+          e.target.classList.add('bg-red-200', 'text-gray-800', 'border-red-400');
+        } else {
+          e.target.classList.add('bg-gray-200', 'text-gray-700', 'border-gray-400');
+        }
+        
         saveGameState();
       });
     });
@@ -516,10 +728,15 @@ window.addEventListener('DOMContentLoaded', () => {
   // Load saved state or initialize new game
   const loaded = loadGameState();
   if (!loaded) {
+    const emptyGuesses = {};
+    shapeTypes.forEach(shape => {
+      emptyGuesses[shape] = {}; // Empty object for each shape's digit states
+    });
     currentBoard = {
-      grid: solution.grid.map(row => row.map(cell => cell === '?' ? shapeTypes[0] : cell)),
+      grid: solution.grid.map(row => row.map(cell => cell === '?' ? '?' : cell)),
       mysteryValue: '',
-      shapeGuesses: {}
+      shapeGuesses: emptyGuesses,
+      shapeLocks: {}
     };
   }
   
@@ -560,6 +777,30 @@ window.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem("shapeSumGameState");
       location.reload();
     }
+  });
+  
+  document.getElementById('reset-notepad').addEventListener('click', () => {
+    if (confirm("Are you sure you want to reset all notepad entries? This will clear all your notes and locked values.")) {
+      // Save state for undo
+      undoStack.push(cloneBoardState(currentBoard));
+      redoStack = [];
+      
+      // Reset all shape guesses and locks
+      const emptyGuesses = {};
+      shapeTypes.forEach(shape => {
+        emptyGuesses[shape] = {};
+      });
+      currentBoard.shapeGuesses = emptyGuesses;
+      currentBoard.shapeLocks = {};
+      
+      saveGameState();
+      displayShapeTracker();
+      renderGrid(); // Re-render to remove number overlays
+    }
+  });
+  
+  document.getElementById('notepad-help').addEventListener('click', () => {
+    showModal('notepadHelpModal');
   });
   
   // Close modals when clicking outside
