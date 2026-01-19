@@ -1,4 +1,6 @@
-const TEST_MODE = true; // Set to false for production
+// Check for test mode URL parameter
+const urlParams = new URLSearchParams(window.location.search);
+const TEST_MODE = urlParams.has('test');
 
 const gridSize = 4;
 let currentBoard = [];
