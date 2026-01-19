@@ -1,0 +1,156 @@
+#shape-sum-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 80px);
+  grid-template-rows: repeat(5, 80px);
+  gap: 4px;
+  margin: 20px auto;
+}
+
+.grid-cell {
+  width: 80px;
+  height: 80px;
+  border: 3px solid #5741AC;
+  border-radius: 8px;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.grid-cell:hover:not(.sum-cell):not(.disabled-cell) {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.grid-cell.focused {
+  border: 4px solid #00A2FF;
+  box-shadow: 0 0 10px rgba(0, 162, 255, 0.5);
+}
+
+.grid-cell.disabled-cell {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.grid-cell.mystery-cell {
+  background: linear-gradient(135deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%),
+              linear-gradient(135deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  border: 3px dashed #999;
+}
+
+/* Sum cells - no border on outside edges */
+.sum-cell {
+  border: none;
+  background: transparent;
+  cursor: default;
+  font-size: 32px;
+  font-weight: bold;
+  color: #5741AC;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sum-cell.mystery-sum {
+  font-size: 48px;
+  color: #999;
+}
+
+.sum-cell input {
+  width: 60px;
+  height: 50px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  border: 3px solid #5741AC;
+  border-radius: 8px;
+  color: #5741AC;
+  background: white;
+}
+
+.sum-cell input:focus {
+  outline: none;
+  border-color: #00A2FF;
+  box-shadow: 0 0 10px rgba(0, 162, 255, 0.5);
+}
+
+/* Shape styles */
+.shape {
+  width: 50px;
+  height: 50px;
+}
+
+.shape-triangle {
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 43px solid #4A90E2;
+}
+
+.shape-square {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(to bottom, #FF6B6B, #E85D5D);
+  border-radius: 4px;
+}
+
+.shape-pentagon {
+  width: 45px;
+  height: 43px;
+  background: #5741AC;
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+.shape-circle {
+  width: 48px;
+  height: 48px;
+  background: #4ECDC4;
+  border-radius: 50%;
+}
+
+.shape-star {
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 35px solid #F7DC6F;
+  position: relative;
+}
+
+.shape-star::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-top: 35px solid #F7DC6F;
+  top: 10px;
+  left: -25px;
+}
+
+.shape-hexagon {
+  width: 45px;
+  height: 39px;
+  background: #E67E22;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+.shape-diamond {
+  width: 40px;
+  height: 40px;
+  background: #E91E63;
+  transform: rotate(45deg);
+}
+
+#stopwatch {
+  margin: 10px;
+  font-weight: bold;
+  font-size: 24px;
+}
