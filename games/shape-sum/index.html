@@ -17,60 +17,34 @@
     </div>
     <nav class="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="navbar-start">
-        <div class="dropdown">
-          <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+        <a href="/" class="text-xl font-bold">Dr. Raj Shah</a>
+      </div>
+      <div class="navbar-end">
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-primary text-primary-content btn-sm lg:btn-md">
+            Daily Games
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
           <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
-            <li>
-              <details>
-                <summary>About</summary>
-                <ul>
-                  <li><a href="/about">About Me</a></li>
-                  <li><a href="/media">Media</a></li>
-                </ul>
-              </details>
-            </li>
-            <li><a href="/math-resources">Math Resources</a></li>
-            <li><a href="/speaking">Speaking</a></li>
-            <li><a href="/professional-development">Professional Development</a></li>
+            <li><a href="/games/kenken">KenKen</a></li>
+            <li><a href="/games/crack-the-code">Crack the Code</a></li>
+            <li><a href="/games/shape-sum">Shape Sum</a></li>
           </ul>
         </div>
-        <a href="/" class="text-xl font-bold">Dr. Raj Shah</a>
-      </div>
-      <div class="navbar-center hidden lg:flex">
-        <ul class="menu menu-horizontal px-1">
-          <li>
-            <details>
-              <summary>About</summary>
-              <ul class="bg-base-100 rounded-box z-50 p-2 shadow">
-                <li><a href="/about">About</a></li>
-                <li><a href="/media">Media</a></li>
-                <li><a href="/contact">Contact</a></li>
-              </ul>
-            </details>
-          </li>
-          <li><a href="/math-resources">Math Resources</a></li>
-          <li><a href="/speaking">Speaking</a></li>
-          <li><a href="/professional-development">Professional Development</a></li>
-        </ul>
-      </div>
-      <div class="navbar-end">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLScbW6oliF8YjPR-RWB9DSp0u71hHI0H4t-uJBevoIdJqKLPNw/viewform?usp=sf_link" class="btn btn-primary text-primary-content btn-sm lg:btn-md">Book a Workshop</a>
       </div>
     </nav>
   </header>
 
   <main class="flex-grow">
     <div class="flex flex-col items-center">
-  <div class="flex items-center gap-2 mb-3">
+  <div class="flex items-center gap-2 mb-3 sm:mb-3 mb-2">
     <div id="stopwatch"><i class="fa-solid fa-stopwatch"></i><span id="timer"> 0:00</span></div>
     <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded" id='checkPuzzle' onclick="showCheckModal()">Check Puzzle</button>
   </div>
   <div id="shape-sum-grid"></div>
-  <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mt-4 w-full" style="max-width: 600px;">
+  <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4 sm:p-4 p-3 mt-4 sm:mt-4 mt-2 w-full" style="max-width: 600px;">
     <div class="flex items-center justify-center gap-2 mb-3">
       <h3 class="font-bold text-lg">Notepad</h3>
       <button id="notepad-help" class="text-gray-500 hover:text-gray-700" title="How to use the notepad">
