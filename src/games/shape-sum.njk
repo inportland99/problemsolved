@@ -1,16 +1,16 @@
 ---
-layout: base.njk
+layout: game-base.njk
 title: Shape Sum Puzzle
 navtitle: Shape Sum
 pageCss: "/assets/css/shape-sum.css"
 ---
 <div class="flex flex-col items-center">
-  <div class="flex items-center gap-2 mb-3">
+  <div class="flex items-center gap-2 mb-3 sm:mb-3 mb-2">
     <div id="stopwatch"><i class="fa-solid fa-stopwatch"></i><span id="timer"> 0:00</span></div>
     <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded" id='checkPuzzle' onclick="showCheckModal()">Check Puzzle</button>
   </div>
   <div id="shape-sum-grid"></div>
-  <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mt-4 w-full" style="max-width: 600px;">
+  <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4 sm:p-4 p-3 mt-4 sm:mt-4 mt-2 w-full" style="max-width: 600px;">
     <div class="flex items-center justify-center gap-2 mb-3">
       <h3 class="font-bold text-lg">Notepad</h3>
       <button id="notepad-help" class="text-gray-500 hover:text-gray-700" title="How to use the notepad">

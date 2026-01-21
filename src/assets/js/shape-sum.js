@@ -200,10 +200,8 @@ function renderGrid() {
             overlay.style.position = 'absolute';
             overlay.style.fontSize = '24px';
             overlay.style.fontWeight = 'bold';
-            overlay.style.color = '#000';
-            overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-            overlay.style.borderRadius = '4px';
-            overlay.style.padding = '2px 6px';
+            overlay.style.color = '#fff';
+            overlay.style.textShadow = '1px 1px 2px rgba(0, 0, 0, 0.5)';
             cell.appendChild(overlay);
           }
         } else if (currentShape === '?') {
@@ -229,10 +227,8 @@ function renderGrid() {
           overlay.style.position = 'absolute';
           overlay.style.fontSize = '24px';
           overlay.style.fontWeight = 'bold';
-          overlay.style.color = '#000';
-          overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-          overlay.style.borderRadius = '4px';
-          overlay.style.padding = '2px 6px';
+          overlay.style.color = '#fff';
+          overlay.style.textShadow = '1px 1px 2px rgba(0, 0, 0, 0.5)';
           cell.appendChild(overlay);
         }
       }
@@ -375,9 +371,10 @@ function showCheckModal() {
   
   if (result.status) {
     solved = true;
+    isPaused = true;
+    clearInterval(timerInterval);
     saveGameState();
     confetti();
-    clearInterval(timerInterval);
     
     modalBody.innerHTML = `🎉 Problem Solved! 🎉 <br />You solved today's puzzle in ${document.getElementById('timer').innerText.trim()}!`;
     modalBody.innerHTML += `

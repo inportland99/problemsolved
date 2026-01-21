@@ -11,6 +11,7 @@
     grid-template-columns: repeat(5, 60px);
     grid-template-rows: repeat(5, 60px);
     gap: 3px;
+    margin: 10px auto;
   }
 }
 
@@ -149,7 +150,7 @@
 .shape-square {
   width: 45px;
   height: 45px;
-  background: linear-gradient(to bottom, #FF6B6B, #E85D5D);
+  background: #4CAF50;
   border-radius: 4px;
 }
 
