@@ -1,0 +1,201 @@
+---
+layout: game-base.njk
+title: Crack the Code - Daily Number Puzzle
+description: Guess the hidden 5-digit number in 6 tries. A new puzzle is available each day.
+pageCss: /assets/css/crack-the-code-v2.css
+---
+
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+  <!-- Timer and Controls -->
+  <div class="flex justify-between items-center mb-4">
+    <div id="stopwatch"><i class="fa-solid fa-stopwatch"></i><span id="timer"> 00:00</span></div>
+    <div class="flex gap-2">
+      <button id="help-btn" class="btn btn-circle btn-sm btn-primary" title="How to Play">
+        <i class="fas fa-question"></i>
+      </button>
+      <button id="stats-btn" class="btn btn-circle btn-sm btn-primary" title="Statistics">
+        <i class="fas fa-chart-bar"></i>
+      </button>
+      <button id="share-btn" class="btn btn-circle btn-sm btn-primary" title="Share" style="display: none;">
+        <i class="fas fa-share-alt"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Game Board -->
+  <div class="mb-6">
+    <div id="game-board" class="space-y-2"></div>
+  </div>
+
+  <!-- Keyboard -->
+  <div id="keyboard" class="space-y-2">
+    <div class="flex justify-center gap-1">
+      <button class="key-btn" data-key="1">1</button>
+      <button class="key-btn" data-key="2">2</button>
+      <button class="key-btn" data-key="3">3</button>
+      <button class="key-btn" data-key="4">4</button>
+      <button class="key-btn" data-key="5">5</button>
+    </div>
+    <div class="flex justify-center gap-1">
+      <button class="key-btn" data-key="6">6</button>
+      <button class="key-btn" data-key="7">7</button>
+      <button class="key-btn" data-key="8">8</button>
+      <button class="key-btn" data-key="9">9</button>
+      <button class="key-btn" data-key="0">0</button>
+    </div>
+    <div class="flex justify-center gap-1">
+      <button class="key-btn key-wide" data-key="Enter">ENTER</button>
+      <button class="key-btn key-wide" data-key="Backspace">
+        <i class="fas fa-backspace"></i>
+      </button>
+    </div>
+  </div>
+  <hr class="w-full my-4 border-gray-300">
+  <p class="text-center text-gray-500" id="daily-number"></p>
+  <div class="text-center">
+    <a href="mailto:raj@drrajshah.com?subject=Bug Report for Crack the Code Game" class="border border-red-500 text-red-500 hover:bg-red-50 font-semibold py-2 px-4 rounded inline-block">
+      Report a Bug
+    </a>
+  </div>
+
+  <!-- Help Modal -->
+  <dialog id="help-modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-2xl text-primary mb-4">How to Play</h3>
+      <div class="space-y-4">
+        <p>Guess the hidden 5-digit code in 6 tries.</p>
+        
+        <div class="divider">THE RULES</div>
+        
+        <ul class="list-disc list-inside space-y-2">
+          <li>Each guess must be exactly 5 digits (0-9)</li>
+          <li>Digits can repeat in the code</li>
+          <li>After each guess, the color of the tiles will change to show how close your guess was</li>
+        </ul>
+
+        <div class="divider">EXAMPLES</div>
+
+        <div class="space-y-3">
+          <div>
+            <div class="flex gap-1 mb-2">
+              <div class="tile-demo tile-correct">1</div>
+              <div class="tile-demo tile-empty">2</div>
+              <div class="tile-demo tile-empty">3</div>
+              <div class="tile-demo tile-empty">4</div>
+              <div class="tile-demo tile-empty">5</div>
+            </div>
+            <p class="text-sm"><strong>1</strong> is in the code and in the correct position.</p>
+          </div>
+
+          <div>
+            <div class="flex gap-1 mb-2">
+              <div class="tile-demo tile-empty">6</div>
+              <div class="tile-demo tile-present">7</div>
+              <div class="tile-demo tile-empty">8</div>
+              <div class="tile-demo tile-empty">9</div>
+              <div class="tile-demo tile-empty">0</div>
+            </div>
+            <p class="text-sm"><strong>7</strong> is in the code but in the wrong position.</p>
+          </div>
+
+          <div>
+            <div class="flex gap-1 mb-2">
+              <div class="tile-demo tile-empty">1</div>
+              <div class="tile-demo tile-empty">1</div>
+              <div class="tile-demo tile-absent">2</div>
+              <div class="tile-demo tile-empty">3</div>
+              <div class="tile-demo tile-empty">4</div>
+            </div>
+            <p class="text-sm"><strong>2</strong> is not in the code at all.</p>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i>
+          <span>A new puzzle is available each day!</span>
+        </div>
+      </div>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-primary">Got it!</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!-- Stats Modal -->
+  <dialog id="stats-modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-2xl text-primary mb-4">Statistics</h3>
+      <div id="stats-content" class="space-y-4">
+        <div class="grid grid-cols-4 gap-4 text-center">
+          <div>
+            <div id="stat-played" class="text-3xl font-bold">0</div>
+            <div class="text-sm">Played</div>
+          </div>
+          <div>
+            <div id="stat-win-rate" class="text-3xl font-bold">0</div>
+            <div class="text-sm">Win %</div>
+          </div>
+          <div>
+            <div id="stat-current-streak" class="text-3xl font-bold">0</div>
+            <div class="text-sm">Current Streak</div>
+          </div>
+          <div>
+            <div id="stat-max-streak" class="text-3xl font-bold">0</div>
+            <div class="text-sm">Max Streak</div>
+          </div>
+        </div>
+
+        <div class="divider">GUESS DISTRIBUTION</div>
+
+        <div id="guess-distribution" class="space-y-1"></div>
+
+        <div id="game-complete-message" style="display: none;">
+          <div class="divider">NEXT PUZZLE</div>
+          <div class="text-center">
+            <div id="countdown-timer" class="text-2xl font-bold text-primary"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-primary">Close</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!-- Share Modal -->
+  <dialog id="share-modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-2xl text-primary mb-4">Share Your Result</h3>
+      <div class="space-y-4">
+        <div id="share-text" class="bg-base-200 p-4 rounded-lg font-mono text-sm whitespace-pre"></div>
+        <button id="copy-share-btn" class="btn btn-primary w-full">
+          <i class="fas fa-copy"></i> Copy to Clipboard
+        </button>
+        <div id="copy-success" class="alert alert-success" style="display: none;">
+          <i class="fas fa-check"></i>
+          <span>Copied to clipboard!</span>
+        </div>
+      </div>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn">Close</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+</div>
+
+<script src="{{ '/assets/js/crack-the-code-v2.js' | url }}"></script>
