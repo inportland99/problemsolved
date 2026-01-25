@@ -230,30 +230,30 @@ function calculateRecipe() {
   
   // Biga ingredients
   const bigaFlour = totalFlour / 2;
-  const bigaWater = totalFlour / 4;
+  const bigaWater = bigaFlour / 2;
   const bigaYeast = (totalFlour / 2) * 0.003;
   
   // Add to biga
   const addFlour = totalFlour / 2;
-  const addWater = (totalFlour * (hydration - 50)) / 100;
+  const addWater = (totalFlour * hydration/100 - bigaWater) / 2;
   const addYeast = (totalFlour / 2) * 0.003;
   
   // Salt water
-  const saltWater = (totalFlour * (hydration - 50)) / 100;
+  const saltWater = (totalFlour * hydration/100 - bigaWater) / 2;
   const salt = totalFlour * 0.03;
   
   // Display biga (flour to nearest 10g, water to nearest 5g, yeast to nearest 0.1g)
-  document.getElementById('biga-flour').textContent = `${Math.round(bigaFlour / 10) * 10}g`;
-  document.getElementById('biga-water').textContent = `${Math.round(bigaWater / 5) * 5}g`;
+  document.getElementById('biga-flour').textContent = `${Math.round(bigaFlour / 1) * 1}g`;
+  document.getElementById('biga-water').textContent = `${Math.round(bigaWater / 1) * 1}g`;
   document.getElementById('biga-yeast').textContent = `${Math.round(bigaYeast * 10) / 10}g`;
   
   // Display add to biga (flour to nearest 10g, water to nearest 5g, yeast to nearest 0.1g)
-  document.getElementById('add-flour').textContent = `${Math.round(addFlour / 10) * 10}g`;
-  document.getElementById('add-water').textContent = `${Math.round(addWater / 5) * 5}g`;
+  document.getElementById('add-flour').textContent = `${Math.round(addFlour / 1) * 1}g`;
+  document.getElementById('add-water').textContent = `${Math.round(addWater / 1) * 1}g`;
   document.getElementById('add-yeast').textContent = `${Math.round(addYeast * 10) / 10}g`;
   
   // Display salt water (water to nearest 5g, salt to nearest 1g)
-  document.getElementById('salt-water').textContent = `${Math.round(saltWater / 5) * 5}g`;
+  document.getElementById('salt-water').textContent = `${Math.round(saltWater / 1) * 1}g`;
   document.getElementById('salt-amount').textContent = `${Math.round(salt)}g`;
 }
 
