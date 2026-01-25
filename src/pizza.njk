@@ -235,11 +235,11 @@ function calculateRecipe() {
   
   // Add to biga
   const addFlour = totalFlour / 2;
-  const addWater = (totalFlour * (hydration - 50)) / 200;
+  const addWater = (totalFlour * (hydration - 50)) / 100;
   const addYeast = (totalFlour / 2) * 0.003;
   
   // Salt water
-  const saltWater = (totalFlour * (hydration - 50)) / 200;
+  const saltWater = (totalFlour * (hydration - 50)) / 100;
   const salt = totalFlour * 0.03;
   
   // Display biga (flour to nearest 10g, water to nearest 5g, yeast to nearest 0.1g)
