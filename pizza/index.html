@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pizza Dough Calculator (Biga Method)</title>
+  <meta name="description" content="Calculate ingredients for pizza dough using the biga method">
+  <link rel="stylesheet" href="/styles/output.css">
+  
+</head>
+<body class="min-h-screen">
+  
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+  <h1 class="text-3xl font-bold text-center mb-8">Biga Pizza Dough</h1>
+  <h3 class="text-1xl font-bold text-center mb-8">Poom Poom Poom!</h3>
+  
+  <!-- Progress indicator -->
+  <div class="flex justify-center gap-2 mb-6">
+    <div class="h-2 w-2 rounded-full bg-primary panel-dot" data-panel="0"></div>
+    <div class="h-2 w-2 rounded-full bg-base-300 panel-dot" data-panel="1"></div>
+    <div class="h-2 w-2 rounded-full bg-base-300 panel-dot" data-panel="2"></div>
+    <div class="h-2 w-2 rounded-full bg-base-300 panel-dot" data-panel="3"></div>
+    <div class="h-2 w-2 rounded-full bg-base-300 panel-dot" data-panel="4"></div>
+  </div>
+
+  <!-- Panels container -->
+  <div class="panels-container overflow-hidden touch-pan-y">
+    <div class="panels-wrapper flex transition-transform duration-300">
+      
+      <!-- Panel 1: Input -->
+      <div class="panel w-full flex-shrink-0 px-4">
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">Step 1: Recipe Settings</h2>
+            
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-semibold">Number of dough balls</span>
+              </label>
+              <input type="number" id="doughBalls" min="1" max="20" value="8" 
+                     class="input input-bordered input-primary text-lg" />
+            </div>
+
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-semibold">Dough ball size (g)</span>
+              </label>
+              <input type="number" id="ballSize" min="100" max="500" value="290" step="10"
+                     class="input input-bordered input-primary text-lg" />
+            </div>
+
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-semibold">Hydration (%)</span>
+              </label>
+              <input type="number" id="hydration" min="50" max="80" value="75"
+                     class="input input-bordered input-primary text-lg" />
+              <label class="label">
+                <span class="label-text-alt">Between 50% and 80%</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 2: Biga -->
+      <div class="panel w-full flex-shrink-0 px-4">
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">Step 2: Make the Biga</h2>
+            <p class="mb-4">Mix these ingredients and let ferment 12-24 hours:</p>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span class="font-semibold">Flour</span>
+                <span class="text-xl" id="biga-flour">--</span>
+              </div>
+              <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span class="font-semibold">Water</span>
+                <span class="text-xl" id="biga-water">--</span>
+              </div>
+              <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span class="font-semibold">Yeast</span>
+                <span class="text-xl" id="biga-yeast">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3: Add to Biga -->
+      <div class="panel w-full flex-shrink-0 px-4">
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">Step 3: Add to Biga</h2>
+            <p class="mb-4">Add these ingredients to your biga and mix:</p>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span class="font-semibold">Flour</span>
+                <span class="text-xl" id="add-flour">--</span>
+              </div>
+              <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span class="font-semibold">Water</span>
+                <span class="text-xl" id="add-water">--</span>
+              </div>
+              <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span class="font-semibold">Yeast</span>
+                <span class="text-xl" id="add-yeast">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 4: Salt Water -->
+      <div class="panel w-full flex-shrink-0 px-4">
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">Step 4: Build Gluten</h2>
+            <p class="mb-4">Mix and build gluten by adding salt water one spoon a time:</p>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span class="font-semibold">Water</span>
+                <span class="text-xl" id="salt-water">--</span>
+              </div>
+              <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span class="font-semibold">Salt</span>
+                <span class="text-xl" id="salt-amount">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 5: Final Steps -->
+      <div class="panel w-full flex-shrink-0 px-4">
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">Step 5: Final Steps</h2>
+            
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <span class="text-primary text-xl">•</span>
+                <span>Take it out and put into oiled bowl.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-primary text-xl">•</span>
+                <span>Cover and let rest for 30 minutes.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-primary text-xl">•</span>
+                <span>Then make the dough balls.</span>
+              </li>
+            </ul>
+
+            <div class="alert alert-success mt-6">
+              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span>Your dough is ready to rise!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Navigation buttons -->
+  <div class="flex justify-between mt-6 px-4">
+    <button id="prevBtn" class="btn btn-outline" onclick="prevPanel()" disabled>Previous</button>
+    <button id="nextBtn" class="btn btn-primary" onclick="nextPanel()">Next</button>
+  </div>
+</div>
+
+<script>
+let currentPanel = 0;
+const totalPanels = 5;
+
+function updatePanelDisplay() {
+  const wrapper = document.querySelector('.panels-wrapper');
+  wrapper.style.transform = `translateX(-${currentPanel * 100}%)`;
+  
+  // Update progress dots
+  document.querySelectorAll('.panel-dot').forEach((dot, index) => {
+    if (index === currentPanel) {
+      dot.classList.remove('bg-base-300');
+      dot.classList.add('bg-primary');
+    } else {
+      dot.classList.remove('bg-primary');
+      dot.classList.add('bg-base-300');
+    }
+  });
+  
+  // Update button states
+  document.getElementById('prevBtn').disabled = currentPanel === 0;
+  document.getElementById('nextBtn').disabled = currentPanel === totalPanels - 1;
+  
+  if (currentPanel === totalPanels - 1) {
+    document.getElementById('nextBtn').textContent = 'Done';
+  } else {
+    document.getElementById('nextBtn').textContent = 'Next';
+  }
+}
+
+function nextPanel() {
+  if (currentPanel === 0) {
+    calculateRecipe();
+  }
+  if (currentPanel < totalPanels - 1) {
+    currentPanel++;
+    updatePanelDisplay();
+  }
+}
+
+function prevPanel() {
+  if (currentPanel > 0) {
+    currentPanel--;
+    updatePanelDisplay();
+  }
+}
+
+function calculateRecipe() {
+  const doughBalls = parseFloat(document.getElementById('doughBalls').value);
+  const ballSize = parseFloat(document.getElementById('ballSize').value);
+  const hydration = parseFloat(document.getElementById('hydration').value);
+  
+  // Validate inputs
+  if (isNaN(doughBalls) || doughBalls < 1 || isNaN(ballSize) || ballSize < 100 || isNaN(hydration) || hydration < 50 || hydration > 80) {
+    alert('Please enter valid values');
+    return;
+  }
+  
+  // Calculate total flour
+  const totalFlour = (ballSize * doughBalls * 100) / (100 + hydration + 3);
+  
+  // Biga ingredients
+  const bigaFlour = totalFlour / 2;
+  const bigaWater = totalFlour / 4;
+  const bigaYeast = (totalFlour / 2) * 0.003;
+  
+  // Add to biga
+  const addFlour = totalFlour / 2;
+  const addWater = (totalFlour * (hydration - 50)) / 200;
+  const addYeast = (totalFlour / 2) * 0.003;
+  
+  // Salt water
+  const saltWater = (totalFlour * (hydration - 50)) / 200;
+  const salt = totalFlour * 0.03;
+  
+  // Display biga (flour to nearest 10g, water to nearest 5g, yeast to nearest 0.1g)
+  document.getElementById('biga-flour').textContent = `${Math.round(bigaFlour / 10) * 10}g`;
+  document.getElementById('biga-water').textContent = `${Math.round(bigaWater / 5) * 5}g`;
+  document.getElementById('biga-yeast').textContent = `${Math.round(bigaYeast * 10) / 10}g`;
+  
+  // Display add to biga (flour to nearest 10g, water to nearest 5g, yeast to nearest 0.1g)
+  document.getElementById('add-flour').textContent = `${Math.round(addFlour / 10) * 10}g`;
+  document.getElementById('add-water').textContent = `${Math.round(addWater / 5) * 5}g`;
+  document.getElementById('add-yeast').textContent = `${Math.round(addYeast * 10) / 10}g`;
+  
+  // Display salt water (water to nearest 5g, salt to nearest 1g)
+  document.getElementById('salt-water').textContent = `${Math.round(saltWater / 5) * 5}g`;
+  document.getElementById('salt-amount').textContent = `${Math.round(salt)}g`;
+}
+
+// Touch/swipe support
+let touchStartX = 0;
+let touchEndX = 0;
+
+const container = document.querySelector('.panels-container');
+
+container.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+container.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+  const swipeThreshold = 50;
+  const diff = touchStartX - touchEndX;
+  
+  if (Math.abs(diff) > swipeThreshold) {
+    if (diff > 0) {
+      // Swiped left
+      nextPanel();
+    } else {
+      // Swiped right
+      prevPanel();
+    }
+  }
+}
+
+// Initialize
+updatePanelDisplay();
+</script>
+
+<style>
+.panels-container {
+  width: 100%;
+  position: relative;
+}
+
+.panels-wrapper {
+  display: flex;
+  will-change: transform;
+}
+
+.panel {
+  min-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .panel {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
+</style>
+
+</body>
+</html>

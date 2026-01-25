@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KenKen 5x5 Puzzle</title>
+  <title>KenKen Jr. 4x4 Puzzle</title>
   <meta name="description" content="No more lecturing to disengaged students!&lt;br /&gt; I help teachers bring &lt;strong&gt;joy&lt;/strong&gt;, &lt;strong&gt;curiosity&lt;/strong&gt;, and &lt;strong&gt;rigor&lt;/strong&gt; to math class using &lt;em&gt;any curriculum&lt;/em&gt;. ">
   <link rel="stylesheet" href="/styles/output.css">
-  <link rel="stylesheet" href="/assets/css/kenken.css">
+  <link rel="stylesheet" href="/assets/css/kenken-jr.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
@@ -50,7 +50,6 @@
     <button class="tile" data-number="2">2</button>
     <button class="tile" data-number="3">3</button>
     <button class="tile" data-number="4">4</button>
-    <button class="tile" data-number="5">5</button>
     <button class="tile eraser" data-number=""><i class="fa-solid fa-eraser"></i></button>
   </div>
   <div class="flex items-center gap-2 mb-3">
@@ -70,7 +69,7 @@
   <hr class="w-full my-4 border-gray-300">
   <p class="text-center text-gray-500" id="daily-number"></p>
   <div class="text-center">
-    <a href="mailto:raj@drrajshah.com?subject=Bug Report for KenKen Game" class="border border-red-500 text-red-500 hover:bg-red-50 font-semibold py-2 px-4 rounded inline-block">
+    <a href="mailto:raj@drrajshah.com?subject=Bug Report for KenKen Jr. Game" class="border border-red-500 text-red-500 hover:bg-red-50 font-semibold py-2 px-4 rounded inline-block">
       Report a Bug
     </a>
   </div>
@@ -85,11 +84,12 @@
     <div class="modal-body">
       
             <ol>
-              <li>Fill in each cell with a number from 1 to 5
+              <li>Fill in each cell with a number from 1 to 4
               <li>Every row and column contains each number exactly once
-              <li>The cells in a colored region combine to make the target value using given operation (+, -, x, or ÷)
-              <br>Note: Numbers is a colored region may occur more than once as long as they don't violate rule #2
+              <li>The cells in a colored region combine to make the target value using given operation (+ or -)
+              <br>Note: Numbers in a colored region may occur more than once as long as they don't violate rule #2
             </ol>
+            <p class='mt-3'><strong>KenKen Jr. uses only addition (+) and subtraction (-) operations!</strong></p>
             Use the number tiles below the puzzle or keyboard to enter numbers into the grid. You may use pencil mode (<i class='fa-solid fa-pencil' style='color:gray'></i>) to mark potential numbers in a cell<br>
             Use the Check Puzzle button to verify your solution. If you get stuck, you can reset the puzzle using the Reset Puzzle button.<br>
             <img src='/images/kenken_sample_game.png' class='max-w-full w-1/2 block mx-auto' alt='Sample KenKen Game'>
@@ -112,7 +112,7 @@
   <div id="welcomeModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="welcomeLabel" aria-hidden="true">
   <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
     <div class="flex items-center justify-between mb-4">
-      <h5 class="text-2xl font-bold" id="welcomeLabel">Welcome!</h5>
+      <h5 class="text-2xl font-bold" id="welcomeLabel">Welcome to KenKen Jr.!</h5>
       <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
         &times;
       </button>
@@ -120,11 +120,12 @@
     <div class="modal-body">
       
             <ol>
-              <li>Fill in each cell with a number from 1 to 5
+              <li>Fill in each cell with a number from 1 to 4
               <li>Every row and column contains each number exactly once
-              <li>The cells in a colored region combine to make the target value using given operation (+, -, x, or ÷)
-              <br>Note: Numbers is a colored region may occur more than once as long as they don't violate rule #2
+              <li>The cells in a colored region combine to make the target value using given operation (+ or -)
+              <br>Note: Numbers in a colored region may occur more than once as long as they don't violate rule #2
             </ol>
+            <p class='mt-3'><strong>KenKen Jr. uses only addition (+) and subtraction (-) operations!</strong> Perfect for beginners!</p>
             <img src='/images/kenken_sample_game.png' class='max-w-full w-1/2 block mx-auto' alt='Sample KenKen Game'>
             <div class='text-center'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded'>Start</button></div>
             
@@ -149,7 +150,7 @@
 </div>
 
 </div>
-<script src="/assets/js/kenken.js"></script>
+<script src="/assets/js/kenken-jr.js"></script>
 
   </main>
 

@@ -1,0 +1,232 @@
+/* Game Board Tiles */
+.guess-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.tile {
+  width: 60px;
+  height: 60px;
+  border: 3px solid #5741AC;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  font-weight: bold;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 640px) {
+  .tile {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+    border: 2px solid #5741AC;
+  }
+}
+
+.tile.filled {
+  border-color: #00A2FF;
+  transform: scale(1.05);
+}
+
+.tile.tile-empty {
+  background: white;
+  border-color: #d3d6da;
+}
+
+.tile.tile-absent {
+  background: #787c7e;
+  color: white;
+  border-color: #787c7e;
+}
+
+.tile.tile-present {
+  background: #FFB84D;
+  color: white;
+  border-color: #FFB84D;
+}
+
+.tile.tile-correct {
+  background: #6AAA64;
+  color: white;
+  border-color: #6AAA64;
+}
+
+/* Flip animation */
+.tile.flip {
+  animation: flip 0.5s ease;
+}
+
+@keyframes flip {
+  0% {
+    transform: rotateX(0);
+  }
+  50% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0);
+  }
+}
+
+/* Shake animation for invalid guess */
+.guess-row.shake {
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Keyboard */
+.key-btn {
+  min-width: 50px;
+  height: 58px;
+  padding: 0 12px;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background: #d3d6da;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.key-btn:hover {
+  background: #bfc1c4;
+  transform: scale(1.05);
+}
+
+.key-btn:active {
+  transform: scale(0.95);
+}
+
+.key-btn.key-wide {
+  min-width: 80px;
+  font-size: 16px;
+}
+
+.key-btn[data-state="absent"] {
+  background: #787c7e;
+  color: white;
+}
+
+.key-btn[data-state="present"] {
+  background: #FFB84D;
+  color: white;
+}
+
+.key-btn[data-state="correct"] {
+  background: #6AAA64;
+  color: white;
+}
+
+@media (max-width: 640px) {
+  .key-btn {
+    min-width: 40px;
+    height: 50px;
+    font-size: 18px;
+  }
+  
+  .key-btn.key-wide {
+    min-width: 65px;
+    font-size: 14px;
+  }
+}
+
+/* Demo tiles in help modal */
+.tile-demo {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #d3d6da;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  background: white;
+}
+
+.tile-demo.tile-empty {
+  background: white;
+  border-color: #d3d6da;
+}
+
+.tile-demo.tile-absent {
+  background: #787c7e;
+  color: white;
+  border-color: #787c7e;
+}
+
+.tile-demo.tile-present {
+  background: #FFB84D;
+  color: white;
+  border-color: #FFB84D;
+}
+
+.tile-demo.tile-correct {
+  background: #6AAA64;
+  color: white;
+  border-color: #6AAA64;
+}
+
+/* Stats distribution bars */
+.stat-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-bar-label {
+  width: 20px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.stat-bar-container {
+  flex: 1;
+  height: 24px;
+  background: #d3d6da;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  background: #5741AC;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  min-width: 30px;
+  transition: width 0.5s ease;
+}
+
+.stat-bar-fill.highlight {
+  background: #00A2FF;
+}
+
+/* Stopwatch */
+#stopwatch {
+  margin: 10px;
+  font-weight: bold;
+  font-size: 24px;
+}

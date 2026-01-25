@@ -2,8 +2,8 @@
 const urlParams = new URLSearchParams(window.location.search);
 const TEST_MODE = urlParams.has('test');
 
-const gridSize = 5;
-const N = 5;
+const gridSize = 4;
+const N = 4;
 let currentInput = null; // Track focused input
 let pencilMode = false;
 let currentBoard = [];   // 2D array of { value: string, pencil: [] }
@@ -188,7 +188,7 @@ document.querySelectorAll('.tile').forEach(button => {
 
 document.getElementById("clear-game").addEventListener("click", () => {
   if (confirm("Are you sure you want to clear the puzzle and restart?")) {
-    localStorage.removeItem("kenkenGameState");
+    localStorage.removeItem("kenkenJrGameState");
     location.reload();
   }
 });
@@ -252,10 +252,10 @@ for (let r = 0; r < gridSize; r++) {
           saveGameState(); // ✅ Save after change
           break;
         default:
-          if (!["1", "2", "3", "4", "5", "Backspace", "Tab"].includes(e.key)) {
+          if (!["1", "2", "3", "4", "Backspace", "Tab"].includes(e.key)) {
             e.preventDefault();
           }
-          if (["1", "2", "3", "4", "5"].includes(e.key)) {
+          if (["1", "2", "3", "4"].includes(e.key)) {
             e.preventDefault(); // prevent typing directly
             handleInput(div, e.key); // call the shared input handler
           }
@@ -280,7 +280,7 @@ const handleInput = (cell, number) => {
 
   // Don't allow pencil marks if a number is already present
   const input = cell.querySelector('input');
-  if (pencilMode && input.value.match(/^[1-5]$/)) return;
+  if (pencilMode && input.value.match(/^[1-4]$/)) return;
 
   // Add current state to undoStack and reset redoStack
   undoStack.push(cloneBoardState(currentBoard));
@@ -387,12 +387,12 @@ function resumeTimer() {
 
 function updateElapsedTimeInStorage() {
   if (TEST_MODE) return; // Don't update in test mode
-  const saved = localStorage.getItem("kenkenGameState");
+  const saved = localStorage.getItem("kenkenJrGameState");
   if (!saved) return;
   try {
     const data = JSON.parse(saved);
     data.elapsed = elapsed;
-    localStorage.setItem("kenkenGameState", JSON.stringify(data));
+    localStorage.setItem("kenkenJrGameState", JSON.stringify(data));
   } catch (e) {
     console.error("Could not update elapsed time:", e);
   }
@@ -478,6 +478,8 @@ function generateCages(solution, rand) {
   const size = solution.length;
   const visited = Array.from({ length: size }, () => Array(size).fill(false));
   const cages = [];
+  let singleCellCount = 0;
+  const minSingleCells = 2; // Ensure at least 2 single-cell cages
 
   const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
 
@@ -498,22 +500,18 @@ function generateCages(solution, rand) {
       const [a, b] = values;
       const add = a + b;
       const sub = Math.abs(a - b);
-      const mul = a * b;
-      const div = a > b ? a / b : b / a;
       const options = [];
 
-      if (Number.isInteger(div)) options.push({ op: '÷', val: div });
+      // KenKen Jr. only uses addition and subtraction
       options.push({ op: '+', val: add });
       options.push({ op: '-', val: sub });
-      options.push({ op: 'x', val: mul });
 
       const choice = options[Math.floor(rand() * options.length)];
       return `${choice.val}${choice.op}`;
     }
-    // from cages with 3 or more cells, we can either sum or multiply
+    // For cages with 3 or more cells, only use addition
     const sum = values.reduce((a, b) => a + b, 0);
-    const product = values.reduce((a, b) => a * b, 1);
-    return rand() < 0.5 ? `${sum}+` : `${product}x`;
+    return `${sum}+`;
   }
 
   for (let r = 0; r < size; r++) {
@@ -523,12 +521,20 @@ function generateCages(solution, rand) {
       const cage = [[r, c]];
       visited[r][c] = true;
 
-      const weights = [0.6, 0.3, 0.1]; // For sizes 2, 3, 4
-      const randomVal = rand();
+      // Determine cage size with preference for single cells early on
       let cageSize;
-      if (randomVal < weights[0]) cageSize = 2;
-      else if (randomVal < weights[0] + weights[1]) cageSize = 3;
-      else cageSize = 4;
+      const cellsRemaining = size * size - cages.reduce((sum, c) => sum + c.cells.length, 0);
+      
+      // Force single-cell cages if we haven't met the minimum yet
+      if (singleCellCount < minSingleCells && cellsRemaining > minSingleCells - singleCellCount) {
+        cageSize = 1;
+      } else {
+        const weights = [0.6, 0.3, 0.1]; // For sizes 2, 3, 4
+        const randomVal = rand();
+        if (randomVal < weights[0]) cageSize = 2;
+        else if (randomVal < weights[0] + weights[1]) cageSize = 3;
+        else cageSize = 4;
+      }
 
       let frontier = [[r, c]];
 
@@ -548,6 +554,12 @@ function generateCages(solution, rand) {
           }
         }
       }
+      
+      // Track single-cell cages
+      if (cage.length === 1) {
+        singleCellCount++;
+      }
+      
       const values = cage.map(([r, c]) => solution[r][c]);
       const label = getClue(cage, values);
       cages.push({ cells: cage, label });
@@ -658,7 +670,7 @@ function showCheckModal() {
           const shareBtn = document.getElementById('share-kenken-button');
           if (shareBtn) {
             shareBtn.addEventListener('click', () => {
-              const shareText = `Dr. Shah's Daily KenKen Challenge\nI solved it in ${document.getElementById('timer').innerText.trim()}! https://drrajshah.com/games/kenken/`;
+              const shareText = `Dr. Shah's Daily KenKen Jr. Challenge\nI solved it in ${document.getElementById('timer').innerText.trim()}! https://drrajshah.com/games/kenken-jr/`;
               navigator.clipboard.writeText(shareText).then(() => {
                 shareBtn.innerText = "Copied!";
                 setTimeout(() => shareBtn.innerHTML = `Share <i class="fa-solid fa-share-nodes"></i>`, 1500);
@@ -721,13 +733,13 @@ function saveGameState() {
     solved: solved,
     date: d.toISOString().slice(0, 10)
   };
-  localStorage.setItem("kenkenGameState", JSON.stringify(data));
+  localStorage.setItem("kenkenJrGameState", JSON.stringify(data));
 }
 
 // Load game state from localStorage
 function loadGameState() {
   if (TEST_MODE) return; // Don't load in test mode
-  const saved = localStorage.getItem("kenkenGameState");
+  const saved = localStorage.getItem("kenkenJrGameState");
   if (!saved) return;
 
   try {
@@ -743,7 +755,7 @@ function loadGameState() {
       }
       elapsed = data.elapsed || 0;
     } else {
-      localStorage.removeItem("kenkenGameState");
+      localStorage.removeItem("kenkenJrGameState");
     }
   } catch (e) {
     console.error("Could not load saved game:", e);

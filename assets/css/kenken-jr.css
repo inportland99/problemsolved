@@ -1,0 +1,105 @@
+#kenken { display: grid; grid-template-columns: repeat(4, 60px); grid-template-rows: repeat(4, 60px); gap: 0; }
+    .cell { border: 1px solid white; border-radius: 8px;text-align: center; font-size: 30px; background: white; position: relative; box-sizing: border-box; }
+    .cell input { width: 100%; height: 100%; border: none; text-align: center; font-size: 30px; font-weight: 700; background: transparent; }
+    .cage-label { position: absolute; top: 2px; left: 4px; font-size: 12px; font-weight:500; color: #555; }
+    .cage-op {
+      font-size: 1.3em;
+    }
+  .tile { width: 50px; height: 50px; border-radius: 8px;  border: 1px solid gray; display: inline-flex; justify-content: center; align-items: center; font-size: 30px; font-weight: 900; background-color: white; cursor: pointer; }
+    #tiles { margin: 10px; }
+    #stopwatch { margin: 10px; font-weight: bold; font-size: 24px}
+    #modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none; justify-content: center; align-items: center;
+    }
+    #modalContent {
+      background: white; padding: 20px; border-radius: 10px; text-align: center;
+    }
+    .cell input:focus {
+        outline: none;          /* Removes default focus outline */
+        caret-color: transparent; /* Hides the blinking cursor */
+    }
+    .cell.focused {
+        border: 3px solid gray; /* border on focused cell */
+    }
+    .disabled-cell {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+    .pencil-marks {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      font-size: 12px;
+      text-align: right;
+      white-space: normal;
+      width: 100%;
+      padding: 2px;
+      line-height: 1.2;
+      color: gray;
+      font-family: monospace;
+    }
+    .tile.pencil {
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: normal;
+      color: gray;
+    }
+    .custom-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+    .custom-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      background-color: #007bff; /* Blue background always */
+      border-radius: 34px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: 0.3s;
+    }
+    .slider::before {
+      content: "";
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    .custom-switch input:checked + .slider::before {
+      transform: translateX(24px);
+    }
+
+    .cage-label,
+    .pencil-marks {
+      cursor: default;
+    }
+    .small-card {
+      width: 100px !important;      /* adjust as needed */
+      height: 120px;     /* adjust as needed */
+      border-radius: 1rem;
+      overflow: hidden;
+      margin: 0.5rem;
+    }
+
+.card-img-top.aspect-img {
+  height: 100px;
+  width: auto;
+  display: block;
+  max-width: 100%;
+}
