@@ -14,14 +14,11 @@
   let guesses = [];
   let gameStatus = 'playing'; // 'playing', 'won', 'lost'
   let currentRow = 0;
-  let startTime = null;
-  let timerInterval = null;
   let puzzleNumber = 0;
 
   // DOM elements
   const gameBoard = document.getElementById('game-board');
   const keyboard = document.getElementById('keyboard');
-  const timerDisplay = document.getElementById('timer');
   const helpBtn = document.getElementById('help-btn');
   const statsBtn = document.getElementById('stats-btn');
   const shareBtn = document.getElementById('share-btn');
@@ -45,7 +42,6 @@
       restoreGameState(saved);
     } else {
       // New game - show welcome modal if not played today
-      startTimer();
       setTimeout(() => helpModal.showModal(), 500);
     }
   }
@@ -269,7 +265,6 @@
   // Game won
   function gameWon() {
     gameStatus = 'won';
-    stopTimer();
     saveGameState();
     updateStats(true);
     shareBtn.style.display = 'inline-flex';
@@ -290,7 +285,6 @@
   // Game lost
   function gameLost() {
     gameStatus = 'lost';
-    stopTimer();
     saveGameState();
     updateStats(false);
     shareBtn.style.display = 'inline-flex';
@@ -301,28 +295,6 @@
     }, 1500);
   }
 
-  // Timer functions
-  function startTimer() {
-    startTime = Date.now();
-    timerInterval = setInterval(updateTimer, 1000);
-  }
-
-  function stopTimer() {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
-  }
-
-  function updateTimer() {
-    if (!startTime) return;
-    
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
-    const minutes = Math.floor(elapsed / 60);
-    const seconds = elapsed % 60;
-    timerDisplay.textContent = ` ${minutes}:${String(seconds).padStart(2, '0')}`;
-  }
-
   // Save game state
   function saveGameState() {
     const state = {
@@ -331,7 +303,6 @@
       guesses,
       currentRow,
       gameStatus,
-      startTime,
       currentGuess
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -349,7 +320,6 @@
     guesses = state.guesses;
     currentRow = state.currentRow;
     gameStatus = state.gameStatus;
-    startTime = state.startTime;
     currentGuess = state.currentGuess || '';
     
     // Restore board
@@ -368,12 +338,9 @@
     // Restore current guess if game is still playing
     if (gameStatus === 'playing') {
       updateCurrentRow();
-      startTimer();
     } else {
       shareBtn.style.display = 'inline-flex';
     }
-    
-    updateTimer();
   }
 
   // Stats functions

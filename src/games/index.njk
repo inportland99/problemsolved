@@ -1,0 +1,28 @@
+---
+layout: game-base.njk
+title: Daily Math Games
+description: Play free daily math puzzles and logic games to sharpen your mind
+---
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+  <div class="text-center mb-8">
+    <h1 class="text-4xl font-bold mb-4" style="color: #5741AC;">Daily Math Games</h1>
+    <p class="text-lg text-gray-600">Challenge yourself with a new puzzle every day!</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for game in games %}
+    <a href="{{ game.link | url }}" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 no-underline">
+      <figure class="px-4 pt-4">
+        <img src="{{ game.thumbnail | url }}" alt="{{ game.name }}" class="rounded-xl h-48 w-full object-cover">
+      </figure>
+      <div class="card-body">
+        <h2 class="card-title text-2xl" style="color: #5741AC;">{{ game.name }}</h2>
+        <p class="text-gray-600">{{ game.description }}</p>
+        <div class="card-actions justify-end mt-4">
+          <button class="btn btn-primary">Play Now</button>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>

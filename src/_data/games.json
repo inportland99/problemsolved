@@ -3,7 +3,7 @@
     "name": "KenKen",
     "description": "A daily 5×5 logic puzzle that combines sudoku-style rules with arithmetic operations. Fill the grid so each row and column contains 1-5, while making sure each cage's numbers produce the target using the given operation.",
     "link": "/games/kenken",
-    "thumbnail": "/images/kenken_sample_game.png"
+    "thumbnail": "/images/kenkenjr_sample.png"
   },
   {
     "name": "KenKen Jr.",
@@ -15,12 +15,12 @@
     "name": "Crack the Code",
     "description": "Use logic and deduction to crack the secret 3-digit code. Each guess gives you clues about which digits are correct and in the right position.",
     "link": "/games/crack-the-code-v2",
-    "thumbnail": "/images/games.jpg"
+    "thumbnail": "/images/crack_the_code_sample.png"
   },
   {
     "name": "Shape Sum",
     "description": "A visual math puzzle where you assign numbers to shapes to make equations balance. Perfect for developing algebraic thinking.",
     "link": "/games/shape-sum",
-    "thumbnail": "/images/games.jpg"
+    "thumbnail": "/images/shapesum_sample.png"
   }
 ]

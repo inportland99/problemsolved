@@ -17,6 +17,7 @@ let timerInterval;
 let startTime;
 let elapsed = 0;
 let isPaused = false;
+const STATS_KEY = 'shape-sum-stats';
 
 const d = new Date();
 let todaySeed = TEST_MODE ? Math.floor(Math.random() * 1000000) : d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
@@ -373,24 +374,18 @@ function showCheckModal() {
     solved = true;
     isPaused = true;
     clearInterval(timerInterval);
+    updateStats(elapsed); // Update stats with solve time
     saveGameState();
     confetti();
+    document.getElementById('share-btn').style.display = 'inline-flex';
+    hideModal(modal.id);
+    disableInputs();
     
-    modalBody.innerHTML = `🎉 Problem Solved! 🎉 <br />You solved today's puzzle in ${document.getElementById('timer').innerText.trim()}!`;
-    modalBody.innerHTML += `
-      <br><button id="share-shape-sum-button" class="btn btn-success mt-3">
-        <i class="bi bi-share"></i> Share
-      </button>
-      <br><br>Next puzzle will be available at midnight! <br>
-    `;
-    
+    // Show stats modal after a short delay
     setTimeout(() => {
-      const shareBtn = document.getElementById('share-shape-sum-button');
-      if (shareBtn) {
-        shareBtn.addEventListener('click', showShareModal);
-      }
-      disableInputs();
-    }, 0);
+      updateStatsDisplay();
+      showModal('statsModal');
+    }, 1500);
   } else {
     modalBody.innerHTML = result.reason || 'Not quite. Keep trying!';
   }
@@ -517,8 +512,10 @@ function disableInputs() {
   document.querySelectorAll('.sum-cell input').forEach(input => {
     input.disabled = true;
   });
-  document.getElementById('checkPuzzle').innerHTML = `Share <i class="fa-solid fa-share-nodes"></i>`;
-  document.getElementById('checkPuzzle').onclick = showShareModal;
+  // disable check puzzle button
+  document.getElementById('checkPuzzle').disabled = true;
+  // show share button
+  document.getElementById('share-btn').style.display = 'inline-flex';
   document.getElementById('clear-game').disabled = true;
   document.getElementById('undo-button').disabled = true;
   document.getElementById('redo-button').disabled = true;
@@ -853,6 +850,35 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+  
+  // Help button opens welcome modal
+  document.getElementById('help-btn')?.addEventListener('click', () => {
+    showModal('welcomeModal');
+    pauseTimer();
+  });
+  
+  // Stats button opens stats modal
+  document.getElementById('stats-btn')?.addEventListener('click', () => {
+    updateStatsDisplay();
+    showModal('statsModal');
+  });
+  
+  // Share button opens share modal
+  document.getElementById('share-btn')?.addEventListener('click', () => {
+    showShareModal();
+  });
+  
+  // Close stats modal
+  document.getElementById('close-stats-btn')?.addEventListener('click', () => {
+    hideModal('statsModal');
+  });
+  
+  // Close stats modal when clicking outside
+  document.getElementById('statsModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'statsModal') {
+      hideModal('statsModal');
+    }
+  });
 });
 
 // Pause timer when window loses focus
@@ -864,3 +890,106 @@ window.addEventListener('focus', () => {
   const pauseModal = document.getElementById('pauseModal');
   if (pauseModal.classList.contains('hidden') && isPaused) resumeTimer();
 });
+
+// Stats functions
+function getStats() {
+  const saved = localStorage.getItem(STATS_KEY);
+  return saved ? JSON.parse(saved) : getDefaultStats();
+}
+
+function getDefaultStats() {
+  return {
+    gamesPlayed: 0,
+    currentStreak: 0,
+    maxStreak: 0,
+    lastPlayedDate: null,
+    times: [] // Array of solve times in seconds
+  };
+}
+
+function saveStats(stats) {
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+}
+
+function updateStats(solveTime) {
+  const stats = getStats();
+  const today = d.toISOString().slice(0, 10);
+  
+  stats.gamesPlayed++;
+  stats.times.push(solveTime);
+  
+  // Check streak
+  if (stats.lastPlayedDate) {
+    const lastDate = new Date(stats.lastPlayedDate);
+    const todayDate = new Date(today);
+    const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) {
+      // Consecutive day
+      stats.currentStreak++;
+    } else if (diffDays === 0) {
+      // Same day (shouldn't happen normally)
+      // Don't change streak
+    } else {
+      // Broke streak
+      stats.currentStreak = 1;
+    }
+  } else {
+    // First game
+    stats.currentStreak = 1;
+  }
+  
+  stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
+  stats.lastPlayedDate = today;
+  
+  saveStats(stats);
+}
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateStatsDisplay() {
+  const stats = getStats();
+  
+  document.getElementById('stat-played').textContent = stats.gamesPlayed;
+  document.getElementById('stat-current-streak').textContent = stats.currentStreak;
+  document.getElementById('stat-max-streak').textContent = stats.maxStreak;
+  
+  // Time stats
+  if (stats.times.length > 0) {
+    const bestTime = Math.min(...stats.times);
+    const avgTime = Math.round(stats.times.reduce((a, b) => a + b, 0) / stats.times.length);
+    document.getElementById('stat-best-time').textContent = formatTime(bestTime);
+    document.getElementById('stat-avg-time').textContent = formatTime(avgTime);
+  } else {
+    document.getElementById('stat-best-time').textContent = '--';
+    document.getElementById('stat-avg-time').textContent = '--';
+  }
+  
+  // Show countdown if game is complete
+  if (solved) {
+    document.getElementById('game-complete-message').style.display = 'block';
+    updateCountdown();
+    // Set interval to update countdown (clear any existing interval first)
+    if (window.countdownInterval) clearInterval(window.countdownInterval);
+    window.countdownInterval = setInterval(updateCountdown, 1000);
+  }
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  
+  const diff = tomorrow - now;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  
+  document.getElementById('countdown-timer').textContent = 
+    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
