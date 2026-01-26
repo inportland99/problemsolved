@@ -6,9 +6,21 @@
     "thumbnail": "/images/kenken_sample_game.png"
   },
   {
+    "name": "KenKen Jr.",
+    "description": "A smaller 4×4 version of the classic KenKen puzzle, perfect for building logic skills with a simpler challenge.",
+    "link": "/games/kenken-jr",
+    "thumbnail": "/images/kenken_sample_game.png"
+  },
+  {
     "name": "Crack the Code",
     "description": "Use logic and deduction to crack the secret 3-digit code. Each guess gives you clues about which digits are correct and in the right position.",
-    "link": "/games/crack-the-code",
+    "link": "/games/crack-the-code-v2",
+    "thumbnail": "/images/games.jpg"
+  },
+  {
+    "name": "Shape Sum",
+    "description": "A visual math puzzle where you assign numbers to shapes to make equations balance. Perfect for developing algebraic thinking.",
+    "link": "/games/shape-sum",
     "thumbnail": "/images/games.jpg"
   }
 ]
