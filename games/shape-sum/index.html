@@ -45,9 +45,20 @@
 
   <main class="flex-grow">
     <div class="flex flex-col items-center">
-  <div class="flex items-center gap-2 mb-3 sm:mb-3 mb-2">
+  <div class="flex items-center justify-center gap-2 mb-3 flex-wrap">
     <div id="stopwatch"><i class="fa-solid fa-stopwatch"></i><span id="timer"> 0:00</span></div>
     <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded" id='checkPuzzle' onclick="showCheckModal()">Check Puzzle</button>
+    <div class="flex gap-2">
+      <button id="help-btn" class="btn btn-circle btn-sm" style="background-color: #5741AC; color: white;" title="How to Play">
+        <i class="fas fa-question"></i>
+      </button>
+      <button id="stats-btn" class="btn btn-circle btn-sm" style="background-color: #5741AC; color: white;" title="Statistics">
+        <i class="fas fa-chart-bar"></i>
+      </button>
+      <button id="share-btn" class="btn btn-circle btn-sm" style="background-color: #5741AC; color: white; display: none;" title="Share">
+        <i class="fas fa-share-alt"></i>
+      </button>
+    </div>
   </div>
   <div id="shape-sum-grid"></div>
   <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4 sm:p-4 p-3 mt-4 sm:mt-4 mt-2 w-full" style="max-width: 600px;">
@@ -199,6 +210,52 @@
     </div>
   </div>
 </div>
+
+  <!-- Stats Modal -->
+  <div id="statsModal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <h3 class="font-bold text-2xl mb-4" style="color: #5741AC;">Statistics</h3>
+      <div id="stats-content" class="space-y-4">
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <div id="stat-played" class="text-3xl font-bold">0</div>
+            <div class="text-sm">Played</div>
+          </div>
+          <div>
+            <div id="stat-current-streak" class="text-3xl font-bold">0</div>
+            <div class="text-sm">Current Streak</div>
+          </div>
+          <div>
+            <div id="stat-max-streak" class="text-3xl font-bold">0</div>
+            <div class="text-sm">Max Streak</div>
+          </div>
+        </div>
+
+        <div class="divider" style="border-color: #d3d3d3;">TIME STATS</div>
+
+        <div class="grid grid-cols-2 gap-4 text-center">
+          <div>
+            <div id="stat-best-time" class="text-2xl font-bold">--</div>
+            <div class="text-sm">Best Time</div>
+          </div>
+          <div>
+            <div id="stat-avg-time" class="text-2xl font-bold">--</div>
+            <div class="text-sm">Avg Time</div>
+          </div>
+        </div>
+
+        <div id="game-complete-message" style="display: none;">
+          <div class="divider" style="border-color: #d3d3d3;">NEXT PUZZLE</div>
+          <div class="text-center">
+            <div id="countdown-timer" class="text-2xl font-bold" style="color: #5741AC;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end">
+        <button id="close-stats-btn" class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded">Close</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Share Modal -->
   <div id="shareModal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">

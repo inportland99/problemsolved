@@ -19,6 +19,7 @@ let timerInterval;
 let startTime;
 let elapsed = 0;
 let isPaused = false;
+const STATS_KEY = 'kenken-stats';
 
 // Define cage colors for visual differentiation
 const cageColors = [
@@ -140,6 +141,35 @@ window.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
+  });
+
+  // Help button opens welcome modal
+  document.getElementById('help-btn')?.addEventListener('click', () => {
+    showModal('welcomeModal');
+    pauseTimer();
+  });
+
+  // Stats button opens stats modal
+  document.getElementById('stats-btn')?.addEventListener('click', () => {
+    updateStatsDisplay();
+    showModal('statsModal');
+  });
+
+  // Share button opens share modal
+  document.getElementById('share-btn')?.addEventListener('click', () => {
+    showShareModal();
+  });
+  
+  // Close stats modal
+  document.getElementById('close-stats-btn')?.addEventListener('click', () => {
+    hideModal('statsModal');
+  });
+  
+  // Close stats modal when clicking outside
+  document.getElementById('statsModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'statsModal') {
+      hideModal('statsModal');
+    }
   });
 });
 
@@ -627,41 +657,20 @@ function showCheckModal() {
   switch (result.status) {
     case true:
       solved = true;
+      updateStats(elapsed); // Update stats with solve time
       saveGameState(); // Save the solved state
       confetti();
       clearInterval(timerInterval);
-      modalBody.innerHTML = `🎉 Problem Solved! 🎉 <br />You solved today's puzzle in ${document.getElementById('timer').innerText.trim()}!`;
-      // Save the game state to prevent replay
-      if (TEST_MODE) {
-        modalBody.innerHTML += `
-          <br><button id="play-again-button" class="btn btn-primary mt-3">
-            <i class="fa-solid fa-rotate-right"></i> Play Again
-          </button>
-        `;
-      } else {
-        modalBody.innerHTML += `
-          <br><button id="share-kenken-button" class="btn btn-success mt-3">
-            <i class="bi bi-share"></i> Share
-          </button>
-          <br><br>Next puzzle will be available at midnight! <br>
-        `;
+      document.getElementById('share-btn').style.display = 'inline-flex';
+      hideModal(modal.id);
+      if (!TEST_MODE) {
+        disableImputs(); // Disable inputs to prevent further changes
       }
+      // Show stats modal after a short delay
       setTimeout(() => {
-        if (TEST_MODE) {
-          const playAgainBtn = document.getElementById('play-again-button');
-          if (playAgainBtn) {
-            playAgainBtn.addEventListener('click', () => {
-              location.reload();
-            });
-          }
-        } else {
-          const shareBtn = document.getElementById('share-kenken-button');
-          if (shareBtn) {
-            shareBtn.addEventListener('click', showShareModal);
-          }
-          disableImputs(); // Disable inputs to prevent further changes
-        }
-      }, 0);
+        updateStatsDisplay();
+        showModal('statsModal');
+      }, 1500);
       break;
     case false:
       switch (result.reason) {
@@ -756,7 +765,25 @@ function restoreBoardToDOM() {
       document.getElementById('timer').innerText = ` ${Math.floor(elapsed / 60)}:${(elapsed % 60).toString().padStart(2, '0')}`;
     }
   }
-  if (solved) disableImputs();
+  if (solved) {
+    disableImputs();
+  }
+}
+
+// Disable inputs after solving
+function disableImputs() {
+  document.querySelectorAll('.cell').forEach(cell => {
+    cell.classList.add('disabled-cell');
+  });
+  // disable check puzzle button
+  document.getElementById('checkPuzzle').disabled = true;
+  // show share button
+  document.getElementById('share-btn').style.display = 'inline-flex';
+  // disable reset puzzle, pause, undo, redo buttons
+  document.getElementById('clear-game').disabled = true;
+  document.getElementById('undo-button').disabled = true;
+  document.getElementById('redo-button').disabled = true;
+  document.getElementById('pauseButton').disabled = true;
 }
 
 // Undo functionality
@@ -809,20 +836,6 @@ document.getElementById('shareModal').addEventListener('click', (e) => {
   }
 });
 
-// Disable inputs and change the check puzzle button to share after solving
-function disableImputs(){
-  document.querySelectorAll('.cell').forEach(cell => {
-    cell.classList.add('disabled-cell');
-  });
-  // change check puzzle to share button
-  document.getElementById('checkPuzzle').innerHTML = `Share <i class="fa-solid fa-share-nodes"></i>`;
-  document.getElementById('checkPuzzle').onclick = showShareModal;
-  // disable reset puzzle, paus, undo, redo buttons
-  document.getElementById('clear-game').disabled = true;
-  document.getElementById('undo-button').disabled = true;
-  document.getElementById('redo-button').disabled = true;
-  document.getElementById('pauseButton').disabled = true;
-}
 
 // Create empty grid
 function createEmptyGrid() {
@@ -915,6 +928,112 @@ function solver() {
   const count = { value: 0 };
 
   return countSolutions(grid, cages, 0, 0, count);
+}
+
+// Stats functions
+function getStats() {
+  if (TEST_MODE) return getDefaultStats();
+  const saved = localStorage.getItem(STATS_KEY);
+  return saved ? JSON.parse(saved) : getDefaultStats();
+}
+
+function getDefaultStats() {
+  return {
+    gamesPlayed: 0,
+    currentStreak: 0,
+    maxStreak: 0,
+    lastPlayedDate: null,
+    times: [] // Array of solve times in seconds
+  };
+}
+
+function saveStats(stats) {
+  if (TEST_MODE) return;
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+}
+
+function updateStats(solveTime) {
+  if (TEST_MODE) return;
+  const stats = getStats();
+  const today = d.toISOString().slice(0, 10);
+  
+  stats.gamesPlayed++;
+  stats.times.push(solveTime);
+  
+  // Check streak
+  if (stats.lastPlayedDate) {
+    const lastDate = new Date(stats.lastPlayedDate);
+    const todayDate = new Date(today);
+    const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) {
+      // Consecutive day
+      stats.currentStreak++;
+    } else if (diffDays === 0) {
+      // Same day (shouldn't happen normally)
+      // Don't change streak
+    } else {
+      // Broke streak
+      stats.currentStreak = 1;
+    }
+  } else {
+    // First game
+    stats.currentStreak = 1;
+  }
+  
+  stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
+  stats.lastPlayedDate = today;
+  
+  saveStats(stats);
+}
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateStatsDisplay() {
+  const stats = getStats();
+  
+  document.getElementById('stat-played').textContent = stats.gamesPlayed;
+  document.getElementById('stat-current-streak').textContent = stats.currentStreak;
+  document.getElementById('stat-max-streak').textContent = stats.maxStreak;
+  
+  // Time stats
+  if (stats.times.length > 0) {
+    const bestTime = Math.min(...stats.times);
+    const avgTime = Math.round(stats.times.reduce((a, b) => a + b, 0) / stats.times.length);
+    document.getElementById('stat-best-time').textContent = formatTime(bestTime);
+    document.getElementById('stat-avg-time').textContent = formatTime(avgTime);
+  } else {
+    document.getElementById('stat-best-time').textContent = '--';
+    document.getElementById('stat-avg-time').textContent = '--';
+  }
+  
+  // Show countdown if game is complete
+  if (solved) {
+    document.getElementById('game-complete-message').style.display = 'block';
+    updateCountdown();
+    // Set interval to update countdown (clear any existing interval first)
+    if (window.countdownInterval) clearInterval(window.countdownInterval);
+    window.countdownInterval = setInterval(updateCountdown, 1000);
+  }
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  
+  const diff = tomorrow - now;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  
+  document.getElementById('countdown-timer').textContent = 
+    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 // ADDITIONAL FEATURES
