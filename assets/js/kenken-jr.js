@@ -669,13 +669,7 @@ function showCheckModal() {
         } else {
           const shareBtn = document.getElementById('share-kenken-button');
           if (shareBtn) {
-            shareBtn.addEventListener('click', () => {
-              const shareText = `Dr. Shah's Daily KenKen Jr. Challenge\nI solved it in ${document.getElementById('timer').innerText.trim()}! https://drrajshah.com/games/kenken-jr/`;
-              navigator.clipboard.writeText(shareText).then(() => {
-                shareBtn.innerText = "Copied!";
-                setTimeout(() => shareBtn.innerHTML = `Share <i class="fa-solid fa-share-nodes"></i>`, 1500);
-              });
-            });
+            shareBtn.addEventListener('click', showShareModal);
           }
           disableImputs(); // Disable inputs to prevent further changes
         }
@@ -795,6 +789,38 @@ function redoLastMove() {
   saveGameState(); // Keep localStorage updated
 }
 
+// Share modal functions
+function showShareModal() {
+  const dateStr = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+  const shareText = `Dr. Shah's Daily KenKen Jr. Challenge\n${dateStr}\nI solved it in ${document.getElementById('timer').innerText.trim()}!\n\nhttps://drrajshah.com/games/kenken-jr/`;
+  document.getElementById('share-text').textContent = shareText;
+  document.getElementById('copy-success').style.display = 'none';
+  showModal('shareModal');
+}
+
+// Add event listeners for share modal
+document.getElementById('copy-share-btn').addEventListener('click', () => {
+  const shareText = document.getElementById('share-text').textContent;
+  navigator.clipboard.writeText(shareText).then(() => {
+    const successMsg = document.getElementById('copy-success');
+    successMsg.style.display = 'flex';
+    setTimeout(() => {
+      successMsg.style.display = 'none';
+    }, 2000);
+  });
+});
+
+document.getElementById('close-share-btn').addEventListener('click', () => {
+  hideModal('shareModal');
+});
+
+// Close share modal when clicking outside
+document.getElementById('shareModal').addEventListener('click', (e) => {
+  if (e.target.id === 'shareModal') {
+    hideModal('shareModal');
+  }
+});
+
 // Disable inputs and change the check puzzle button to share after solving
 function disableImputs(){
   document.querySelectorAll('.cell').forEach(cell => {
@@ -802,6 +828,7 @@ function disableImputs(){
   });
   // change check puzzle to share button
   document.getElementById('checkPuzzle').innerHTML = `Share <i class="fa-solid fa-share-nodes"></i>`;
+  document.getElementById('checkPuzzle').onclick = showShareModal;
   // disable reset puzzle, paus, undo, redo buttons
   document.getElementById('clear-game').disabled = true;
   document.getElementById('undo-button').disabled = true;

@@ -120,13 +120,43 @@
           <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
             <div class="card bg-base-100 shadow-xl rounded-2xl hover:shadow-2xl transition-shadow">
               <figure class="aspect-video overflow-hidden">
+                <img src="/images/kenken_sample_game.png" alt="KenKen Jr." class="w-full h-full object-cover" />
+              </figure>
+              <div class="card-body">
+                <h2 class="card-title text-2xl">KenKen Jr.</h2>
+                <p>A smaller 4×4 version of the classic KenKen puzzle, perfect for building logic skills with a simpler challenge.</p>
+                <div class="card-actions justify-end mt-4">
+                  <a href="/games/kenken-jr" class="btn btn-primary">Play Now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+            <div class="card bg-base-100 shadow-xl rounded-2xl hover:shadow-2xl transition-shadow">
+              <figure class="aspect-video overflow-hidden">
                 <img src="/images/games.jpg" alt="Crack the Code" class="w-full h-full object-cover" />
               </figure>
               <div class="card-body">
                 <h2 class="card-title text-2xl">Crack the Code</h2>
                 <p>Use logic and deduction to crack the secret 3-digit code. Each guess gives you clues about which digits are correct and in the right position.</p>
                 <div class="card-actions justify-end mt-4">
-                  <a href="/games/crack-the-code" class="btn btn-primary">Play Now</a>
+                  <a href="/games/crack-the-code-v2" class="btn btn-primary">Play Now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="w-full md:w-1/2 lg:w-1/3 flex-shrink-0 px-4">
+            <div class="card bg-base-100 shadow-xl rounded-2xl hover:shadow-2xl transition-shadow">
+              <figure class="aspect-video overflow-hidden">
+                <img src="/images/games.jpg" alt="Shape Sum" class="w-full h-full object-cover" />
+              </figure>
+              <div class="card-body">
+                <h2 class="card-title text-2xl">Shape Sum</h2>
+                <p>A visual math puzzle where you assign numbers to shapes to make equations balance. Perfect for developing algebraic thinking.</p>
+                <div class="card-actions justify-end mt-4">
+                  <a href="/games/shape-sum" class="btn btn-primary">Play Now</a>
                 </div>
               </div>
             </div>
@@ -153,6 +183,10 @@
         <button class="games-carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="0"></button>
         
         <button class="games-carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="1"></button>
+        
+        <button class="games-carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="2"></button>
+        
+        <button class="games-carousel-indicator w-2 h-2 rounded-full bg-base-300 hover:bg-primary transition-colors" data-index="3"></button>
         
       </div>
     </div>
@@ -757,7 +791,7 @@ Here is a little tool to help you explore the problem and find solutions: bit.ly
     const prevBtn = document.getElementById('games-prev-btn');
     const nextBtn = document.getElementById('games-next-btn');
     const indicators = document.querySelectorAll('.games-carousel-indicator');
-    const totalSlides = 2;
+    const totalSlides = 4;
     let currentIndex = 0;
     let isTransitioning = false;
     

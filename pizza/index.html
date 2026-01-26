@@ -53,11 +53,23 @@
               <label class="label">
                 <span class="label-text font-semibold">Hydration (%)</span>
               </label>
-              <input type="number" id="hydration" min="50" max="80" value="75"
+              <input type="number" id="hydration" min="50" max="80" value="75" 
                      class="input input-bordered input-primary text-lg" />
               <label class="label">
                 <span class="label-text-alt">Between 50% and 80%</span>
               </label>
+            </div>
+
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-semibold">Flour type</span>
+              </label>
+              <select id="flourType" class="select select-bordered select-primary text-lg">
+                <option value="semolina">Semolina</option>
+                <option value="00pizza" selected>00 Pizza</option>
+                <option value="allpurpose">All Purpose</option>
+                <option value="other">Other</option>
+              </select>
             </div>
           </div>
         </div>
