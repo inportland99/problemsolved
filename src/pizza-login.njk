@@ -1,0 +1,191 @@
+---
+layout: minimal.njk
+title: Pizza Tracker Login
+description: Login to track your pizza recipes
+---
+
+<div class="container mx-auto px-4 py-8 max-w-md">
+  <h1 class="text-3xl font-bold text-center mb-8">Pizza Tracker</h1>
+  
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+      <!-- Tabs -->
+      <div role="tablist" class="tabs tabs-boxed mb-4">
+        <a role="tab" class="tab tab-active" id="login-tab">Login</a>
+        <a role="tab" class="tab" id="signup-tab">Sign Up</a>
+      </div>
+
+      <!-- Alert messages -->
+      <div id="alert-message" class="alert hidden mb-4">
+        <span id="alert-text"></span>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Email</span>
+          </label>
+          <input type="email" id="login-email" placeholder="your@email.com" 
+                 class="input input-bordered" required />
+        </div>
+
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Password</span>
+          </label>
+          <input type="password" id="login-password" placeholder="••••••••" 
+                 class="input input-bordered" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full">
+          <span id="login-btn-text">Login</span>
+          <span id="login-spinner" class="loading loading-spinner loading-sm hidden"></span>
+        </button>
+      </form>
+
+      <!-- Signup Form (hidden by default) -->
+      <form id="signup-form" class="hidden">
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Email</span>
+          </label>
+          <input type="email" id="signup-email" placeholder="your@email.com" 
+                 class="input input-bordered" required />
+        </div>
+
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Password</span>
+          </label>
+          <input type="password" id="signup-password" placeholder="••••••••" 
+                 class="input input-bordered" required minlength="6" />
+          <label class="label">
+            <span class="label-text-alt">At least 6 characters</span>
+          </label>
+        </div>
+
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Confirm Password</span>
+          </label>
+          <input type="password" id="signup-password-confirm" placeholder="••••••••" 
+                 class="input input-bordered" required minlength="6" />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full">
+          <span id="signup-btn-text">Sign Up</span>
+          <span id="signup-spinner" class="loading loading-spinner loading-sm hidden"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { signIn, signUp, getCurrentUser } from '/assets/js/supabase-client.js';
+
+// Check if already logged in
+const user = await getCurrentUser();
+if (user) {
+  window.location.href = '/pizza/';
+}
+
+// Tab switching
+const loginTab = document.getElementById('login-tab');
+const signupTab = document.getElementById('signup-tab');
+const loginForm = document.getElementById('login-form');
+const signupForm = document.getElementById('signup-form');
+
+loginTab.addEventListener('click', () => {
+  loginTab.classList.add('tab-active');
+  signupTab.classList.remove('tab-active');
+  loginForm.classList.remove('hidden');
+  signupForm.classList.add('hidden');
+  hideAlert();
+});
+
+signupTab.addEventListener('click', () => {
+  signupTab.classList.add('tab-active');
+  loginTab.classList.remove('tab-active');
+  signupForm.classList.remove('hidden');
+  loginForm.classList.add('hidden');
+  hideAlert();
+});
+
+// Alert functions
+function showAlert(message, type = 'error') {
+  const alert = document.getElementById('alert-message');
+  const alertText = document.getElementById('alert-text');
+  
+  alert.className = `alert mb-4 ${type === 'error' ? 'alert-error' : 'alert-success'}`;
+  alertText.textContent = message;
+  alert.classList.remove('hidden');
+}
+
+function hideAlert() {
+  document.getElementById('alert-message').classList.add('hidden');
+}
+
+// Login form submission
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+  
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  
+  // Show loading state
+  document.getElementById('login-btn-text').classList.add('hidden');
+  document.getElementById('login-spinner').classList.remove('hidden');
+  
+  const { data, error } = await signIn(email, password);
+  
+  // Hide loading state
+  document.getElementById('login-btn-text').classList.remove('hidden');
+  document.getElementById('login-spinner').classList.add('hidden');
+  
+  if (error) {
+    showAlert(error.message || 'Failed to login', 'error');
+  } else {
+    showAlert('Login successful! Redirecting...', 'success');
+    setTimeout(() => {
+      window.location.href = '/pizza/';
+    }, 1000);
+  }
+});
+
+// Signup form submission
+signupForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+  
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  const passwordConfirm = document.getElementById('signup-password-confirm').value;
+  
+  // Validate passwords match
+  if (password !== passwordConfirm) {
+    showAlert('Passwords do not match', 'error');
+    return;
+  }
+  
+  // Show loading state
+  document.getElementById('signup-btn-text').classList.add('hidden');
+  document.getElementById('signup-spinner').classList.remove('hidden');
+  
+  const { data, error } = await signUp(email, password);
+  
+  // Hide loading state
+  document.getElementById('signup-btn-text').classList.remove('hidden');
+  document.getElementById('signup-spinner').classList.add('hidden');
+  
+  if (error) {
+    showAlert(error.message || 'Failed to sign up', 'error');
+  } else {
+    showAlert('Account created! Please check your email to verify your account.', 'success');
+    // Supabase typically sends a confirmation email
+    // You can redirect or show a message asking them to check email
+  }
+});
+</script>

@@ -21,10 +21,13 @@
     "@tailwindcss/cli": "^4.1.16",
     "@tailwindcss/typography": "^0.5.19",
     "autoprefixer": "^10.4.21",
+    "common-tags": "^1.8.2",
     "daisyui": "^5.3.10",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.16",
-    "common-tags": "^1.8.2"
+    "tailwindcss": "^4.1.16"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.93.2"
   }
 }

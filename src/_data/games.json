@@ -22,5 +22,11 @@
     "description": "A visual math puzzle where you assign numbers to shapes to make equations balance. Perfect for developing algebraic thinking.",
     "link": "/games/shape-sum",
     "thumbnail": "/images/shapesum_sample.png"
+  },
+  {
+    "name": "SET",
+    "description": "Find all 6 SETs among 12 cards! A SET is 3 cards where each attribute (number, shape, shading, color) is all the same or all different.",
+    "link": "/games/set",
+    "thumbnail": "/images/set_sample.png"
   }
 ]
