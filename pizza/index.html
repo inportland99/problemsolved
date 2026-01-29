@@ -11,8 +11,19 @@
 <body class="min-h-screen">
   
 <div class="container mx-auto px-4 py-8 max-w-2xl">
+  <!-- User info bar -->
+  <div id="user-info" class="mb-4 flex justify-end items-center gap-2">
+    <span id="user-email" class="text-sm text-gray-600"></span>
+    <button id="logout-btn" class="btn btn-sm btn-outline">Logout</button>
+  </div>
+  
   <h1 class="text-3xl font-bold text-center mb-8">Biga Pizza Dough</h1>
   <h3 class="text-1xl font-bold text-center mb-8">Poom Poom Poom!</h3>
+  
+  <!-- Alert for save status -->
+  <div id="save-alert" class="alert hidden mb-4">
+    <span id="save-alert-text"></span>
+  </div>
   
   <!-- Progress indicator -->
   <div class="flex justify-center gap-2 mb-6">
@@ -71,6 +82,15 @@
                 <option value="other">Other</option>
               </select>
             </div>
+            
+            <div class="divider"></div>
+            
+            <button type="button" id="save-recipe-btn" class="btn btn-secondary w-full">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              <span>Save Recipe</span>
+            </button>
           </div>
         </div>
       </div>
@@ -180,12 +200,84 @@
 
   <!-- Navigation buttons -->
   <div class="flex justify-between mt-6 px-4">
-    <button id="prevBtn" class="btn btn-outline" onclick="prevPanel()" disabled>Previous</button>
-    <button id="nextBtn" class="btn btn-primary" onclick="nextPanel()">Next</button>
+    <button id="prevBtn" class="btn btn-outline" disabled>Previous</button>
+    <button id="nextBtn" class="btn btn-primary">Next</button>
   </div>
 </div>
 
-<script>
+<script type="module">
+import { getCurrentUser, signOut } from '/assets/js/supabase-client.js';
+import { savePizzaLog } from '/assets/js/pizza-db.js';
+
+// Check authentication on page load
+const user = await getCurrentUser();
+if (!user) {
+  window.location.href = '/pizza-login/';
+} else {
+  // Display user email
+  document.getElementById('user-email').textContent = user.email;
+}
+
+// Logout functionality
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await signOut();
+  window.location.href = '/pizza-login/';
+});
+
+// Alert functions
+function showSaveAlert(message, type = 'error') {
+  const alert = document.getElementById('save-alert');
+  const alertText = document.getElementById('save-alert-text');
+  
+  alert.className = `alert mb-4 ${type === 'error' ? 'alert-error' : 'alert-success'}`;
+  alertText.textContent = message;
+  alert.classList.remove('hidden');
+  
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    alert.classList.add('hidden');
+  }, 5000);
+}
+
+// Save recipe functionality
+document.getElementById('save-recipe-btn').addEventListener('click', async () => {
+  const flourType = document.getElementById('flourType').value;
+  const doughBalls = parseInt(document.getElementById('doughBalls').value);
+  const ballSize = parseInt(document.getElementById('ballSize').value);
+  const hydration = parseInt(document.getElementById('hydration').value);
+  
+  // Validate inputs
+  if (!flourType || isNaN(doughBalls) || isNaN(ballSize) || isNaN(hydration)) {
+    showSaveAlert('Please fill in all fields', 'error');
+    return;
+  }
+  
+  if (doughBalls < 1 || ballSize < 100 || hydration < 50 || hydration > 80) {
+    showSaveAlert('Please enter valid values', 'error');
+    return;
+  }
+  
+  // Show loading state
+  const btn = document.getElementById('save-recipe-btn');
+  const btnText = btn.querySelector('span:last-child');
+  const originalText = btnText.textContent;
+  btnText.textContent = 'Saving...';
+  btn.disabled = true;
+  
+  // Save to database
+  const result = await savePizzaLog(flourType, doughBalls, ballSize, hydration);
+  
+  // Reset button state
+  btnText.textContent = originalText;
+  btn.disabled = false;
+  
+  if (result.success) {
+    showSaveAlert('Recipe saved successfully! 🍕', 'success');
+  } else {
+    showSaveAlert(result.error?.message || 'Failed to save recipe', 'error');
+  }
+});
+
 let currentPanel = 0;
 const totalPanels = 5;
 
@@ -304,6 +396,10 @@ function handleSwipe() {
     }
   }
 }
+
+// Add event listeners for navigation buttons
+document.getElementById('nextBtn').addEventListener('click', nextPanel);
+document.getElementById('prevBtn').addEventListener('click', prevPanel);
 
 // Initialize
 updatePanelDisplay();

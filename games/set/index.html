@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shape Sum Puzzle</title>
+  <title>Daily SET Puzzle</title>
   <meta name="description" content="No more lecturing to disengaged students!&lt;br /&gt; I help teachers bring &lt;strong&gt;joy&lt;/strong&gt;, &lt;strong&gt;curiosity&lt;/strong&gt;, and &lt;strong&gt;rigor&lt;/strong&gt; to math class using &lt;em&gt;any curriculum&lt;/em&gt;. ">
   <link rel="stylesheet" href="/styles/output.css">
-  <link rel="stylesheet" href="/assets/css/shape-sum.css">
+  <link rel="stylesheet" href="/assets/css/set.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
@@ -56,7 +56,9 @@
     <div class="flex flex-col items-center">
   <div class="flex items-center justify-center gap-2 mb-3 flex-wrap">
     <div id="stopwatch"><i class="fa-solid fa-stopwatch"></i><span id="timer"> 0:00</span></div>
-    <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded" id='checkPuzzle' onclick="showCheckModal()">Check Puzzle</button>
+    <div id="sets-found" class="font-bold text-lg">
+      <i class="fa-solid fa-layer-group"></i> Sets: <span id="sets-count">0</span>/6
+    </div>
     <div class="flex gap-2">
       <button id="help-btn" class="btn btn-circle btn-sm" style="background-color: #5741AC; color: white;" title="How to Play">
         <i class="fas fa-question"></i>
@@ -69,39 +71,28 @@
       </button>
     </div>
   </div>
-  <div id="shape-sum-grid"></div>
-  <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4 sm:p-4 p-3 mt-4 sm:mt-4 mt-2 w-full" style="max-width: 600px;">
-    <div class="flex items-center justify-center gap-2 mb-3">
-      <h3 class="font-bold text-lg">Notepad</h3>
-      <button id="notepad-help" class="text-gray-500 hover:text-gray-700" title="How to use the notepad">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-          <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm11.378-3.917c-.89-.777-2.366-.777-3.255 0a.75.75 0 0 1-.988-1.129c1.454-1.272 3.776-1.272 5.23 0 1.513 1.324 1.513 3.518 0 4.842a3.75 3.75 0 0 1-.837.552c-.676.328-1.028.774-1.028 1.152v.75a.75.75 0 0 1-1.5 0v-.75c0-1.279 1.06-2.107 1.875-2.502.182-.088.351-.199.503-.331.83-.727.83-1.857 0-2.584ZM12 18a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
-        </svg>
-      </button>
-      <button id="reset-notepad" class="text-red-500 hover:text-red-700" title="Reset notepad">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-        </svg>
-      </button>
-    </div>
-    <div id="shape-tracker" class="space-y-3"></div>
-  </div>
-  <div id="test-mode-info" class="hidden mt-4">
-    <div class="bg-yellow-100 border-2 border-yellow-500 rounded-lg p-4 inline-block">
-      <h3 class="font-bold text-lg mb-2">🧪 Test Mode - Solution</h3>
-      <div id="shape-values-display"></div>
+  <div class="flex flex-col lg:flex-row gap-4 items-start justify-center">
+    <div id="set-board"></div>
+    <div id="found-sets-display" class="bg-gray-50 border-2 border-gray-300 rounded-lg p-3 w-full lg:w-auto" style="max-width: 100%;">
+      <h3 class="font-bold text-base mb-2 text-center" style="color: #5741AC;">Found Sets</h3>
+      <div id="found-sets-list" class="flex flex-wrap gap-2 justify-center">
+        <p class="text-sm text-gray-500 text-center w-full">No sets found yet</p>
+      </div>
     </div>
   </div>
   <div class="flex items-center gap-2 mt-3 mb-3">
-    <button class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded" id="undo-button"><i class="fa-solid fa-rotate-left"></i></button>
-    <button class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded" id="redo-button"><i class="fa-solid fa-rotate-right"></i></button>
-    <button id="pauseButton" class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded"><i class="fa-solid fa-pause"></i></button>
-    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded" id="clear-game">Reset</button>
+    <button id="clear-selection" class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded">
+      <i class="fa-solid fa-xmark"></i> Clear Selection
+    </button>
+    <button id="pauseButton" class="border border-gray-400 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded">
+      <i class="fa-solid fa-pause"></i>
+    </button>
+    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded" id="reset-game">Reset</button>
   </div>
   <hr class="w-full my-4 border-gray-300">
   <p class="text-center text-gray-500" id="daily-number"></p>
   <div class="text-center">
-    <a href="mailto:raj@drrajshah.com?subject=Bug Report for Shape Sum Game" class="border border-red-500 text-red-500 hover:bg-red-50 font-semibold py-2 px-4 rounded inline-block">
+    <a href="mailto:raj@drrajshah.com?subject=Bug Report for SET Game" class="border border-red-500 text-red-500 hover:bg-red-50 font-semibold py-2 px-4 rounded inline-block">
       Report a Bug
     </a>
   </div>
@@ -115,57 +106,57 @@
     </div>
     <div class="modal-body">
       
-            <ol>
-              <li>Each shape represents a number</li>
-              <li>The sum of shapes in each row is shown on the right</li>
-              <li>The sum of shapes in each column is shown at the bottom</li>
-              <li>One shape or one sum is hidden - find it!</li>
-            </ol>
-            Click on any shape to change it. Use the row and column sums to figure out which shape is missing or what the hidden sum is.<br>
-            Use the Check Puzzle button to verify your solution. If you get stuck, you can reset the puzzle using the Reset button.
-    </div>
-  </div>
-</div>
-  <div id="checkPuzzleModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="checkPuzzleLabel" aria-hidden="true">
-  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h5 class="text-2xl font-bold" id="checkPuzzleLabel">Check Puzzle</h5>
-      <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
-        &times;
-      </button>
-    </div>
-    <div class="modal-body">
-      
+            <p class='mb-3'>Find all 6 SETs among the 12 cards!</p>
+            
+            <h4 class='font-bold mb-2'>What's a SET?</h4>
+            <p class='mb-3'>A SET is 3 cards where <strong>each attribute</strong> (number, shape, shading, color) is either <strong>all the same</strong> or <strong>all different</strong>.</p>
+            
+            <h4 class='font-bold mb-2'>Card Attributes</h4>
+            <ul class='list-disc ml-5 mb-3 space-y-1'>
+              <li><strong>Number:</strong> 1, 2, or 3 shapes</li>
+              <li><strong>Shape:</strong> Diamond, pill, or squiggle</li>
+              <li><strong>Shading:</strong> Empty, striped, or solid</li>
+              <li><strong>Color:</strong> Purple, blue, or magenta</li>
+            </ul>
+            
+            <h4 class='font-bold mb-2'>💡 Quick Tip</h4>
+            <p class='mb-3'>For each attribute: if two cards match, the third must also match. If two cards differ, the third must differ from both.</p>
+            
+            <h4 class='font-bold mb-2'>How to Play</h4>
+            <ul class='list-disc ml-5 space-y-1'>
+              <li>Click 3 cards to select them</li>
+              <li>If they form a valid SET, you earn a point!</li>
+              <li>Cards can be part of multiple SETs</li>
+              <li>Find all 6 SETs to win!</li>
+            </ul>
+            
     </div>
   </div>
 </div>
   <div id="welcomeModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="welcomeLabel" aria-hidden="true">
   <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
     <div class="flex items-center justify-between mb-4">
-      <h5 class="text-2xl font-bold" id="welcomeLabel">Welcome to Shape Sum!</h5>
+      <h5 class="text-2xl font-bold" id="welcomeLabel">Welcome to SET!</h5>
       <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
         &times;
       </button>
     </div>
     <div class="modal-body">
       
-            <p class='mb-3 font-semibold'>Your Goal:</p>
-            <p class='mb-4'>Each shape represents a number (1-9). Use logic and the row/column sums to figure out which shape equals which number!</p>
+            <p class='mb-3'>Find all 6 SETs among the 12 cards!</p>
             
-            <p class='mb-2 font-semibold'>The Puzzle:</p>
+            <h4 class='font-bold mb-2'>What's a SET?</h4>
+            <p class='mb-3'>A SET is 3 cards where <strong>each attribute</strong> (number, shape, shading, color) is either <strong>all the same</strong> or <strong>all different</strong>.</p>
+            
+            <h4 class='font-bold mb-2'>Card Attributes</h4>
             <ul class='list-disc ml-5 mb-4 space-y-1'>
-              <li>Each row's sum is shown on the right</li>
-              <li>Each column's sum is shown at the bottom</li>
-              <li>One shape or one sum is hidden - that's your mystery to solve!</li>
+              <li><strong>Number:</strong> 1, 2, or 3 shapes</li>
+              <li><strong>Shape:</strong> Three different shapes</li>
+              <li><strong>Shading:</strong> Empty, striped, or filled</li>
+              <li><strong>Color:</strong> Three different colors</li>
             </ul>
             
-            <p class='mb-2 font-semibold'>How to Play:</p>
-            <ul class='list-disc ml-5 mb-4 space-y-1'>
-              <li>Click the mystery shape to cycle through options</li>
-              <li>Use the Notepad below to track possible values for each shape</li>
-              <li>Lock in a shape's value when you're certain</li>
-              <li>When ready, click <strong>Check Puzzle</strong></li>
-            </ul>
+            <p class='text-sm text-gray-600 mb-4'>💡 Tip: For each attribute, if two cards match, the third must also match. If two cards differ, the third must differ from both.</p>
             
             <div class='text-center'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded'>Start Puzzle</button></div>
             
@@ -184,37 +175,6 @@
       
             The game is paused.
             <div class='text-center'><button id='resumeButton' class='border border-blue-500 text-blue-500 hover:bg-blue-50 font-semibold py-2 px-4 rounded'>Resume</button></div>
-            
-    </div>
-  </div>
-</div>
-  <div id="notepadHelpModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="notepadHelpLabel" aria-hidden="true">
-  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h5 class="text-2xl font-bold" id="notepadHelpLabel">How to Use the Notepad</h5>
-      <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
-        &times;
-      </button>
-    </div>
-    <div class="modal-body">
-      
-            <p class='mb-3'>The notepad helps you track possible values for each shape:</p>
-            <ul class='list-disc ml-5 space-y-2'>
-              <li><strong>Click numbers</strong> to cycle through three states:</li>
-              <ul class='list-disc ml-5 mt-1'>
-                <li><span class='bg-gray-200 px-2 py-1 rounded'>Gray</span> - Unsure</li>
-                <li><span class='bg-green-200 px-2 py-1 rounded'>Green</span> - Possible</li>
-                <li><span class='bg-red-200 px-2 py-1 rounded'>Red</span> - Not possible</li>
-              </ul>
-              <li><strong>Lock a value</strong>: When a shape has exactly one green value, click the lock icon to confirm it. This will:</li>
-              <ul class='list-disc ml-5 mt-1'>
-                <li>Mark all other values for that shape as red</li>
-                <li>Display the locked value on all instances of that shape in the grid</li>
-                <li>Mark that value as red for all other shapes</li>
-              </ul>
-              <li><strong>Unlock</strong>: Click the lock again to reset that row</li>
-              <li><strong>Reset Notepad</strong>: Clear all notes and locks at once</li>
-            </ul>
             
     </div>
   </div>
@@ -287,7 +247,7 @@
   </div>
 
 </div>
-<script src="/assets/js/shape-sum.js"></script>
+<script src="/assets/js/set.js"></script>
 
   </main>
 
