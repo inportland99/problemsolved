@@ -49,39 +49,35 @@ pageCss: "/assets/css/kenken-jr.css"
       Report a Bug
     </a>
   </div>
-  {% Modal 
-    id="help",
-    title="How to Play", 
-    body="
-      <ol>
-        <li>Fill in each cell with a number from 1 to 4
-        <li>Every row and column contains each number exactly once
-        <li>The cells in a colored region combine to make the target value using given operation (+ or -)
-        <br>Note: Numbers in a colored region may occur more than once as long as they don't violate rule #2
-      </ol>
-      <p class='mt-3'><strong>KenKen Jr. uses only addition (+) and subtraction (-) operations!</strong></p>
-      Use the number tiles below the puzzle or keyboard to enter numbers into the grid. You may use pencil mode (<i class='fa-solid fa-pencil' style='color:gray'></i>) to mark potential numbers in a cell<br>
-      Use the Check Puzzle button to verify your solution. If you get stuck, you can reset the puzzle using the Reset Puzzle button.<br>
-      <img src='/images/kenken_sample_game.png' class='max-w-full w-1/2 block mx-auto' alt='Sample KenKen Game'>"
-  %}
+  <!-- Help/Welcome Modal -->
+  <div id="helpModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="helpLabel" aria-hidden="true">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h5 class="text-2xl font-bold" id="helpLabel">How to Play</h5>
+        <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <ol>
+          <li>Fill in each cell with a number from 1 to 4
+          <li>Every row and column contains each number exactly once
+          <li>The cells in a colored region combine to make the target value using given operation (+ or -)
+          <br>Note: Numbers in a colored region may occur more than once as long as they don't violate rule #2
+        </ol>
+        <p class='mt-3'><strong>KenKen Jr. uses only addition (+) and subtraction (-) operations!</strong> <span id="beginnerNote">Perfect for beginners!</span></p>
+        <div id="helpInstructions" style="display: none;">
+          Use the number tiles below the puzzle or keyboard to enter numbers into the grid. You may use pencil mode (<i class='fa-solid fa-pencil' style='color:gray'></i>) to mark potential numbers in a cell<br>
+          Use the Check Puzzle button to verify your solution. If you get stuck, you can reset the puzzle using the Reset Puzzle button.<br>
+        </div>
+        <img src='/images/kenken_sample_game.png' class='max-w-full w-1/2 block mx-auto' alt='Sample KenKen Game'>
+        <div class='text-center mt-3'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded' style='display: none;'>Start</button></div>
+      </div>
+    </div>
+  </div>
   {% Modal 
     id="checkPuzzle",
     title="Check Puzzle" 
-  %}
-  {% Modal 
-    id="welcome",
-    title="Welcome to KenKen Jr.!", 
-    body="
-      <ol>
-        <li>Fill in each cell with a number from 1 to 4
-        <li>Every row and column contains each number exactly once
-        <li>The cells in a colored region combine to make the target value using given operation (+ or -)
-        <br>Note: Numbers in a colored region may occur more than once as long as they don't violate rule #2
-      </ol>
-      <p class='mt-3'><strong>KenKen Jr. uses only addition (+) and subtraction (-) operations!</strong> Perfect for beginners!</p>
-      <img src='/images/kenken_sample_game.png' class='max-w-full w-1/2 block mx-auto' alt='Sample KenKen Game'>
-      <div class='text-center'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded'>Start</button></div>
-      "
   %}
   {% Modal 
     id="pause",

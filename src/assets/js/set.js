@@ -713,7 +713,9 @@ window.addEventListener('DOMContentLoaded', () => {
   updateTimerDisplay();
   
   if (!hasState || elapsed === 0) {
-    showModal('welcomeModal');
+    document.getElementById('helpLabel').textContent = 'Welcome to SET!';
+    document.getElementById('startButton').style.display = 'inline-block';
+    showModal('helpModal');
     pauseTimer();
   } else {
     startTimer();
@@ -721,7 +723,9 @@ window.addEventListener('DOMContentLoaded', () => {
   
   // Event listeners
   document.getElementById('startButton').onclick = () => {
-    hideModal('welcomeModal');
+    hideModal('helpModal');
+    document.getElementById('startButton').style.display = 'none';
+    document.getElementById('helpLabel').textContent = 'How to Play';
     resumeTimer();
     startTimer();
   };
@@ -747,6 +751,8 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('reset-game').onclick = resetGame;
   
   document.getElementById('help-btn')?.addEventListener('click', () => {
+    document.getElementById('helpLabel').textContent = 'How to Play';
+    document.getElementById('startButton').style.display = 'none';
     showModal('helpModal');
     pauseTimer();
   });
@@ -771,7 +777,8 @@ window.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         hideModal(modal.id);
-        if (modal.id === 'welcomeModal' || modal.id === 'pauseModal') {
+        if (modal.id === 'helpModal' || modal.id === 'pauseModal') {
+          document.getElementById('startButton').style.display = 'none';
           resumeTimer();
         }
       }
@@ -783,7 +790,8 @@ window.addEventListener('DOMContentLoaded', () => {
       const modal = btn.closest('[id$="Modal"]');
       if (modal) {
         hideModal(modal.id);
-        if (modal.id === 'welcomeModal' || modal.id === 'pauseModal') {
+        if (modal.id === 'helpModal' || modal.id === 'pauseModal') {
+          document.getElementById('startButton').style.display = 'none';
           resumeTimer();
         }
       }

@@ -771,13 +771,17 @@ window.addEventListener('DOMContentLoaded', () => {
   startTimer();
   
   if (elapsed == 0) {
-    showModal('welcomeModal');
+    document.getElementById('helpLabel').textContent = 'Welcome to Shape Sum!';
+    document.getElementById('startButton').style.display = 'inline-block';
+    showModal('helpModal');
     pauseTimer();
   }
   
   // Event listeners
   document.getElementById('startButton').onclick = () => {
-    hideModal('welcomeModal');
+    hideModal('helpModal');
+    document.getElementById('startButton').style.display = 'none';
+    document.getElementById('helpLabel').textContent = 'How to Play';
     resumeTimer();
     startTimer();
   };
@@ -831,7 +835,10 @@ window.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         hideModal(modal.id);
-        if (modal.id === 'welcomeModal' || modal.id === 'pauseModal') {
+        if (modal.id === 'helpModal' || modal.id === 'pauseModal') {
+          document.getElementById('startButton').style.display = 'none';
+          document.getElementById('helpInstructions').style.display = 'none';
+          document.getElementById('helpLabel').textContent = 'How to Play';
           resumeTimer();
         }
       }
@@ -844,16 +851,22 @@ window.addEventListener('DOMContentLoaded', () => {
       const modal = closeBtn.closest('[id$="Modal"]');
       if (modal) {
         hideModal(modal.id);
-        if (modal.id === 'welcomeModal' || modal.id === 'pauseModal') {
+        if (modal.id === 'helpModal' || modal.id === 'pauseModal') {
+          document.getElementById('startButton').style.display = 'none';
+          document.getElementById('helpInstructions').style.display = 'none';
+          document.getElementById('helpLabel').textContent = 'How to Play';
           resumeTimer();
         }
       }
     });
   });
   
-  // Help button opens welcome modal
+  // Help button opens help modal with extra instructions
   document.getElementById('help-btn')?.addEventListener('click', () => {
-    showModal('welcomeModal');
+    document.getElementById('helpLabel').textContent = 'How to Play';
+    document.getElementById('startButton').style.display = 'none';
+    document.getElementById('helpInstructions').style.display = 'block';
+    showModal('helpModal');
     pauseTimer();
   });
   
