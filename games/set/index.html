@@ -56,9 +56,6 @@
     <div class="flex flex-col items-center">
   <div class="flex items-center justify-center gap-2 mb-3 flex-wrap">
     <div id="stopwatch"><i class="fa-solid fa-stopwatch"></i><span id="timer"> 0:00</span></div>
-    <div id="sets-found" class="font-bold text-lg">
-      <i class="fa-solid fa-layer-group"></i> Sets: <span id="sets-count">0</span>/6
-    </div>
     <div class="flex gap-2">
       <button id="help-btn" class="btn btn-circle btn-sm" style="background-color: #5741AC; color: white;" title="How to Play">
         <i class="fas fa-question"></i>
@@ -73,8 +70,10 @@
   </div>
   <div class="flex flex-col lg:flex-row gap-4 items-start justify-center">
     <div id="set-board"></div>
-    <div id="found-sets-display" class="bg-gray-50 border-2 border-gray-300 rounded-lg p-3 w-full lg:w-auto" style="max-width: 100%;">
-      <h3 class="font-bold text-base mb-2 text-center" style="color: #5741AC;">Found Sets</h3>
+    <div id="found-sets-display" class="bg-gray-50 border-2 border-gray-300 rounded-lg p-3 w-full lg:w-auto" style="max-width: 100%; margin-top: 15px;">
+      <h3 class="font-bold text-base mb-2 text-center" style="color: #5741AC;">
+        <i class="fa-solid fa-layer-group"></i> Found Sets <span id="sets-count">0</span>/6
+      </h3>
       <div id="found-sets-list" class="flex flex-wrap gap-2 justify-center">
         <p class="text-sm text-gray-500 text-center w-full">No sets found yet</p>
       </div>
@@ -96,73 +95,125 @@
       Report a Bug
     </a>
   </div>
+  <!-- Help/Welcome Modal -->
   <div id="helpModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="helpLabel" aria-hidden="true">
-  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h5 class="text-2xl font-bold" id="helpLabel">How to Play</h5>
-      <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
-        &times;
-      </button>
-    </div>
-    <div class="modal-body">
-      
-            <p class='mb-3'>Find all 6 SETs among the 12 cards!</p>
-            
-            <h4 class='font-bold mb-2'>What's a SET?</h4>
-            <p class='mb-3'>A SET is 3 cards where <strong>each attribute</strong> (number, shape, shading, color) is either <strong>all the same</strong> or <strong>all different</strong>.</p>
-            
-            <h4 class='font-bold mb-2'>Card Attributes</h4>
-            <ul class='list-disc ml-5 mb-3 space-y-1'>
-              <li><strong>Number:</strong> 1, 2, or 3 shapes</li>
-              <li><strong>Shape:</strong> Diamond, pill, or squiggle</li>
-              <li><strong>Shading:</strong> Empty, striped, or solid</li>
-              <li><strong>Color:</strong> Purple, blue, or magenta</li>
-            </ul>
-            
-            <h4 class='font-bold mb-2'>💡 Quick Tip</h4>
-            <p class='mb-3'>For each attribute: if two cards match, the third must also match. If two cards differ, the third must differ from both.</p>
-            
-            <h4 class='font-bold mb-2'>How to Play</h4>
-            <ul class='list-disc ml-5 space-y-1'>
-              <li>Click 3 cards to select them</li>
-              <li>If they form a valid SET, you earn a point!</li>
-              <li>Cards can be part of multiple SETs</li>
-              <li>Find all 6 SETs to win!</li>
-            </ul>
-            
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h5 class="text-2xl font-bold" id="helpLabel">How to Play</h5>
+        <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class='mb-3'>Find all 6 SETs among the 12 cards!</p>
+        
+        <h4 class='font-bold mb-2'>What's a SET?</h4>
+        <p class='mb-3'>A SET is 3 cards where <strong>each attribute</strong> (number, shape, shading, color) is either <strong>all the same</strong> or <strong>all different</strong>.</p>
+        
+        <h4 class='font-bold mb-2'>Card Attributes</h4>
+        <div class='grid grid-cols-2 gap-9 mb-3 text-sm'>
+          <!-- Color -->
+          <div>
+            <div class='font-semibold mb-1.5'>Color</div>
+            <div class='flex gap-1.5'>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#5741AC'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#5741AC'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#5741AC'/></svg>
+              </div>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+              </div>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#D946EF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#D946EF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#D946EF'/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- Shape -->
+          <div>
+            <div class='font-semibold mb-1.5'>Shape</div>
+            <div class='flex gap-1.5'>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+              </div>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'><polygon points='50,10 95,30 50,50 5,30' fill='#5741AC'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><polygon points='50,10 95,30 50,50 5,30' fill='#5741AC'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><polygon points='50,10 95,30 50,50 5,30' fill='#5741AC'/></svg>
+              </div>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'><rect x='5' y='15' width='90' height='30' rx='15' fill='#D946EF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><rect x='5' y='15' width='90' height='30' rx='15' fill='#D946EF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><rect x='5' y='15' width='90' height='30' rx='15' fill='#D946EF'/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- Number -->
+          <div>
+            <div class='font-semibold mb-1.5'>Number</div>
+            <div class='flex gap-1.5'>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+              </div>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+              </div>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+                <svg width='35' height='25' viewBox='0 0 100 60'><path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/></svg>
+              </div>
+            </div>
+          </div>
+          <!-- Filling -->
+          <div>
+            <div class='font-semibold mb-1.5'>Filling</div>
+            <div class='flex gap-1.5'>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'>
+                  <path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='#00A2FF'/>
+                </svg>
+              </div>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'>
+                  <defs>
+                    <pattern id='help-stripe' patternUnits='userSpaceOnUse' width='6' height='6' patternTransform='rotate(45)'>
+                      <line x1='0' y1='0' x2='0' y2='6' stroke='#00A2FF' stroke-width='2'/>
+                    </pattern>
+                  </defs>
+                  <path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='url(#help-stripe)' stroke='#00A2FF' stroke-width='2'/>
+                </svg>
+              </div>
+              <div class='bg-white border border-gray-300 rounded p-2 flex-1 flex flex-col items-center justify-center' style='min-height: 70px; gap: 1px;'>
+                <svg width='35' height='25' viewBox='0 0 100 60'>
+                  <path d='M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z' fill='none' stroke='#00A2FF' stroke-width='2'/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <h4 class='font-bold mb-2'>💡 Quick Tip</h4>
+        <p class='mb-3'>For each attribute: if two cards match, the third must also match. If two cards differ, the third must differ from both.</p>
+        
+        <h4 class='font-bold mb-2'>Play</h4>
+        <ul class='list-disc ml-5 space-y-1'>
+          <li>Click 3 cards to select them</li>
+          <li>Cards can be part of multiple SETs</li>
+          <li>Find all 6 SETs to win!</li>
+        </ul>
+        
+        <div class='text-center mt-4'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded' style='display: none;'>Start Puzzle</button></div>
+      </div>
     </div>
   </div>
-</div>
-  <div id="welcomeModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="welcomeLabel" aria-hidden="true">
-  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h5 class="text-2xl font-bold" id="welcomeLabel">Welcome to SET!</h5>
-      <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
-        &times;
-      </button>
-    </div>
-    <div class="modal-body">
-      
-            <p class='mb-3'>Find all 6 SETs among the 12 cards!</p>
-            
-            <h4 class='font-bold mb-2'>What's a SET?</h4>
-            <p class='mb-3'>A SET is 3 cards where <strong>each attribute</strong> (number, shape, shading, color) is either <strong>all the same</strong> or <strong>all different</strong>.</p>
-            
-            <h4 class='font-bold mb-2'>Card Attributes</h4>
-            <ul class='list-disc ml-5 mb-4 space-y-1'>
-              <li><strong>Number:</strong> 1, 2, or 3 shapes</li>
-              <li><strong>Shape:</strong> Three different shapes</li>
-              <li><strong>Shading:</strong> Empty, striped, or filled</li>
-              <li><strong>Color:</strong> Three different colors</li>
-            </ul>
-            
-            <p class='text-sm text-gray-600 mb-4'>💡 Tip: For each attribute, if two cards match, the third must also match. If two cards differ, the third must differ from both.</p>
-            
-            <div class='text-center'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded'>Start Puzzle</button></div>
-            
-    </div>
-  </div>
-</div>
   <div id="pauseModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="pauseLabel" aria-hidden="true">
   <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
     <div class="flex items-center justify-between mb-4">

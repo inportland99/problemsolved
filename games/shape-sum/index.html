@@ -105,27 +105,40 @@
       Report a Bug
     </a>
   </div>
+  <!-- Help/Welcome Modal -->
   <div id="helpModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="helpLabel" aria-hidden="true">
-  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h5 class="text-2xl font-bold" id="helpLabel">How to Play</h5>
-      <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
-        &times;
-      </button>
-    </div>
-    <div class="modal-body">
-      
-            <ol>
-              <li>Each shape represents a number</li>
-              <li>The sum of shapes in each row is shown on the right</li>
-              <li>The sum of shapes in each column is shown at the bottom</li>
-              <li>One shape or one sum is hidden - find it!</li>
-            </ol>
-            Click on any shape to change it. Use the row and column sums to figure out which shape is missing or what the hidden sum is.<br>
-            Use the Check Puzzle button to verify your solution. If you get stuck, you can reset the puzzle using the Reset button.
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h5 class="text-2xl font-bold" id="helpLabel">How to Play</h5>
+        <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class='mb-3 font-semibold'>Your Goal:</p>
+        <p class='mb-4'>Each shape represents a number (1-9). Use logic and the row/column sums to figure out which shape equals which number!</p>
+        
+        <p class='mb-2 font-semibold'>The Puzzle:</p>
+        <ul class='list-disc ml-5 mb-4 space-y-1'>
+          <li>Each row's sum is shown on the right</li>
+          <li>Each column's sum is shown at the bottom</li>
+          <li>One shape or one sum is hidden - that's your mystery to solve!</li>
+        </ul>
+        
+        <div id="helpInstructions" style="display: none;">
+          <p class='mb-2 font-semibold'>How to Play:</p>
+          <ul class='list-disc ml-5 mb-4 space-y-1'>
+            <li>Click the mystery shape to cycle through options</li>
+            <li>Use the Notepad below to track possible values for each shape</li>
+            <li>Lock in a shape's value when you're certain</li>
+            <li>When ready, click <strong>Check Puzzle</strong></li>
+          </ul>
+        </div>
+        
+        <div class='text-center mt-3'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded' style='display: none;'>Start Puzzle</button></div>
+      </div>
     </div>
   </div>
-</div>
   <div id="checkPuzzleModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="checkPuzzleLabel" aria-hidden="true">
   <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
     <div class="flex items-center justify-between mb-4">
@@ -136,39 +149,6 @@
     </div>
     <div class="modal-body">
       
-    </div>
-  </div>
-</div>
-  <div id="welcomeModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50" tabindex="-1" aria-labelledby="welcomeLabel" aria-hidden="true">
-  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h5 class="text-2xl font-bold" id="welcomeLabel">Welcome to Shape Sum!</h5>
-      <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" data-dismiss="modal" aria-label="Close">
-        &times;
-      </button>
-    </div>
-    <div class="modal-body">
-      
-            <p class='mb-3 font-semibold'>Your Goal:</p>
-            <p class='mb-4'>Each shape represents a number (1-9). Use logic and the row/column sums to figure out which shape equals which number!</p>
-            
-            <p class='mb-2 font-semibold'>The Puzzle:</p>
-            <ul class='list-disc ml-5 mb-4 space-y-1'>
-              <li>Each row's sum is shown on the right</li>
-              <li>Each column's sum is shown at the bottom</li>
-              <li>One shape or one sum is hidden - that's your mystery to solve!</li>
-            </ul>
-            
-            <p class='mb-2 font-semibold'>How to Play:</p>
-            <ul class='list-disc ml-5 mb-4 space-y-1'>
-              <li>Click the mystery shape to cycle through options</li>
-              <li>Use the Notepad below to track possible values for each shape</li>
-              <li>Lock in a shape's value when you're certain</li>
-              <li>When ready, click <strong>Check Puzzle</strong></li>
-            </ul>
-            
-            <div class='text-center'><button id='startButton' class='bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded'>Start Puzzle</button></div>
-            
     </div>
   </div>
 </div>
