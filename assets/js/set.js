@@ -141,8 +141,8 @@ function renderShape(shape, color, shading, uniqueId) {
     svg = `
       <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
         <defs>
-          <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-            <line x1="0" y1="0" x2="0" y2="6" stroke="${getColorHex(color)}" stroke-width="2"/>
+          <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke="${getColorHex(color)}" stroke-width="2"/>
           </pattern>
         </defs>
         <polygon points="50,10 95,30 50,50 5,30" class="${colorClass} ${shadingClass}" style="${shading === 'striped' ? `fill: url(#${patternId})` : ''}"/>
@@ -152,8 +152,8 @@ function renderShape(shape, color, shading, uniqueId) {
     svg = `
       <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
         <defs>
-          <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-            <line x1="0" y1="0" x2="0" y2="6" stroke="${getColorHex(color)}" stroke-width="2"/>
+          <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke="${getColorHex(color)}" stroke-width="3"/>
           </pattern>
         </defs>
         <rect x="5" y="10" width="90" height="40" rx="20" ry="20" class="${colorClass} ${shadingClass}" style="${shading === 'striped' ? `fill: url(#${patternId})` : ''}"/>
@@ -163,8 +163,8 @@ function renderShape(shape, color, shading, uniqueId) {
     svg = `
       <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
         <defs>
-          <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-            <line x1="0" y1="0" x2="0" y2="6" stroke="${getColorHex(color)}" stroke-width="2"/>
+          <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke="${getColorHex(color)}" stroke-width="2"/>
           </pattern>
         </defs>
         <path d="M 10 30 Q 12 10 30 12 Q 40 13 50 18 Q 60 23 70 18 Q 80 13 88 12 Q 95 14 92 30 Q 88 46 70 42 Q 60 38 50 40 Q 40 42 30 46 Q 12 48 10 30 Z" class="${colorClass} ${shadingClass}" style="${shading === 'striped' ? `fill: url(#${patternId})` : ''}"/>
