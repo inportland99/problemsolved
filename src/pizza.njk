@@ -6,9 +6,17 @@ description: Calculate ingredients for pizza dough using the biga method
 
 <div class="container mx-auto px-4 py-8 max-w-2xl">
   <!-- User info bar -->
-  <div id="user-info" class="mb-4 flex justify-end items-center gap-2">
-    <span id="user-email" class="text-sm text-gray-600"></span>
-    <button id="logout-btn" class="btn btn-sm btn-outline">Logout</button>
+  <div id="user-info" class="mb-4 flex justify-between items-center gap-2">
+    <a href="/pizza-dashboard/" class="btn btn-sm btn-ghost">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      My Recipes
+    </a>
+    <div class="flex items-center gap-2">
+      <span id="user-email" class="text-sm text-gray-600"></span>
+      <button id="logout-btn" class="btn btn-sm btn-outline">Logout</button>
+    </div>
   </div>
   
   <h1 class="text-3xl font-bold text-center mb-8">Biga Pizza Dough</h1>
@@ -266,7 +274,18 @@ document.getElementById('save-recipe-btn').addEventListener('click', async () =>
   btn.disabled = false;
   
   if (result.success) {
-    showSaveAlert('Recipe saved successfully! 🍕', 'success');
+    const message = 'Recipe saved successfully! 🍕 ';
+    const link = '<a href="/pizza-dashboard/" class="underline font-semibold">View all recipes</a>';
+    const alert = document.getElementById('save-alert');
+    const alertText = document.getElementById('save-alert-text');
+    
+    alert.className = 'alert mb-4 alert-success';
+    alertText.innerHTML = message + link;
+    alert.classList.remove('hidden');
+    
+    setTimeout(() => {
+      alert.classList.add('hidden');
+    }, 5000);
   } else {
     showSaveAlert(result.error?.message || 'Failed to save recipe', 'error');
   }

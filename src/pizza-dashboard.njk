@@ -1,0 +1,602 @@
+---
+layout: minimal.njk
+title: Pizza Recipe Dashboard
+description: Manage your pizza recipes, notes, and photos
+---
+
+<div class="min-h-screen bg-base-200">
+  <!-- Header -->
+  <div class="navbar bg-base-100 shadow-lg">
+    <div class="flex-1">
+      <a href="/pizza/" class="btn btn-ghost normal-case text-xl">🍕 Pizza Dashboard</a>
+    </div>
+    <div class="flex-none gap-2">
+      <span id="user-email" class="text-sm text-gray-600"></span>
+      <button id="logout-btn" class="btn btn-sm btn-outline">Logout</button>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    
+    <!-- Action Bar -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">My Pizza Recipes</h1>
+      <a href="/pizza/" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        New Recipe
+      </a>
+    </div>
+
+    <!-- Alert messages -->
+    <div id="alert-container" class="mb-4"></div>
+
+    <!-- Loading state -->
+    <div id="loading" class="flex justify-center items-center py-12">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden text-center py-12">
+      <div class="text-6xl mb-4">🍕</div>
+      <h2 class="text-2xl font-bold mb-2">No recipes yet</h2>
+      <p class="text-gray-600 mb-6">Start by creating your first pizza recipe!</p>
+      <a href="/pizza/" class="btn btn-primary">Create First Recipe</a>
+    </div>
+
+    <!-- Recipes Grid -->
+    <div id="recipes-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Recipe cards will be inserted here -->
+    </div>
+  </div>
+</div>
+
+<!-- View Modal -->
+<dialog id="view-modal" class="modal">
+  <div class="modal-box max-w-3xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-2xl mb-4" id="view-recipe-title">Recipe Details</h3>
+    
+    <!-- Recipe Info Grid -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div>
+        <p class="text-sm text-gray-600">Flour Type</p>
+        <p class="font-semibold" id="view-flour-type"></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600">Hydration</p>
+        <p class="font-semibold" id="view-hydration"></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600">Dough Balls</p>
+        <p class="font-semibold" id="view-dough-balls"></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600">Ball Size</p>
+        <p class="font-semibold" id="view-ball-size"></p>
+      </div>
+      <div class="col-span-2">
+        <p class="text-sm text-gray-600">Date</p>
+        <p class="font-semibold" id="view-date"></p>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div id="view-notes-container" class="mb-6 hidden">
+      <p class="text-sm text-gray-600 mb-2">Notes</p>
+      <div class="p-4 bg-base-200 rounded-lg">
+        <p id="view-notes" class="whitespace-pre-wrap"></p>
+      </div>
+    </div>
+
+    <!-- Photos Gallery -->
+    <div id="view-photos-container" class="hidden">
+      <p class="text-sm text-gray-600 mb-3">Photos</p>
+      <div id="view-photos-grid" class="grid grid-cols-3 gap-3">
+        <!-- Photo thumbnails will be inserted here -->
+      </div>
+    </div>
+
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Full Image Modal (Lightbox) -->
+<dialog id="fullimage-modal" class="modal">
+  <div class="modal-box max-w-6xl p-2">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10">✕</button>
+    </form>
+    <img id="fullimage-img" src="" alt="Full size" class="w-full h-auto rounded" />
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<!-- Edit Modal -->
+<dialog id="edit-modal" class="modal">
+  <div class="modal-box max-w-2xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg mb-4">Edit Recipe</h3>
+    
+    <input type="hidden" id="edit-recipe-id">
+    
+    <div class="space-y-4">
+      <!-- Recipe Details -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="form-control">
+          <label class="label"><span class="label-text">Flour Type</span></label>
+          <select id="edit-flour-type" class="select select-bordered">
+            <option value="semolina">Semolina</option>
+            <option value="00pizza">00 Pizza</option>
+            <option value="allpurpose">All Purpose</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Dough Balls</span></label>
+          <input type="number" id="edit-dough-balls" class="input input-bordered" min="1" max="20">
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Ball Size (g)</span></label>
+          <input type="number" id="edit-ball-size" class="input input-bordered" min="100" max="500" step="10">
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Hydration (%)</span></label>
+          <input type="number" id="edit-hydration" class="input input-bordered" min="50" max="80">
+        </div>
+      </div>
+
+      <!-- Date -->
+      <div class="form-control">
+        <label class="label"><span class="label-text">Recipe Date</span></label>
+        <input type="datetime-local" id="edit-date" class="input input-bordered">
+        <label class="label">
+          <span class="label-text-alt">When you made this recipe</span>
+        </label>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-control">
+        <label class="label"><span class="label-text">Notes</span></label>
+        <textarea id="edit-notes" class="textarea textarea-bordered h-24" placeholder="Add notes about this recipe..."></textarea>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="form-control">
+        <label class="label"><span class="label-text">Photos</span></label>
+        <input type="file" id="edit-image" class="file-input file-input-bordered" accept="image/*" multiple>
+        <label class="label">
+          <span class="label-text-alt">Upload photos of your pizza (max 5MB each)</span>
+        </label>
+        <div id="current-image-preview" class="mt-2"></div>
+        <div id="new-image-preview" class="mt-2 hidden">
+          <p class="text-sm font-semibold mb-2">New images to upload:</p>
+          <div id="new-image-grid" class="grid grid-cols-3 gap-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-action">
+      <button id="save-edit-btn" class="btn btn-primary">Save Changes</button>
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Delete Confirmation Modal -->
+<dialog id="delete-modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">Delete Recipe?</h3>
+    <p class="mb-4">Are you sure you want to delete this recipe? This action cannot be undone.</p>
+    <input type="hidden" id="delete-recipe-id">
+    <div class="modal-action">
+      <button id="confirm-delete-btn" class="btn btn-error">Delete</button>
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<script type="module">
+import { getCurrentUser, signOut } from '/assets/js/supabase-client.js';
+import { getUserPizzaLogs, updatePizzaLog, deletePizzaLog, uploadPizzaImage } from '/assets/js/pizza-db.js';
+
+// Check authentication
+const user = await getCurrentUser();
+if (!user) {
+  window.location.href = '/pizza-login/';
+} else {
+  document.getElementById('user-email').textContent = user.email;
+}
+
+// Logout
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await signOut();
+  window.location.href = '/pizza-login/';
+});
+
+// Alert helper
+function showAlert(message, type = 'info') {
+  const container = document.getElementById('alert-container');
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type} shadow-lg`;
+  alert.innerHTML = `<span>${message}</span>`;
+  container.appendChild(alert);
+  
+  setTimeout(() => {
+    alert.remove();
+  }, 5000);
+}
+
+// Format date
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+// Load and display recipes
+async function loadRecipes() {
+  const loading = document.getElementById('loading');
+  const emptyState = document.getElementById('empty-state');
+  const grid = document.getElementById('recipes-grid');
+  
+  loading.classList.remove('hidden');
+  emptyState.classList.add('hidden');
+  grid.classList.add('hidden');
+  
+  const result = await getUserPizzaLogs();
+  
+  loading.classList.add('hidden');
+  
+  if (!result.success) {
+    showAlert(result.error?.message || 'Failed to load recipes', 'error');
+    return;
+  }
+  
+  if (result.data.length === 0) {
+    emptyState.classList.remove('hidden');
+    return;
+  }
+  
+  grid.classList.remove('hidden');
+  grid.innerHTML = result.data.map(recipe => createRecipeCard(recipe)).join('');
+  
+  // Attach event listeners
+  result.data.forEach(recipe => {
+    document.getElementById(`view-${recipe.id}`).addEventListener('click', () => openViewModal(recipe));
+    document.getElementById(`edit-${recipe.id}`).addEventListener('click', () => openEditModal(recipe));
+    document.getElementById(`delete-${recipe.id}`).addEventListener('click', () => openDeleteModal(recipe));
+  });
+}
+
+// Create recipe card HTML
+function createRecipeCard(recipe) {
+  // image_urls is an array, display the images
+  const hasImages = recipe.image_urls && recipe.image_urls.length > 0;
+  const imageCount = hasImages ? recipe.image_urls.length : 0;
+  
+  return `
+    <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+      ${hasImages ? `
+        <figure class="h-48 overflow-hidden relative">
+          <img src="${recipe.image_urls[0]}" alt="Pizza" class="w-full h-full object-cover" />
+          ${imageCount > 1 ? `
+            <div class="absolute bottom-2 right-2 badge badge-neutral">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              ${imageCount}
+            </div>
+          ` : ''}
+        </figure>
+      ` : ''}
+      <div class="card-body">
+        <div class="flex justify-between items-start mb-2">
+          <h2 class="card-title text-lg">${recipe.flour_type.charAt(0).toUpperCase() + recipe.flour_type.slice(1)} Pizza</h2>
+          <div class="badge badge-primary">${recipe.hydration}%</div>
+        </div>
+        
+        <div class="text-sm space-y-1 mb-2">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Dough balls:</span>
+            <span class="font-semibold">${recipe.dough_balls}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Ball size:</span>
+            <span class="font-semibold">${recipe.ball_size}g</span>
+          </div>
+        </div>
+        
+        ${recipe.notes ? `
+          <div class="text-sm mt-2 p-2 bg-base-200 rounded">
+            <p class="text-gray-700 line-clamp-2">${recipe.notes}</p>
+          </div>
+        ` : ''}
+        
+        <div class="text-xs text-gray-500 mt-2">
+          ${formatDate(recipe.created_at)}
+        </div>
+        
+        <div class="card-actions justify-end mt-4">
+          <button id="view-${recipe.id}" class="btn btn-sm btn-outline">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            View
+          </button>
+          <button id="edit-${recipe.id}" class="btn btn-sm btn-outline btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edit
+          </button>
+          <button id="delete-${recipe.id}" class="btn btn-sm btn-outline btn-error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Open view modal
+function openViewModal(recipe) {
+  // Set title
+  const flourName = recipe.flour_type.charAt(0).toUpperCase() + recipe.flour_type.slice(1);
+  document.getElementById('view-recipe-title').textContent = `${flourName} Pizza`;
+  
+  // Set recipe details
+  document.getElementById('view-flour-type').textContent = flourName;
+  document.getElementById('view-hydration').textContent = `${recipe.hydration}%`;
+  document.getElementById('view-dough-balls').textContent = recipe.dough_balls;
+  document.getElementById('view-ball-size').textContent = `${recipe.ball_size}g`;
+  document.getElementById('view-date').textContent = formatDate(recipe.created_at);
+  
+  // Show/hide notes
+  const notesContainer = document.getElementById('view-notes-container');
+  if (recipe.notes) {
+    document.getElementById('view-notes').textContent = recipe.notes;
+    notesContainer.classList.remove('hidden');
+  } else {
+    notesContainer.classList.add('hidden');
+  }
+  
+  // Show/hide photos gallery
+  const photosContainer = document.getElementById('view-photos-container');
+  const photosGrid = document.getElementById('view-photos-grid');
+  
+  if (recipe.image_urls && recipe.image_urls.length > 0) {
+    photosGrid.innerHTML = recipe.image_urls.map((url, index) => `
+      <div class="cursor-pointer hover:opacity-80 transition-opacity" onclick="openFullImage('${url}')">
+        <img src="${url}" alt="Pizza photo ${index + 1}" class="w-full h-32 object-cover rounded-lg" />
+      </div>
+    `).join('');
+    photosContainer.classList.remove('hidden');
+  } else {
+    photosContainer.classList.add('hidden');
+  }
+  
+  document.getElementById('view-modal').showModal();
+}
+
+// Open full image in lightbox
+window.openFullImage = function(url) {
+  document.getElementById('fullimage-img').src = url;
+  document.getElementById('fullimage-modal').showModal();
+};
+
+// Open edit modal
+function openEditModal(recipe) {
+  document.getElementById('edit-recipe-id').value = recipe.id;
+  document.getElementById('edit-flour-type').value = recipe.flour_type;
+  document.getElementById('edit-dough-balls').value = recipe.dough_balls;
+  document.getElementById('edit-ball-size').value = recipe.ball_size;
+  document.getElementById('edit-hydration').value = recipe.hydration;
+  document.getElementById('edit-notes').value = recipe.notes || '';
+  
+  // Set date field (convert from ISO to datetime-local format)
+  if (recipe.created_at) {
+    const date = new Date(recipe.created_at);
+    // Format as YYYY-MM-DDTHH:MM for datetime-local input
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    document.getElementById('edit-date').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+  
+  // Show current images if exist
+  const previewContainer = document.getElementById('current-image-preview');
+  if (recipe.image_urls && recipe.image_urls.length > 0) {
+    previewContainer.innerHTML = `
+      <p class="text-sm font-semibold mb-2">Current photos:</p>
+      <div class="grid grid-cols-3 gap-2">
+        ${recipe.image_urls.map(url => `
+          <div class="relative">
+            <img src="${url}" alt="Pizza photo" class="w-full h-24 object-cover rounded" />
+          </div>
+        `).join('')}
+      </div>
+      <p class="text-xs text-gray-500 mt-2">New uploads will be added to existing photos</p>
+    `;
+  } else {
+    previewContainer.innerHTML = '<p class="text-sm text-gray-500">No photos yet</p>';
+  }
+  
+  // Clear new image preview
+  document.getElementById('new-image-preview').classList.add('hidden');
+  document.getElementById('new-image-grid').innerHTML = '';
+  
+  document.getElementById('edit-modal').showModal();
+}
+
+// Preview selected images
+document.getElementById('edit-image').addEventListener('change', (e) => {
+  const files = e.target.files;
+  const previewContainer = document.getElementById('new-image-preview');
+  const gridContainer = document.getElementById('new-image-grid');
+  
+  if (files.length > 0) {
+    previewContainer.classList.remove('hidden');
+    gridContainer.innerHTML = '';
+    
+    Array.from(files).forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const div = document.createElement('div');
+        div.className = 'relative';
+        div.innerHTML = `
+          <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-24 object-cover rounded" />
+        `;
+        gridContainer.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  } else {
+    previewContainer.classList.add('hidden');
+  }
+});
+
+// Save edit
+document.getElementById('save-edit-btn').addEventListener('click', async () => {
+  const recipeId = document.getElementById('edit-recipe-id').value;
+  const flourType = document.getElementById('edit-flour-type').value;
+  const doughBalls = parseInt(document.getElementById('edit-dough-balls').value);
+  const ballSize = parseInt(document.getElementById('edit-ball-size').value);
+  const hydration = parseInt(document.getElementById('edit-hydration').value);
+  const notes = document.getElementById('edit-notes').value;
+  const recipeDate = document.getElementById('edit-date').value;
+  const imageFiles = document.getElementById('edit-image').files;
+  
+  // Validate
+  if (isNaN(doughBalls) || isNaN(ballSize) || isNaN(hydration)) {
+    showAlert('Please fill in all required fields', 'error');
+    return;
+  }
+  
+  // Show loading state
+  const btn = document.getElementById('save-edit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading loading-spinner"></span> Saving...';
+  
+  // Upload images if provided
+  const newImageUrls = [];
+  if (imageFiles.length > 0) {
+    btn.innerHTML = '<span class="loading loading-spinner"></span> Uploading images...';
+    
+    for (let i = 0; i < imageFiles.length; i++) {
+      const uploadResult = await uploadPizzaImage(imageFiles[i], recipeId);
+      if (!uploadResult.success) {
+        showAlert(`Failed to upload image ${i + 1}: ${uploadResult.error?.message}`, 'error');
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+        return;
+      }
+      newImageUrls.push(uploadResult.url);
+    }
+  }
+  
+  // Update recipe
+  const updateData = {
+    flour_type: flourType,
+    dough_balls: doughBalls,
+    ball_size: ballSize,
+    hydration: hydration,
+    notes: notes || null
+  };
+  
+  // Update date if provided
+  if (recipeDate) {
+    updateData.created_at = new Date(recipeDate).toISOString();
+  }
+  
+  if (newImageUrls.length > 0) {
+    // Get existing images from the current recipe
+    const result = await getUserPizzaLogs();
+    const currentRecipe = result.data?.find(r => r.id === recipeId);
+    const existingUrls = currentRecipe?.image_urls || [];
+    
+    // Append new images to existing ones
+    updateData.image_urls = [...existingUrls, ...newImageUrls];
+  }
+  
+  const result = await updatePizzaLog(recipeId, updateData);
+  
+  btn.disabled = false;
+  btn.textContent = 'Save Changes';
+  
+  if (result.success) {
+    showAlert('Recipe updated successfully! 🍕', 'success');
+    document.getElementById('edit-modal').close();
+    document.getElementById('edit-image').value = '';
+    loadRecipes();
+  } else {
+    showAlert(result.error?.message || 'Failed to update recipe', 'error');
+  }
+});
+
+// Open delete modal
+function openDeleteModal(recipe) {
+  document.getElementById('delete-recipe-id').value = recipe.id;
+  document.getElementById('delete-modal').showModal();
+}
+
+// Confirm delete
+document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+  const recipeId = document.getElementById('delete-recipe-id').value;
+  
+  const btn = document.getElementById('confirm-delete-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading loading-spinner"></span> Deleting...';
+  
+  const result = await deletePizzaLog(recipeId);
+  
+  btn.disabled = false;
+  btn.textContent = 'Delete';
+  
+  if (result.success) {
+    showAlert('Recipe deleted', 'info');
+    document.getElementById('delete-modal').close();
+    loadRecipes();
+  } else {
+    showAlert(result.error?.message || 'Failed to delete recipe', 'error');
+  }
+});
+
+// Initial load
+loadRecipes();
+</script>
+
+<style>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>
