@@ -157,15 +157,15 @@
 /* Shading classes */
 .shading-empty {
   fill: none !important;
-  stroke-width: 3;
+  stroke-width: 5;
 }
 
 .shading-striped {
-  stroke-width: 3;
+  stroke-width: 5;
 }
 
 .shading-solid {
-  stroke-width: 3;
+  stroke-width: 5;
 }
 
 /* Timer and counter styles */

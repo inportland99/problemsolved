@@ -314,6 +314,13 @@ function handleCorrectSet() {
     card.classList.add('correct-flash');
   });
   
+  // Calculate sets remaining (before adding this one)
+  const setsRemaining = 6 - foundSets.length - 1;
+  const message = setsRemaining === 0 
+    ? 'SET Found! Puzzle complete!' 
+    : `SET Found! ${setsRemaining} SET${setsRemaining === 1 ? '' : 's'} to go.`;
+  showTemporaryMessage(message, 'success');
+  
   setTimeout(() => {
     // Just clear the visual feedback - don't mark cards as found
     // since they can be part of multiple sets
@@ -358,35 +365,59 @@ function handleDuplicateSet() {
 }
 
 // Show temporary message
-function showTemporaryMessage(message, type = 'info') {
+function showTemporaryMessage(message, type = 'info', duration = 2000, onDismiss = null) {
   // Remove any existing message
   const existing = document.getElementById('temp-message');
   if (existing) existing.remove();
   
+  // Styles for different types
+  const typeStyles = {
+    'info': { bg: '#00A2FF', color: 'white' },
+    'error': { bg: '#E74C3C', color: 'white' },
+    'success': { bg: '#16a34a', color: 'white' },
+    'error-detail': { bg: 'white', color: '#333', border: '3px solid #E74C3C' }
+  };
+  
+  const style = typeStyles[type] || typeStyles['info'];
+  
   // Create message element
   const msgDiv = document.createElement('div');
   msgDiv.id = 'temp-message';
-  msgDiv.textContent = message;
+  msgDiv.innerHTML = message;
   msgDiv.style.cssText = `
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: ${type === 'info' ? '#00A2FF' : '#E74C3C'};
-    color: white;
+    background: ${style.bg};
+    color: ${style.color};
+    ${style.border ? `border: ${style.border};` : ''}
     padding: 15px 25px;
     border-radius: 8px;
     font-weight: bold;
     font-size: 16px;
     z-index: 1000;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    animation: fadeInOut 2s ease-in-out;
+    text-align: center;
+    max-width: 300px;
+    ${duration ? `animation: fadeInOut ${duration}ms ease-in-out;` : 'cursor: pointer;'}
   `;
   
   document.body.appendChild(msgDiv);
   
-  // Remove after animation
-  setTimeout(() => msgDiv.remove(), 2000);
+  if (duration) {
+    // Remove after animation
+    setTimeout(() => {
+      msgDiv.remove();
+      if (onDismiss) onDismiss();
+    }, duration);
+  } else {
+    // Click to dismiss
+    msgDiv.addEventListener('click', () => {
+      msgDiv.remove();
+      if (onDismiss) onDismiss();
+    });
+  }
 }
 
 // Handle incorrect set
@@ -396,13 +427,85 @@ function handleIncorrectSet() {
     card.classList.add('incorrect-shake');
   });
   
+  // Remove shake animation after it completes, but keep selected
   setTimeout(() => {
     selectedCards.forEach(index => {
       const card = document.querySelector(`[data-index="${index}"]`);
-      card.classList.remove('selected', 'incorrect-shake');
+      card.classList.remove('incorrect-shake');
     });
-    selectedCards = [];
   }, 500);
+  
+  // Analyze why it's not a valid set
+  const [i1, i2, i3] = selectedCards;
+  const card1 = currentCards[i1];
+  const card2 = currentCards[i2];
+  const card3 = currentCards[i3];
+  
+  const feedback = getSetFeedback(card1, card2, card3);
+  
+  // Store selected cards to clear on dismiss
+  const cardsToDeselect = [...selectedCards];
+  selectedCards = [];
+  
+  showTemporaryMessage(feedback, 'error-detail', null, () => {
+    // Callback when dismissed - deselect the cards
+    cardsToDeselect.forEach(index => {
+      const card = document.querySelector(`[data-index="${index}"]`);
+      card.classList.remove('selected');
+    });
+  });
+}
+
+// Render a mini card as HTML string for popups
+function renderMiniCardHTML(card, uniquePrefix) {
+  let shapesHTML = '';
+  for (let i = 0; i < card.number; i++) {
+    const uniqueId = `popup-${uniquePrefix}-${i}`;
+    shapesHTML += `<div class="card-shape shape-${card.shape}" style="width: 28px; height: 18px; min-height: 18px; max-height: 18px;">${renderShape(card.shape, card.color, card.shading, uniqueId)}</div>`;
+  }
+  return `<div class="mini-card" style="width: 38px; height: 55px; padding: 2px; border: 1.5px solid #5741AC; border-radius: 4px; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1px;">
+    <div class="shape-container" style="display: flex; flex-direction: column; align-items: center; gap: 1px;">${shapesHTML}</div>
+  </div>`;
+}
+
+// Get feedback on why cards don't form a valid set
+function getSetFeedback(card1, card2, card3) {
+  const attributes = [
+    { name: 'Color', values: [card1.color, card2.color, card3.color] },
+    { name: 'Number', values: [card1.number, card2.number, card3.number] },
+    { name: 'Shape', values: [card1.shape, card2.shape, card3.shape] },
+    { name: 'Shading', values: [card1.shading, card2.shading, card3.shading] }
+  ];
+  
+  const lines = [];
+  
+  for (const attr of attributes) {
+    const [a, b, c] = attr.values;
+    const allSame = a === b && b === c;
+    const allDiff = a !== b && b !== c && a !== c;
+    
+    if (allSame) {
+      lines.push(`<span style="color: #16a34a;">${attr.name}: all same ✓</span>`);
+    } else if (allDiff) {
+      lines.push(`<span style="color: #16a34a;">${attr.name}: all diff ✓</span>`);
+    } else {
+      lines.push(`<span style="color: #E74C3C;">${attr.name}: 2 same, 1 diff ✗</span>`);
+    }
+  }
+  
+  // Render mini cards
+  const miniCardsHTML = `
+    <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 12px;">
+      ${renderMiniCardHTML(card1, '0')}
+      ${renderMiniCardHTML(card2, '1')}
+      ${renderMiniCardHTML(card3, '2')}
+    </div>
+  `;
+  
+  return `<div style="font-weight: bold; margin-bottom: 10px; color: #E74C3C;">Not a SET!</div>
+    ${miniCardsHTML}
+    <div style="font-size: 14px; text-align: left;">${lines.join('<br>')}</div>
+    <div style="font-size: 12px; margin-top: 10px; color: #999;">Tap to dismiss</div>`;
 }
 
 // Update sets counter
