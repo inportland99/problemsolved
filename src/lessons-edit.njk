@@ -1,0 +1,373 @@
+---
+layout: minimal.njk
+title: Create/Edit Lesson
+description: Create or edit a math lesson
+---
+
+<div class="min-h-screen bg-base-200">
+  <!-- Header -->
+  <div class="navbar bg-base-100 shadow-lg">
+    <div class="flex-1">
+      <a href="/lessons/" class="btn btn-ghost normal-case text-xl">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Lessons
+      </a>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-8 max-w-3xl">
+    <h1 id="page-title" class="text-3xl font-bold mb-8">Create New Lesson</h1>
+    
+    <!-- Alert messages -->
+    <div id="alert-container" class="mb-4"></div>
+
+    <!-- Loading state (for edit mode) -->
+    <div id="loading" class="hidden flex justify-center items-center py-12">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+
+    <!-- Form -->
+    <form id="lesson-form" class="space-y-6">
+      <input type="hidden" id="lesson-id">
+
+      <!-- Learning Goal -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Learning Goal <span class="text-error">*</span></span>
+        </label>
+        <textarea id="learning-goal" class="textarea textarea-bordered h-20" 
+          placeholder="Students will understand that..." required></textarea>
+      </div>
+
+      <!-- Task -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Task <span class="text-error">*</span></span>
+        </label>
+        <textarea id="task" class="textarea textarea-bordered h-32" 
+          placeholder="Describe the problem or activity..." required></textarea>
+      </div>
+
+      <!-- Diagram Upload -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Diagram</span>
+        </label>
+        <input type="file" id="diagram-upload" class="file-input file-input-bordered w-full" accept="image/*">
+        <label class="label">
+          <span class="label-text-alt">Upload an image (max 5MB)</span>
+        </label>
+        <div id="diagram-preview" class="mt-2 hidden">
+          <div class="relative inline-block">
+            <img id="diagram-img" src="" alt="Diagram preview" class="max-w-full h-auto max-h-64 rounded-lg shadow">
+            <button type="button" id="remove-diagram" class="btn btn-circle btn-sm btn-error absolute top-2 right-2">✕</button>
+          </div>
+        </div>
+        <input type="hidden" id="diagram-url">
+      </div>
+
+      <!-- Launch Details -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Launch Details</span>
+        </label>
+        <textarea id="launch-details" class="textarea textarea-bordered h-24" 
+          placeholder="How will you introduce this task?"></textarea>
+      </div>
+
+      <!-- Anticipated Strategies -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Anticipated Strategies</span>
+        </label>
+        <div id="strategies-container" class="space-y-2">
+          <!-- Strategy items will be added here -->
+        </div>
+        <button type="button" id="add-strategy" class="btn btn-outline btn-sm mt-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Strategy
+        </button>
+      </div>
+
+      <!-- Connecting Questions -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Connecting Questions</span>
+        </label>
+        <div id="questions-container" class="space-y-2">
+          <!-- Question items will be added here -->
+        </div>
+        <button type="button" id="add-question" class="btn btn-outline btn-sm mt-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Question
+        </button>
+      </div>
+
+      <!-- Author -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Author <span class="text-error">*</span></span>
+        </label>
+        <input type="text" id="author" class="input input-bordered" placeholder="Your name" required>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex gap-4 pt-4">
+        <button type="submit" id="submit-btn" class="btn btn-primary flex-1">
+          <span id="submit-text">Create Lesson</span>
+          <span id="submit-loading" class="loading loading-spinner hidden"></span>
+        </button>
+        <a href="/lessons/" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import { getLessonById, createLesson, updateLesson, uploadLessonImage } from '/assets/js/lessons-db.js';
+
+let isEditMode = false;
+let existingDiagramUrl = null;
+let pendingImageFile = null;
+
+// Get lesson ID from URL if editing
+const urlParams = new URLSearchParams(window.location.search);
+const lessonId = urlParams.get('id');
+
+// Alert helper
+function showAlert(message, type = 'info') {
+  const container = document.getElementById('alert-container');
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type} shadow-lg`;
+  alert.innerHTML = `<span>${message}</span>`;
+  container.appendChild(alert);
+  
+  setTimeout(() => {
+    alert.remove();
+  }, 5000);
+}
+
+// Create a removable item row
+function createItemRow(containerId, value = '') {
+  const container = document.getElementById(containerId);
+  const row = document.createElement('div');
+  row.className = 'flex gap-2';
+  row.innerHTML = `
+    <input type="text" class="input input-bordered flex-1 item-input" value="${escapeHtml(value)}">
+    <button type="button" class="btn btn-outline btn-error btn-sm remove-item">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  `;
+  
+  row.querySelector('.remove-item').addEventListener('click', () => {
+    row.remove();
+  });
+  
+  container.appendChild(row);
+  return row;
+}
+
+// Get all values from a container
+function getItemValues(containerId) {
+  const inputs = document.querySelectorAll(`#${containerId} .item-input`);
+  return Array.from(inputs)
+    .map(input => input.value.trim())
+    .filter(val => val !== '');
+}
+
+// Escape HTML
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Load existing lesson for editing
+async function loadLesson(id) {
+  document.getElementById('loading').classList.remove('hidden');
+  document.getElementById('lesson-form').classList.add('hidden');
+  
+  const result = await getLessonById(id);
+  
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('lesson-form').classList.remove('hidden');
+  
+  if (!result.success) {
+    showAlert(result.error?.message || 'Failed to load lesson', 'error');
+    return;
+  }
+  
+  const lesson = result.data;
+  isEditMode = true;
+  
+  // Update page title and button
+  document.getElementById('page-title').textContent = 'Edit Lesson';
+  document.getElementById('submit-text').textContent = 'Save Changes';
+  
+  // Fill form
+  document.getElementById('lesson-id').value = lesson.id;
+  document.getElementById('learning-goal').value = lesson.learning_goal;
+  document.getElementById('task').value = lesson.task;
+  document.getElementById('launch-details').value = lesson.launch_details || '';
+  document.getElementById('author').value = lesson.author;
+  
+  // Diagram
+  if (lesson.diagram_url) {
+    existingDiagramUrl = lesson.diagram_url;
+    document.getElementById('diagram-url').value = lesson.diagram_url;
+    document.getElementById('diagram-img').src = lesson.diagram_url;
+    document.getElementById('diagram-preview').classList.remove('hidden');
+  }
+  
+  // Strategies
+  if (lesson.anticipated_strategies?.length > 0) {
+    lesson.anticipated_strategies.forEach(strategy => {
+      createItemRow('strategies-container', strategy);
+    });
+  }
+  
+  // Questions
+  if (lesson.connecting_questions?.length > 0) {
+    lesson.connecting_questions.forEach(question => {
+      createItemRow('questions-container', question);
+    });
+  }
+}
+
+// Handle image file selection
+document.getElementById('diagram-upload').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  // Validate
+  if (!file.type.startsWith('image/')) {
+    showAlert('Please select an image file', 'error');
+    return;
+  }
+  
+  if (file.size > 5 * 1024 * 1024) {
+    showAlert('Image must be less than 5MB', 'error');
+    return;
+  }
+  
+  // Preview
+  pendingImageFile = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('diagram-img').src = e.target.result;
+    document.getElementById('diagram-preview').classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+});
+
+// Remove diagram
+document.getElementById('remove-diagram').addEventListener('click', () => {
+  pendingImageFile = null;
+  existingDiagramUrl = null;
+  document.getElementById('diagram-url').value = '';
+  document.getElementById('diagram-upload').value = '';
+  document.getElementById('diagram-preview').classList.add('hidden');
+});
+
+// Add strategy button
+document.getElementById('add-strategy').addEventListener('click', () => {
+  createItemRow('strategies-container');
+});
+
+// Add question button
+document.getElementById('add-question').addEventListener('click', () => {
+  createItemRow('questions-container');
+});
+
+// Form submission
+document.getElementById('lesson-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const submitBtn = document.getElementById('submit-btn');
+  const submitText = document.getElementById('submit-text');
+  const submitLoading = document.getElementById('submit-loading');
+  
+  // Show loading
+  submitBtn.disabled = true;
+  submitText.classList.add('hidden');
+  submitLoading.classList.remove('hidden');
+  
+  try {
+    // Get form values
+    const learningGoal = document.getElementById('learning-goal').value.trim();
+    const task = document.getElementById('task').value.trim();
+    const launchDetails = document.getElementById('launch-details').value.trim();
+    const author = document.getElementById('author').value.trim();
+    const anticipatedStrategies = getItemValues('strategies-container');
+    const connectingQuestions = getItemValues('questions-container');
+    
+    // Validate
+    if (!learningGoal || !task || !author) {
+      showAlert('Please fill in all required fields', 'error');
+      return;
+    }
+    
+    // Handle image upload if needed
+    let diagramUrl = existingDiagramUrl || null;
+    
+    if (pendingImageFile) {
+      // Generate a temporary ID for new lessons
+      const tempId = isEditMode ? document.getElementById('lesson-id').value : `temp-${Date.now()}`;
+      const uploadResult = await uploadLessonImage(pendingImageFile, tempId);
+      
+      if (!uploadResult.success) {
+        showAlert(uploadResult.error?.message || 'Failed to upload image', 'error');
+        return;
+      }
+      
+      diagramUrl = uploadResult.url;
+    }
+    
+    // Create or update lesson
+    const lessonData = {
+      learningGoal,
+      task,
+      diagramUrl,
+      launchDetails,
+      anticipatedStrategies,
+      connectingQuestions,
+      author
+    };
+    
+    let result;
+    if (isEditMode) {
+      result = await updateLesson(document.getElementById('lesson-id').value, lessonData);
+    } else {
+      result = await createLesson(lessonData);
+    }
+    
+    if (result.success) {
+      showAlert(isEditMode ? 'Lesson updated!' : 'Lesson created!', 'success');
+      // Redirect after short delay
+      setTimeout(() => {
+        window.location.href = '/lessons/';
+      }, 1000);
+    } else {
+      showAlert(result.error?.message || 'Failed to save lesson', 'error');
+    }
+  } finally {
+    // Reset button
+    submitBtn.disabled = false;
+    submitText.classList.remove('hidden');
+    submitLoading.classList.add('hidden');
+  }
+});
+
+// Initialize
+if (lessonId) {
+  loadLesson(lessonId);
+}
+</script>
