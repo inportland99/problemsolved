@@ -293,3 +293,116 @@
     max-height: 13px;
   }
 }
+
+/* Tutorial styles */
+.tutorial-step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d1d5db;
+  transition: all 0.3s;
+}
+
+.tutorial-step-dot.active {
+  background: #5741AC;
+  transform: scale(1.2);
+}
+
+.tutorial-step-dot.completed {
+  background: #16a34a;
+}
+
+.tutorial-card {
+  aspect-ratio: 2/3;
+  border: 2px solid #5741AC;
+  border-radius: 6px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 4px;
+  width: 60px;
+  min-width: 60px;
+  height: auto;
+}
+
+.tutorial-card.tutorial-card-sm {
+  width: 45px;
+  min-width: 45px;
+  padding: 4px 2px;
+  border-width: 1.5px;
+}
+
+.tutorial-card .shape-container {
+  gap: 2px;
+}
+
+.tutorial-card.tutorial-card-sm .shape-container {
+  gap: 1px;
+}
+
+.tutorial-card .card-shape {
+  width: 40px;
+  height: 26px;
+  min-height: 26px;
+  max-height: 26px;
+}
+
+.tutorial-card.tutorial-card-sm .card-shape {
+  width: 28px;
+  height: 18px;
+  min-height: 18px;
+  max-height: 18px;
+}
+
+.tutorial-card-clickable {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tutorial-card-clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(87, 65, 172, 0.3);
+}
+
+.tutorial-card.correct {
+  border-color: #16a34a;
+  border-width: 3px;
+  background: #dcfce7;
+  box-shadow: 0 0 10px rgba(22, 163, 74, 0.4);
+}
+
+.tutorial-card.incorrect {
+  border-color: #dc2626;
+  border-width: 3px;
+  background: #fee2e2;
+  animation: tutorialShake 0.4s ease-out;
+}
+
+@keyframes tutorialShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.tutorial-given-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .tutorial-card {
+    width: 50px;
+    min-width: 50px;
+    padding: 4px 2px;
+  }
+  
+  .tutorial-card .card-shape {
+    width: 32px;
+    height: 20px;
+    min-height: 20px;
+    max-height: 20px;
+  }
+}

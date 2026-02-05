@@ -909,4 +909,515 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('shareModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'shareModal') hideModal('shareModal');
   });
+  
+  // Tutorial button
+  document.getElementById('tutorialBtn')?.addEventListener('click', () => {
+    hideModal('helpModal');
+    startTutorial();
+  });
+});
+
+// ==================== TUTORIAL SYSTEM ====================
+
+let tutorialStep = 1;
+let tutorialQuizIndex = 0;
+let tutorialQuizCorrect = 0;
+let tutorialQuizTotal = 0;
+let tutorialQuizQuestions = [];
+let step3Questions = [];
+let step3Index = 0;
+let step3Correct = 0;
+
+// Start the tutorial
+function startTutorial() {
+  tutorialStep = 1;
+  tutorialQuizIndex = 0;
+  tutorialQuizCorrect = 0;
+  tutorialQuizTotal = 0;
+  step3Correct = 0;
+  
+  // Reset step visibility
+  document.querySelectorAll('.tutorial-step').forEach(step => step.classList.add('hidden'));
+  document.getElementById('tutorial-step-1').classList.remove('hidden');
+  
+  // Reset dots
+  document.querySelectorAll('.tutorial-step-dot').forEach(dot => dot.classList.remove('active', 'completed'));
+  document.querySelector('.tutorial-step-dot[data-step="1"]').classList.add('active');
+  
+  // Reset navigation buttons
+  document.getElementById('tutorial-prev').classList.add('hidden');
+  document.getElementById('tutorial-next').classList.remove('hidden');
+  document.getElementById('tutorial-finish').classList.add('hidden');
+  
+  // Initialize Step 1 examples
+  initTutorialStep1();
+  
+  showModal('tutorialModal');
+}
+
+// Initialize Step 1: Show attribute examples
+function initTutorialStep1() {
+  // Color examples (same shape, number, shading - different colors)
+  const colorsContainer = document.getElementById('step1-colors');
+  colorsContainer.innerHTML = '';
+  ['red', 'green', 'purple'].forEach((color, idx) => {
+    const card = { number: 1, shape: 'diamond', shading: 'solid', color };
+    colorsContainer.appendChild(renderTutorialCard(card, `step1-color-${idx}`, false, null, true));
+  });
+  
+  // Shape examples (same color, number, shading - different shapes)
+  const shapesContainer = document.getElementById('step1-shapes');
+  shapesContainer.innerHTML = '';
+  ['squiggle', 'diamond', 'pill'].forEach((shape, idx) => {
+    const card = { number: 1, shape, shading: 'solid', color: 'red' };
+    shapesContainer.appendChild(renderTutorialCard(card, `step1-shape-${idx}`, false, null, true));
+  });
+  
+  // Number examples (same color, shape, shading - different numbers)
+  const numbersContainer = document.getElementById('step1-numbers');
+  numbersContainer.innerHTML = '';
+  [1, 2, 3].forEach((number, idx) => {
+    const card = { number, shape: 'pill', shading: 'solid', color: 'green' };
+    numbersContainer.appendChild(renderTutorialCard(card, `step1-number-${idx}`, false, null, true));
+  });
+  
+  // Shading examples (same color, shape, number - different shadings)
+  const shadingsContainer = document.getElementById('step1-shadings');
+  shadingsContainer.innerHTML = '';
+  ['solid', 'striped', 'empty'].forEach((shading, idx) => {
+    const card = { number: 1, shape: 'squiggle', shading, color: 'purple' };
+    shadingsContainer.appendChild(renderTutorialCard(card, `step1-shading-${idx}`, false, null, true));
+  });
+}
+
+// Navigate to a specific step
+function goToTutorialStep(step) {
+  tutorialStep = step;
+  
+  // Update step visibility
+  document.querySelectorAll('.tutorial-step').forEach(s => s.classList.add('hidden'));
+  document.getElementById(`tutorial-step-${step}`).classList.remove('hidden');
+  
+  // Update dots
+  document.querySelectorAll('.tutorial-step-dot').forEach(dot => {
+    const dotStep = parseInt(dot.dataset.step);
+    dot.classList.remove('active');
+    if (dotStep < step) {
+      dot.classList.add('completed');
+    } else if (dotStep === step) {
+      dot.classList.add('active');
+    } else {
+      dot.classList.remove('completed');
+    }
+  });
+  
+  // Update navigation buttons
+  document.getElementById('tutorial-prev').classList.toggle('hidden', step === 1);
+  
+  if (step === 4) {
+    document.getElementById('tutorial-next').classList.add('hidden');
+    document.getElementById('tutorial-finish').classList.remove('hidden');
+  } else {
+    document.getElementById('tutorial-next').classList.remove('hidden');
+    document.getElementById('tutorial-finish').classList.add('hidden');
+  }
+  
+  // Initialize step content
+  if (step === 2) {
+    initTutorialStep2();
+  } else if (step === 3) {
+    initTutorialStep3();
+  } else if (step === 4) {
+    initTutorialStep4();
+  }
+}
+
+// Render a tutorial card (larger than mini, smaller than game)
+function renderTutorialCard(card, uniquePrefix, isClickable = false, onClick = null, isSmall = false) {
+  const cardDiv = document.createElement('div');
+  cardDiv.className = 'tutorial-card' + (isClickable ? ' tutorial-card-clickable' : '') + (isSmall ? ' tutorial-card-sm' : '');
+  
+  const container = document.createElement('div');
+  container.className = 'shape-container';
+  
+  for (let i = 0; i < card.number; i++) {
+    const shapeDiv = document.createElement('div');
+    shapeDiv.className = `card-shape shape-${card.shape}`;
+    const uniqueId = `tutorial-${uniquePrefix}-${i}`;
+    shapeDiv.innerHTML = renderShape(card.shape, card.color, card.shading, uniqueId);
+    container.appendChild(shapeDiv);
+  }
+  
+  cardDiv.appendChild(container);
+  
+  if (isClickable && onClick) {
+    cardDiv.addEventListener('click', onClick);
+  }
+  
+  return cardDiv;
+}
+
+// Get the third card that completes a SET given two cards
+function getCompletingCard(card1, card2) {
+  const getThirdValue = (v1, v2, options) => {
+    if (v1 === v2) return v1;
+    return options.find(v => v !== v1 && v !== v2);
+  };
+  
+  return {
+    number: getThirdValue(card1.number, card2.number, NUMBERS),
+    shape: getThirdValue(card1.shape, card2.shape, SHAPES),
+    shading: getThirdValue(card1.shading, card2.shading, SHADINGS),
+    color: getThirdValue(card1.color, card2.color, COLORS)
+  };
+}
+
+// Generate explanation for a set of 3 cards
+function generateSetExplanation(card1, card2, card3, isValid) {
+  const attributes = [
+    { name: 'Color', values: [card1.color, card2.color, card3.color] },
+    { name: 'Number', values: [card1.number, card2.number, card3.number] },
+    { name: 'Shape', values: [card1.shape, card2.shape, card3.shape] },
+    { name: 'Shading', values: [card1.shading, card2.shading, card3.shading] }
+  ];
+  
+  const lines = [];
+  
+  for (const attr of attributes) {
+    const [a, b, c] = attr.values;
+    const allSame = a === b && b === c;
+    const allDiff = a !== b && b !== c && a !== c;
+    
+    if (allSame) {
+      lines.push(`<strong>${attr.name}:</strong> <span class="text-green-600">all same ✓</span>`);
+    } else if (allDiff) {
+      lines.push(`<strong>${attr.name}:</strong> <span class="text-green-600">all different ✓</span>`);
+    } else {
+      lines.push(`<strong>${attr.name}:</strong> <span class="text-red-600">2 same, 1 different ✗</span>`);
+    }
+  }
+  
+  return lines.join('<br>');
+}
+
+// Initialize Step 2: Examples
+function initTutorialStep2() {
+  // Generate a valid SET example
+  const allCards = generateAllCards();
+  const shuffled = shuffleArray(allCards, Math.random);
+  
+  // Find a valid set from shuffled cards
+  let validSet = null;
+  for (let i = 0; i < shuffled.length && !validSet; i++) {
+    for (let j = i + 1; j < shuffled.length && !validSet; j++) {
+      for (let k = j + 1; k < shuffled.length && !validSet; k++) {
+        if (isValidSet(shuffled[i], shuffled[j], shuffled[k])) {
+          validSet = [shuffled[i], shuffled[j], shuffled[k]];
+        }
+      }
+    }
+  }
+  
+  // Render valid SET
+  const validContainer = document.getElementById('tutorial-valid-set');
+  validContainer.innerHTML = '';
+  validSet.forEach((card, idx) => {
+    validContainer.appendChild(renderTutorialCard(card, `valid-${idx}`, false, null, true));
+  });
+  document.getElementById('tutorial-valid-explanation').innerHTML = 
+    generateSetExplanation(validSet[0], validSet[1], validSet[2], true);
+  
+  // Generate an invalid SET example (2 same, 1 different for some attribute)
+  // Take two cards from the valid set and find a third that breaks it
+  let invalidSet = null;
+  const card1 = validSet[0];
+  const card2 = validSet[1];
+  
+  // Find a card that makes it invalid
+  for (const card of shuffled) {
+    if (card !== card1 && card !== card2 && card !== validSet[2]) {
+      if (!isValidSet(card1, card2, card)) {
+        invalidSet = [card1, card2, card];
+        break;
+      }
+    }
+  }
+  
+  // Render invalid SET
+  const invalidContainer = document.getElementById('tutorial-invalid-set');
+  invalidContainer.innerHTML = '';
+  invalidSet.forEach((card, idx) => {
+    invalidContainer.appendChild(renderTutorialCard(card, `invalid-${idx}`, false, null, true));
+  });
+  document.getElementById('tutorial-invalid-explanation').innerHTML = 
+    generateSetExplanation(invalidSet[0], invalidSet[1], invalidSet[2], false);
+}
+
+// Initialize Step 3: Complete the SET
+function initTutorialStep3() {
+  step3Index = 0;
+  step3Correct = 0;
+  step3Questions = [];
+  
+  // Generate 3 questions
+  const allCards = generateAllCards();
+  for (let i = 0; i < 3; i++) {
+    const shuffled = shuffleArray(allCards, Math.random);
+    const card1 = shuffled[0];
+    const card2 = shuffled[1];
+    const correctCard = getCompletingCard(card1, card2);
+    
+    // Get wrong options
+    const wrongCards = [];
+    for (const card of shuffled) {
+      if (wrongCards.length >= 3) break;
+      if (!cardsEqual(card, card1) && !cardsEqual(card, card2) && !cardsEqual(card, correctCard)) {
+        if (!isValidSet(card1, card2, card)) {
+          wrongCards.push(card);
+        }
+      }
+    }
+    
+    step3Questions.push({
+      card1,
+      card2,
+      correctCard,
+      options: shuffleArray([correctCard, ...wrongCards], Math.random)
+    });
+  }
+  
+  showStep3Question();
+}
+
+// Show current Step 3 question
+function showStep3Question() {
+  const q = step3Questions[step3Index];
+  
+  document.getElementById('tutorial-step3-feedback').innerHTML = '';
+  document.getElementById('tutorial-step3-score').textContent = 
+    `Question ${step3Index + 1} of 3`;
+  
+  // Render the two given cards
+  const card1Container = document.getElementById('tutorial-card-1');
+  const card2Container = document.getElementById('tutorial-card-2');
+  card1Container.innerHTML = '';
+  card2Container.innerHTML = '';
+  card1Container.appendChild(renderTutorialCard(q.card1, `given-1-${step3Index}`));
+  card2Container.appendChild(renderTutorialCard(q.card2, `given-2-${step3Index}`));
+  
+  // Render options
+  const optionsContainer = document.getElementById('tutorial-options');
+  optionsContainer.innerHTML = '';
+  
+  let answered = false;
+  
+  q.options.forEach((card, idx) => {
+    const isCorrect = cardsEqual(card, q.correctCard);
+    const cardEl = renderTutorialCard(card, `option-${step3Index}-${idx}`, true, () => {
+      if (answered) return;
+      
+      optionsContainer.querySelectorAll('.tutorial-card').forEach(c => {
+        c.classList.remove('correct', 'incorrect');
+      });
+      
+      if (isCorrect) {
+        cardEl.classList.add('correct');
+        document.getElementById('tutorial-step3-feedback').innerHTML = 
+          '<span class="text-green-600 font-bold">✓ Correct!</span>';
+        step3Correct++;
+        answered = true;
+        
+        // Move to next question after delay
+        setTimeout(() => {
+          step3Index++;
+          if (step3Index < 3) {
+            showStep3Question();
+          } else {
+            // Show completion
+            document.getElementById('tutorial-step3-feedback').innerHTML = 
+              `<span class="text-green-600 font-bold">🎉 Great! You got ${step3Correct}/3 correct!</span>`;
+            document.getElementById('tutorial-step3-score').textContent = '';
+          }
+        }, 1000);
+      } else {
+        cardEl.classList.add('incorrect');
+        document.getElementById('tutorial-step3-feedback').innerHTML = 
+          '<span class="text-red-600">✗ Try again!</span>';
+      }
+    });
+    optionsContainer.appendChild(cardEl);
+  });
+}
+
+// Check if two cards are equal
+function cardsEqual(c1, c2) {
+  return c1.number === c2.number && 
+         c1.shape === c2.shape && 
+         c1.shading === c2.shading && 
+         c1.color === c2.color;
+}
+
+// Initialize Step 4: Quiz
+function initTutorialStep4() {
+  tutorialQuizIndex = 0;
+  tutorialQuizCorrect = 0;
+  tutorialQuizTotal = 5; // 5 questions
+  
+  // Generate quiz questions
+  tutorialQuizQuestions = [];
+  const allCards = generateAllCards();
+  
+  for (let i = 0; i < tutorialQuizTotal; i++) {
+    const shuffled = shuffleArray(allCards, Math.random);
+    
+    if (i % 2 === 0) {
+      // Generate a valid SET
+      let validSet = null;
+      for (let a = 0; a < shuffled.length && !validSet; a++) {
+        for (let b = a + 1; b < shuffled.length && !validSet; b++) {
+          for (let c = b + 1; c < shuffled.length && !validSet; c++) {
+            if (isValidSet(shuffled[a], shuffled[b], shuffled[c])) {
+              validSet = [shuffled[a], shuffled[b], shuffled[c]];
+            }
+          }
+        }
+      }
+      tutorialQuizQuestions.push({ cards: validSet, isValid: true });
+    } else {
+      // Generate an invalid SET
+      let invalidSet = null;
+      for (let a = 0; a < shuffled.length && !invalidSet; a++) {
+        for (let b = a + 1; b < shuffled.length && !invalidSet; b++) {
+          for (let c = b + 1; c < shuffled.length && !invalidSet; c++) {
+            if (!isValidSet(shuffled[a], shuffled[b], shuffled[c])) {
+              invalidSet = [shuffled[a], shuffled[b], shuffled[c]];
+            }
+          }
+        }
+      }
+      tutorialQuizQuestions.push({ cards: invalidSet, isValid: false });
+    }
+  }
+  
+  showQuizQuestion();
+}
+
+// Show current quiz question
+function showQuizQuestion() {
+  const question = tutorialQuizQuestions[tutorialQuizIndex];
+  
+  // Render cards
+  const cardsContainer = document.getElementById('tutorial-quiz-cards');
+  cardsContainer.innerHTML = '';
+  question.cards.forEach((card, idx) => {
+    cardsContainer.appendChild(renderTutorialCard(card, `quiz-${tutorialQuizIndex}-${idx}`));
+  });
+  
+  // Reset feedback
+  document.getElementById('tutorial-quiz-feedback').innerHTML = '';
+  
+  // Update score
+  document.getElementById('tutorial-quiz-score').textContent = 
+    `Question ${tutorialQuizIndex + 1} of ${tutorialQuizTotal}`;
+  
+  // Enable buttons
+  document.getElementById('quiz-yes-btn').disabled = false;
+  document.getElementById('quiz-no-btn').disabled = false;
+  document.getElementById('quiz-yes-btn').classList.remove('opacity-50');
+  document.getElementById('quiz-no-btn').classList.remove('opacity-50');
+}
+
+// Handle quiz answer
+function handleQuizAnswer(userSaidYes) {
+  const question = tutorialQuizQuestions[tutorialQuizIndex];
+  const isCorrect = userSaidYes === question.isValid;
+  
+  if (isCorrect) {
+    tutorialQuizCorrect++;
+  }
+  
+  // Show feedback
+  const feedbackEl = document.getElementById('tutorial-quiz-feedback');
+  const explanation = generateSetExplanation(question.cards[0], question.cards[1], question.cards[2], question.isValid);
+  
+  if (isCorrect) {
+    feedbackEl.innerHTML = `
+      <div class="bg-green-100 border border-green-400 text-green-700 p-3 rounded mb-2">
+        <strong>✓ Correct!</strong>
+      </div>
+      <div class="text-sm text-left">${explanation}</div>
+    `;
+  } else {
+    feedbackEl.innerHTML = `
+      <div class="bg-red-100 border border-red-400 text-red-700 p-3 rounded mb-2">
+        <strong>✗ Not quite.</strong> This ${question.isValid ? 'IS' : 'is NOT'} a SET.
+      </div>
+      <div class="text-sm text-left">${explanation}</div>
+    `;
+  }
+  
+  // Disable buttons
+  document.getElementById('quiz-yes-btn').disabled = true;
+  document.getElementById('quiz-no-btn').disabled = true;
+  document.getElementById('quiz-yes-btn').classList.add('opacity-50');
+  document.getElementById('quiz-no-btn').classList.add('opacity-50');
+  
+  // Move to next question after delay
+  tutorialQuizIndex++;
+  
+  if (tutorialQuizIndex < tutorialQuizTotal) {
+    setTimeout(() => {
+      showQuizQuestion();
+    }, 2000);
+  } else {
+    // Quiz complete
+    setTimeout(() => {
+      document.getElementById('tutorial-quiz-feedback').innerHTML = '';
+      document.getElementById('tutorial-quiz-cards').innerHTML = `
+        <div class="text-center p-6">
+          <div class="text-4xl mb-3">🎉</div>
+          <div class="text-xl font-bold mb-2">Tutorial Complete!</div>
+          <div class="text-lg">You got <strong>${tutorialQuizCorrect}</strong> out of <strong>${tutorialQuizTotal}</strong> correct!</div>
+          <div class="text-sm text-gray-600 mt-2">You're ready to play the Daily SET Puzzle!</div>
+        </div>
+      `;
+      document.getElementById('tutorial-quiz-score').textContent = '';
+      document.getElementById('quiz-yes-btn').style.display = 'none';
+      document.getElementById('quiz-no-btn').style.display = 'none';
+    }, 2000);
+  }
+}
+
+// Tutorial navigation event listeners
+document.getElementById('tutorial-prev')?.addEventListener('click', () => {
+  if (tutorialStep > 1) {
+    goToTutorialStep(tutorialStep - 1);
+  }
+});
+
+document.getElementById('tutorial-next')?.addEventListener('click', () => {
+  if (tutorialStep < 4) {
+    goToTutorialStep(tutorialStep + 1);
+  }
+});
+
+document.getElementById('tutorial-finish')?.addEventListener('click', () => {
+  hideModal('tutorialModal');
+  // Reset quiz buttons visibility
+  document.getElementById('quiz-yes-btn').style.display = '';
+  document.getElementById('quiz-no-btn').style.display = '';
+});
+
+// Quiz answer buttons
+document.getElementById('quiz-yes-btn')?.addEventListener('click', () => handleQuizAnswer(true));
+document.getElementById('quiz-no-btn')?.addEventListener('click', () => handleQuizAnswer(false));
+
+// Close tutorial modal on outside click
+document.getElementById('tutorialModal')?.addEventListener('click', (e) => {
+  if (e.target.id === 'tutorialModal') {
+    hideModal('tutorialModal');
+    // Reset quiz buttons visibility
+    document.getElementById('quiz-yes-btn').style.display = '';
+    document.getElementById('quiz-no-btn').style.display = '';
+  }
 });
