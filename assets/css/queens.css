@@ -1,0 +1,43 @@
+.queens-table {
+  border-collapse: collapse;
+  width: 480px;
+}
+
+.board-cell {
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  border: 1px solid #888;
+  vertical-align: middle;
+  cursor: pointer;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Checkerboard pattern */
+.queens-table tr:nth-child(odd) td:nth-child(even),
+.queens-table tr:nth-child(even) td:nth-child(odd) {
+  background-color: #d4d4d4;
+}
+
+.queens-table tr:nth-child(odd) td:nth-child(odd),
+.queens-table tr:nth-child(even) td:nth-child(even) {
+  background-color: #fff;
+}
+
+.board-cell:hover {
+  opacity: 0.8;
+}
+
+.queen {
+  background-image: url('/images/queen.png') !important;
+}
+
+.red-queen {
+  background-image: url('/images/red_queen.png') !important;
+}
+
+.attacked {
+  background-color: #ef4444 !important;
+}

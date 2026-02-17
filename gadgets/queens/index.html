@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eight Queens Puzzle</title>
+  <meta name="description" content="Place 8 queens on a chess board so none attack each other">
+  <link rel="stylesheet" href="/styles/output.css">
+  <link rel="stylesheet" href="/assets/css/queens.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Privacy-friendly analytics by Plausible -->
+  <script async src="https://plausible.io/js/pa-nsii_xHsg4vcM9C7SKHG_.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="sticky top-0 z-50 relative bg-base-100">
+    <div class="absolute inset-0 z-0">
+      <img src="/images/website-header.png" alt="" class="w-full h-full object-cover">
+    </div>
+    <nav class="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="navbar-start">
+        <a href="/" class="text-xl font-bold">Dr. Raj Shah</a>
+      </div>
+      <div class="navbar-end">
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-primary text-primary-content btn-sm lg:btn-md">
+            Daily Games
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
+            
+            <li><a href="/games/kenken">KenKen</a></li>
+            
+            <li><a href="/games/kenken-jr">KenKen Jr.</a></li>
+            
+            <li><a href="/games/crack-the-code-v2">Crack the Code</a></li>
+            
+            <li><a href="/games/shape-sum">Shape Sum</a></li>
+            
+            <li><a href="/games/set">SET</a></li>
+            
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="flex-grow">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="bg-base-200 rounded-lg p-6 mb-6">
+    <h1 class="text-3xl font-bold mb-4" style="color: #5741AC;">Eight Queens</h1>
+    <p class="text-gray-700 mb-4">Can you place all 8 queens on the board without having them attack each other?</p>
+    
+    <h3 class="text-xl font-semibold mb-2" style="color: #5741AC;">How to Play</h3>
+    <ol class="list-decimal list-inside text-gray-700 mb-4 space-y-1">
+      <li>Click anywhere on the chess board to place a queen.</li>
+      <li>Use the Check My Work button to see if any queens are attacking one another. Problems are highlighted in red.</li>
+      <li>Click on any queen to remove it from the board.</li>
+    </ol>
+    <p class="text-gray-700 mb-4">If you find the 8×8 challenge difficult, try a smaller board first. The goal is to place as many queens as there are rows.</p>
+    
+    <h3 class="text-xl font-semibold mb-2" style="color: #5741AC;">Helper Mode</h3>
+    <p class="text-gray-700">For smaller boards, you can turn on helper mode. When activated, all attacked cells turn red when you place a queen, making it easier to find safe spots.</p>
+  </div>
+
+  <div class="flex flex-wrap gap-2 mb-4">
+    <button class="btn btn-info start" data-size="4">Try 4×4</button>
+    <button class="btn btn-info start" data-size="5">Try 5×5</button>
+    <button class="btn btn-info start" data-size="6">Try 6×6</button>
+    <button class="btn btn-info start" data-size="7">Try 7×7</button>
+    <button class="btn btn-info start" data-size="8">Try 8×8</button>
+  </div>
+  
+  <div class="flex flex-wrap gap-2 items-center mb-6">
+    <button class="btn btn-success" id="checkBtn">Check My Work</button>
+    <label class="flex items-center gap-2 ml-4" id="helperLabel">
+      <input type="checkbox" id="helperMode" class="checkbox checkbox-primary">
+      <span>Helper Mode</span>
+    </label>
+  </div>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="queens-table mx-auto" id="chessBoard">
+      <tbody>
+        
+        <tr>
+          
+          <td data-row="8" data-col="1" class="board-cell"></td>
+          
+          <td data-row="8" data-col="2" class="board-cell"></td>
+          
+          <td data-row="8" data-col="3" class="board-cell"></td>
+          
+          <td data-row="8" data-col="4" class="board-cell"></td>
+          
+          <td data-row="8" data-col="5" class="board-cell"></td>
+          
+          <td data-row="8" data-col="6" class="board-cell"></td>
+          
+          <td data-row="8" data-col="7" class="board-cell"></td>
+          
+          <td data-row="8" data-col="8" class="board-cell"></td>
+          
+        </tr>
+        
+        <tr>
+          
+          <td data-row="7" data-col="1" class="board-cell"></td>
+          
+          <td data-row="7" data-col="2" class="board-cell"></td>
+          
+          <td data-row="7" data-col="3" class="board-cell"></td>
+          
+          <td data-row="7" data-col="4" class="board-cell"></td>
+          
+          <td data-row="7" data-col="5" class="board-cell"></td>
+          
+          <td data-row="7" data-col="6" class="board-cell"></td>
+          
+          <td data-row="7" data-col="7" class="board-cell"></td>
+          
+          <td data-row="7" data-col="8" class="board-cell"></td>
+          
+        </tr>
+        
+        <tr>
+          
+          <td data-row="6" data-col="1" class="board-cell"></td>
+          
+          <td data-row="6" data-col="2" class="board-cell"></td>
+          
+          <td data-row="6" data-col="3" class="board-cell"></td>
+          
+          <td data-row="6" data-col="4" class="board-cell"></td>
+          
+          <td data-row="6" data-col="5" class="board-cell"></td>
+          
+          <td data-row="6" data-col="6" class="board-cell"></td>
+          
+          <td data-row="6" data-col="7" class="board-cell"></td>
+          
+          <td data-row="6" data-col="8" class="board-cell"></td>
+          
+        </tr>
+        
+        <tr>
+          
+          <td data-row="5" data-col="1" class="board-cell"></td>
+          
+          <td data-row="5" data-col="2" class="board-cell"></td>
+          
+          <td data-row="5" data-col="3" class="board-cell"></td>
+          
+          <td data-row="5" data-col="4" class="board-cell"></td>
+          
+          <td data-row="5" data-col="5" class="board-cell"></td>
+          
+          <td data-row="5" data-col="6" class="board-cell"></td>
+          
+          <td data-row="5" data-col="7" class="board-cell"></td>
+          
+          <td data-row="5" data-col="8" class="board-cell"></td>
+          
+        </tr>
+        
+        <tr>
+          
+          <td data-row="4" data-col="1" class="board-cell"></td>
+          
+          <td data-row="4" data-col="2" class="board-cell"></td>
+          
+          <td data-row="4" data-col="3" class="board-cell"></td>
+          
+          <td data-row="4" data-col="4" class="board-cell"></td>
+          
+          <td data-row="4" data-col="5" class="board-cell"></td>
+          
+          <td data-row="4" data-col="6" class="board-cell"></td>
+          
+          <td data-row="4" data-col="7" class="board-cell"></td>
+          
+          <td data-row="4" data-col="8" class="board-cell"></td>
+          
+        </tr>
+        
+        <tr>
+          
+          <td data-row="3" data-col="1" class="board-cell"></td>
+          
+          <td data-row="3" data-col="2" class="board-cell"></td>
+          
+          <td data-row="3" data-col="3" class="board-cell"></td>
+          
+          <td data-row="3" data-col="4" class="board-cell"></td>
+          
+          <td data-row="3" data-col="5" class="board-cell"></td>
+          
+          <td data-row="3" data-col="6" class="board-cell"></td>
+          
+          <td data-row="3" data-col="7" class="board-cell"></td>
+          
+          <td data-row="3" data-col="8" class="board-cell"></td>
+          
+        </tr>
+        
+        <tr>
+          
+          <td data-row="2" data-col="1" class="board-cell"></td>
+          
+          <td data-row="2" data-col="2" class="board-cell"></td>
+          
+          <td data-row="2" data-col="3" class="board-cell"></td>
+          
+          <td data-row="2" data-col="4" class="board-cell"></td>
+          
+          <td data-row="2" data-col="5" class="board-cell"></td>
+          
+          <td data-row="2" data-col="6" class="board-cell"></td>
+          
+          <td data-row="2" data-col="7" class="board-cell"></td>
+          
+          <td data-row="2" data-col="8" class="board-cell"></td>
+          
+        </tr>
+        
+        <tr>
+          
+          <td data-row="1" data-col="1" class="board-cell"></td>
+          
+          <td data-row="1" data-col="2" class="board-cell"></td>
+          
+          <td data-row="1" data-col="3" class="board-cell"></td>
+          
+          <td data-row="1" data-col="4" class="board-cell"></td>
+          
+          <td data-row="1" data-col="5" class="board-cell"></td>
+          
+          <td data-row="1" data-col="6" class="board-cell"></td>
+          
+          <td data-row="1" data-col="7" class="board-cell"></td>
+          
+          <td data-row="1" data-col="8" class="board-cell"></td>
+          
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+</div>
+<script src="/assets/js/queens.js"></script>
+
+  </main>
+
+  <footer class="relative bg-base-200 py-8 mt-16">
+    <div class="absolute inset-0 z-0">
+      <img src="/images/website-footer.png" alt="" class="w-full h-full object-cover">
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white relative z-10">
+      <p>&copy; 2025 Dr. Raj Shah. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  
+  <script async data-uid="ef4ca0e9a1" src="https://dr-raj-shah.kit.com/ef4ca0e9a1/index.js"></script>
+  
+</body>
+</html>
