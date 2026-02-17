@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Multiplication Connect Four",
+    "description": "A two-player strategy game combining multiplication facts with connect four. Choose factors to claim products on the board and be the first to get four in a row!",
+    "link": "/gadgets/multi",
+    "thumbnail": "/images/multi_thumbnail.png"
+  },
+  {
+    "name": "Eight Queens",
+    "description": "Can you place 8 queens on a chess board so none of them attack each other? Start with smaller boards and work your way up to the classic 8×8 challenge.",
+    "link": "/gadgets/queens",
+    "thumbnail": "/images/queens_thumbnail.png"
+  },
+  {
+    "name": "Ruler Investigation",
+    "description": "A mathematical puzzle about optimal measurement. Place the fewest marks on a ruler to measure every integer length. A great introduction to combinatorics!",
+    "link": "/gadgets/ruler",
+    "thumbnail": "/images/ruler_thumbnail.png"
+  }
+]

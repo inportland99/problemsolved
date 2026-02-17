@@ -1,0 +1,103 @@
+---
+layout: game-base.njk
+title: Multiplication Connect Four
+description: A two-player strategy game combining multiplication facts with connect four
+pageCss: "/assets/css/multi.css"
+---
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="bg-base-200 rounded-lg p-6 mb-6">
+    <h1 class="text-3xl font-bold mb-4" style="color: #5741AC;">Multiplication Connect Four</h1>
+    <p class="text-gray-700">Use the factor controls to choose a number and mark the board. First player to connect four-in-a-row horizontally, vertically, or diagonally is the winner.</p>
+  </div>
+
+  <div class="mb-6">
+    <button class="btn btn-info" id="startBtn">Start New Game</button>
+  </div>
+
+  <div class="overflow-x-auto mb-8">
+    <table class="board-table mx-auto">
+      <tr>
+        <td data-id="1" class="board">1</td>
+        <td data-id="2" class="board">2</td>
+        <td data-id="3" class="board">3</td>
+        <td data-id="4" class="board">4</td>
+        <td data-id="5" class="board">5</td>
+        <td data-id="6" class="board">6</td>
+        <td data-id="7" class="board">7</td>
+        <td data-id="8" class="board">8</td>
+        <td data-id="9" class="board">9</td>
+      </tr>
+      <tr>
+        <td data-id="10" class="board">10</td>
+        <td data-id="12" class="board">12</td>
+        <td data-id="14" class="board">14</td>
+        <td data-id="15" class="board">15</td>
+        <td data-id="16" class="board">16</td>
+        <td data-id="18" class="board">18</td>
+        <td data-id="20" class="board">20</td>
+        <td data-id="21" class="board">21</td>
+        <td data-id="24" class="board">24</td>
+      </tr>
+      <tr>
+        <td data-id="25" class="board">25</td>
+        <td data-id="27" class="board">27</td>
+        <td data-id="28" class="board">28</td>
+        <td data-id="30" class="board">30</td>
+        <td data-id="32" class="board">32</td>
+        <td data-id="35" class="board">35</td>
+        <td data-id="36" class="board">36</td>
+        <td data-id="40" class="board">40</td>
+        <td data-id="42" class="board">42</td>
+      </tr>
+      <tr>
+        <td data-id="45" class="board">45</td>
+        <td data-id="48" class="board">48</td>
+        <td data-id="49" class="board">49</td>
+        <td data-id="54" class="board">54</td>
+        <td data-id="56" class="board">56</td>
+        <td data-id="63" class="board">63</td>
+        <td data-id="64" class="board">64</td>
+        <td data-id="72" class="board">72</td>
+        <td data-id="81" class="board">81</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="factor-table mx-auto">
+      <thead>
+        <tr>
+          <th colspan="9" class="text-center p-3 bg-base-200">
+            <strong>Choose Factors From the Two Rows Below</strong>
+            <span class="ml-2">( <strong>Next to Play:</strong> <span id="turn" class="player1">&nbsp;&nbsp;&nbsp;</span> )</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-id="1" class="factor factor1">1</td>
+          <td data-id="2" class="factor factor1">2</td>
+          <td data-id="3" class="factor factor1">3</td>
+          <td data-id="4" class="factor factor1">4</td>
+          <td data-id="5" class="factor factor1">5</td>
+          <td data-id="6" class="factor factor1">6</td>
+          <td data-id="7" class="factor factor1">7</td>
+          <td data-id="8" class="factor factor1">8</td>
+          <td data-id="9" class="factor factor1">9</td>
+        </tr>
+        <tr>
+          <td data-id="1" class="factor factor2">1</td>
+          <td data-id="2" class="factor factor2">2</td>
+          <td data-id="3" class="factor factor2">3</td>
+          <td data-id="4" class="factor factor2">4</td>
+          <td data-id="5" class="factor factor2">5</td>
+          <td data-id="6" class="factor factor2">6</td>
+          <td data-id="7" class="factor factor2">7</td>
+          <td data-id="8" class="factor factor2">8</td>
+          <td data-id="9" class="factor factor2">9</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script src="/assets/js/multi.js"></script>

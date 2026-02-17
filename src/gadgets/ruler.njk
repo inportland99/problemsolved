@@ -1,0 +1,45 @@
+---
+layout: game-base.njk
+title: Ruler Investigation Tool
+description: A mathematical puzzle about optimal measurement with minimal marks
+pageCss: "/assets/css/ruler.css"
+---
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="bg-base-200 rounded-lg p-6 mb-6">
+    <h1 class="text-3xl font-bold mb-4" style="color: #5741AC;">Ruler Investigation Tool</h1>
+    <p class="text-gray-700 mb-3">Your goal is to construct a ruler that can measure every integer value from 1 inch to the length of the ruler by placing as few marks on the ruler as possible.</p>
+    <p class="text-gray-700 mb-3">The measurements must be done without moving the ruler, so you must be able to measure any integer length between marks that exist on your ruler.</p>
+    <p class="text-gray-700 mb-3">You will start with a 12 inch long ruler with no marks. At first, the only length this ruler can accurately measure is 12 inches.</p>
+    <p class="text-gray-700"><strong>Example:</strong> If you place a mark at the 3 inch position, then you will be able to measure 3 inches (0 to 3) AND 9 inches (3 to 12).</p>
+  </div>
+
+  <div class="flex flex-wrap gap-2 items-center mb-6">
+    <input type="number" id="rulerLength" class="input input-bordered w-24" placeholder="12" min="6" max="36">
+    <button class="btn btn-info" id="setLengthBtn">Set Ruler Length</button>
+    <button class="btn btn-success" id="resetBtn">Reset Ruler</button>
+  </div>
+
+  <div id="rulerContainer" class="mb-8"></div>
+
+  <div class="space-y-3 mb-8">
+    <p><span class="badge badge-neutral">Marks Used:</span> <span id="markNumber" class="font-semibold">0</span></p>
+    <p><span class="badge badge-neutral">Measurable Lengths:</span> <span id="lengths" class="font-semibold"></span></p>
+    <p><span class="badge badge-neutral">Missing Lengths:</span> <span id="missing" class="font-semibold text-red-500"></span></p>
+  </div>
+
+  <div class="bg-base-200 rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-4" style="color: #5741AC;">Track Your Results</h2>
+    <table class="table w-full">
+      <thead>
+        <tr>
+          <th>Ruler Length</th>
+          <th>Total Marks</th>
+          <th>Mark Locations</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody">
+      </tbody>
+    </table>
+  </div>
+</div>
+<script src="/assets/js/ruler.js"></script>

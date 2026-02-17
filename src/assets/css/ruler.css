@@ -1,0 +1,38 @@
+#rulerContainer {
+  display: flex;
+  width: 100%;
+  gap: 0.2%;
+}
+
+.inch {
+  display: inline-block;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 10px;
+  background: #e5e5e5;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.inch:hover {
+  background: #38bdf8;
+  color: white;
+}
+
+.inch-end {
+  display: inline-block;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 10px;
+  background: #1f2937;
+  color: white;
+  text-align: center;
+  font-weight: 500;
+}
+
+.chosen {
+  background: #22c55e !important;
+  color: white;
+}
