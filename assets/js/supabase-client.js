@@ -3,8 +3,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // Supabase configuration
 // Note: These are safe to expose in client-side code
 // Security is handled by Row-Level Security (RLS) policies in the database
-const SUPABASE_URL = 'https://xfnoplwnnijtreuoonln.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhmbm9wbHdubmlqdHJldW9vbmxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2MzAyNDMsImV4cCI6MjA4NTIwNjI0M30.KyQyXFjIuG1-phZmmLOVQLqWTAQgosbhIeYV18D5diM';
+const SUPABASE_URL = 'https://skgqvheszlquwflignze.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_MpxJeWK8VVF8mjScUtv8qg_4TepfyAG';
 
 // Create Supabase client
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

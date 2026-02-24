@@ -160,11 +160,11 @@ export async function uploadPizzaImage(file, recipeId) {
 
     // Create a unique filename
     const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}/${recipeId}-${Date.now()}.${fileExt}`;
+    const fileName = `pizza/${user.id}/${recipeId}-${Date.now()}.${fileExt}`;
 
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage
-      .from('pizza-images')
+      .from('personal-images')
       .upload(fileName, file, {
         cacheControl: '3600',
         upsert: false
@@ -177,7 +177,7 @@ export async function uploadPizzaImage(file, recipeId) {
 
     // Get the public URL for the uploaded image
     const { data: urlData } = supabase.storage
-      .from('pizza-images')
+      .from('personal-images')
       .getPublicUrl(data.path);
 
     return { success: true, url: urlData.publicUrl };
