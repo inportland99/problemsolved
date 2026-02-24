@@ -88,7 +88,7 @@ import { signIn, signUp, getCurrentUser } from '/assets/js/supabase-client.js';
 // Check if already logged in
 const user = await getCurrentUser();
 if (user) {
-  window.location.href = '/pizza/';
+  window.location.href = '/personal/pizza/';
 }
 
 // Tab switching
@@ -150,7 +150,7 @@ loginForm.addEventListener('submit', async (e) => {
   } else {
     showAlert('Login successful! Redirecting...', 'success');
     setTimeout(() => {
-      window.location.href = '/pizza/';
+      window.location.href = '/personal/pizza/';
     }, 1000);
   }
 });

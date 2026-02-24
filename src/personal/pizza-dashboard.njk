@@ -8,7 +8,7 @@ description: Manage your pizza recipes, notes, and photos
   <!-- Header -->
   <div class="navbar bg-base-100 shadow-lg">
     <div class="flex-1">
-      <a href="/pizza/" class="btn btn-ghost normal-case text-xl">🍕 Pizza Dashboard</a>
+      <a href="/personal/pizza/" class="btn btn-ghost normal-case text-xl">🍕 Pizza Dashboard</a>
     </div>
     <div class="flex-none gap-2">
       <span id="user-email" class="text-sm text-gray-600"></span>
@@ -21,7 +21,7 @@ description: Manage your pizza recipes, notes, and photos
     <!-- Action Bar -->
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold">My Pizza Recipes</h1>
-      <a href="/pizza/" class="btn btn-primary">
+      <a href="/personal/pizza/" class="btn btn-primary">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -42,7 +42,7 @@ description: Manage your pizza recipes, notes, and photos
       <div class="text-6xl mb-4">🍕</div>
       <h2 class="text-2xl font-bold mb-2">No recipes yet</h2>
       <p class="text-gray-600 mb-6">Start by creating your first pizza recipe!</p>
-      <a href="/pizza/" class="btn btn-primary">Create First Recipe</a>
+      <a href="/personal/pizza/" class="btn btn-primary">Create First Recipe</a>
     </div>
 
     <!-- Recipes Grid -->
@@ -218,7 +218,7 @@ import { getUserPizzaLogs, updatePizzaLog, deletePizzaLog, uploadPizzaImage } fr
 // Check authentication
 const user = await getCurrentUser();
 if (!user) {
-  window.location.href = '/pizza-login/';
+  window.location.href = '/personal/pizza-login/';
 } else {
   document.getElementById('user-email').textContent = user.email;
 }
@@ -226,7 +226,7 @@ if (!user) {
 // Logout
 document.getElementById('logout-btn').addEventListener('click', async () => {
   await signOut();
-  window.location.href = '/pizza-login/';
+  window.location.href = '/personal/pizza-login/';
 });
 
 // Alert helper
