@@ -561,6 +561,7 @@ function initBoard() {
 // Timer functions
 function startTimer() {
   if (timerInterval) return;
+  if (foundSets.length === 6) return;
   
   timerInterval = setInterval(() => {
     if (!isPaused) {
@@ -583,6 +584,7 @@ function pauseTimer() {
 }
 
 function resumeTimer() {
+  if (foundSets.length === 6) return;
   isPaused = false;
 }
 
@@ -742,9 +744,11 @@ function updateStatsDisplay() {
     document.getElementById('stat-avg-time').textContent = '--';
   }
   
-  // Show next puzzle countdown if game is complete
+  // Show next puzzle countdown and share button if game is complete
   if (foundSets.length === 6) {
     document.getElementById('game-complete-message').style.display = 'block';
+    const statsShareBtn = document.getElementById('stats-share-btn');
+    if (statsShareBtn) statsShareBtn.style.display = 'inline-flex';
     updateCountdown();
   }
 }
@@ -869,6 +873,12 @@ window.addEventListener('DOMContentLoaded', () => {
   
   document.getElementById('close-stats-btn')?.addEventListener('click', () => {
     hideModal('statsModal');
+  });
+
+  // Share button inside stats modal
+  document.getElementById('stats-share-btn')?.addEventListener('click', () => {
+    hideModal('statsModal');
+    showShareModal();
   });
   
   document.getElementById('close-share-btn')?.addEventListener('click', () => {
