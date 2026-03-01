@@ -177,6 +177,12 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('close-stats-btn')?.addEventListener('click', () => {
     hideModal('statsModal');
   });
+
+  // Share button inside stats modal
+  document.getElementById('stats-share-btn')?.addEventListener('click', () => {
+    hideModal('statsModal');
+    showShareModal();
+  });
   
   // Close stats modal when clicking outside
   document.getElementById('statsModal')?.addEventListener('click', (e) => {
@@ -667,48 +673,43 @@ function showCheckModal() {
   const result = checkPuzzle();
   const modal = document.getElementById('checkPuzzleModal');
   const modalBody = modal.querySelector('.modal-body');
-  switch (result.status) {
-    case true:
-      solved = true;
-      updateStats(elapsed); // Update stats with solve time
-      saveGameState(); // Save the solved state
-      confetti();
-      clearInterval(timerInterval);
-      document.getElementById('share-btn').style.display = 'inline-flex';
-      hideModal(modal.id);
-      if (!TEST_MODE) {
-        disableImputs(); // Disable inputs to prevent further changes
-      }
-      // Show stats modal after a short delay
-      setTimeout(() => {
-        updateStatsDisplay();
-        showModal('statsModal');
-      }, 1500);
+  if (result.status === true) {
+    solved = true;
+    updateStats(elapsed); // Update stats with solve time
+    saveGameState(); // Save the solved state
+    confetti();
+    clearInterval(timerInterval);
+    document.getElementById('share-btn').style.display = 'inline-flex';
+    if (!TEST_MODE) {
+      disableImputs(); // Disable inputs to prevent further changes
+    }
+    // Show stats modal after confetti
+    setTimeout(() => {
+      updateStatsDisplay();
+      showModal('statsModal');
+    }, 1500);
+    return;
+  }
+
+  // Puzzle is incorrect — show check modal with feedback
+  switch (result.reason) {
+    case "duplicate_in_row":
+      modalBody.innerHTML = `Check for a duplicate number in one of the rows.`;
       break;
-    case false:
-      switch (result.reason) {
-        case "duplicate_in_row":
-          // modalBody.innerHTML = `Duplicate number <b>${result.value}</b> found in row ${result.row + 1}.`;
-          modalBody.innerHTML = `Check for a duplicate number in one of the rows.`;
-          break;
-        case "duplicate_in_col":
-          modalBody.innerHTML = `Check for a duplicate number in one of the columns.`;
-          break;
-        case "cage_mismatch":
-          modalBody.innerHTML = `Check your cages to make sure they match the target value.`;
-          break;
-        case "not_matching_solution":
-          modalBody.innerHTML = `No duplicates or cage errors found yet... Keep going!`;
-          break;
-        default:
-          modalBody.innerHTML = 'Not quite. Keep trying!';
-      }
+    case "duplicate_in_col":
+      modalBody.innerHTML = `Check for a duplicate number in one of the columns.`;
+      break;
+    case "cage_mismatch":
+      modalBody.innerHTML = `Check your cages to make sure they match the target value.`;
+      break;
+    case "not_matching_solution":
+      modalBody.innerHTML = `No duplicates or cage errors found yet... Keep going!`;
       break;
     default:
       modalBody.innerHTML = 'Not quite. Keep trying!';
   }
   showModal(modal.id);
-  
+
   // Add event listener to close button if it exists
   const closeBtn = modal.querySelector('[data-dismiss="modal"]');
   if (closeBtn) {
@@ -1024,9 +1025,11 @@ function updateStatsDisplay() {
     document.getElementById('stat-avg-time').textContent = '--';
   }
   
-  // Show countdown if game is complete
+  // Show countdown and share button if game is complete
   if (solved) {
     document.getElementById('game-complete-message').style.display = 'block';
+    const statsShareBtn = document.getElementById('stats-share-btn');
+    if (statsShareBtn) statsShareBtn.style.display = 'inline-flex';
     updateCountdown();
     // Set interval to update countdown (clear any existing interval first)
     if (window.countdownInterval) clearInterval(window.countdownInterval);

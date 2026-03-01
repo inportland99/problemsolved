@@ -378,18 +378,18 @@ function showCheckModal() {
     saveGameState();
     confetti();
     document.getElementById('share-btn').style.display = 'inline-flex';
-    hideModal(modal.id);
     disableInputs();
     
-    // Show stats modal after a short delay
+    // Show stats modal after confetti
     setTimeout(() => {
       updateStatsDisplay();
       showModal('statsModal');
     }, 1500);
-  } else {
-    modalBody.innerHTML = result.reason || 'Not quite. Keep trying!';
+    return;
   }
-  
+
+  // Puzzle is incorrect — show check modal with feedback
+  modalBody.innerHTML = result.reason || 'Not quite. Keep trying!';
   showModal(modal.id);
   
   const closeBtn = modal.querySelector('[data-dismiss="modal"]');
@@ -885,6 +885,12 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('close-stats-btn')?.addEventListener('click', () => {
     hideModal('statsModal');
   });
+
+  // Share button inside stats modal
+  document.getElementById('stats-share-btn')?.addEventListener('click', () => {
+    hideModal('statsModal');
+    showShareModal();
+  });
   
   // Close stats modal when clicking outside
   document.getElementById('statsModal')?.addEventListener('click', (e) => {
@@ -982,9 +988,11 @@ function updateStatsDisplay() {
     document.getElementById('stat-avg-time').textContent = '--';
   }
   
-  // Show countdown if game is complete
+  // Show countdown and share button if game is complete
   if (solved) {
     document.getElementById('game-complete-message').style.display = 'block';
+    const statsShareBtn = document.getElementById('stats-share-btn');
+    if (statsShareBtn) statsShareBtn.style.display = 'inline-flex';
     updateCountdown();
     // Set interval to update countdown (clear any existing interval first)
     if (window.countdownInterval) clearInterval(window.countdownInterval);
