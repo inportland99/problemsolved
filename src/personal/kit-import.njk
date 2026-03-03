@@ -1,0 +1,507 @@
+---
+layout: minimal.njk
+title: Kit Import
+description: Import Google Form responses to Kit.com
+---
+
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <h1 class="text-3xl font-bold text-center mb-8">📧 Kit Import</h1>
+
+  <!-- Auth gate -->
+  <div id="auth-loading" class="text-center py-12">
+    <span class="loading loading-spinner loading-lg"></span>
+    <p class="mt-2 text-sm opacity-60">Checking authentication…</p>
+  </div>
+
+  <div id="app" class="hidden">
+    <!-- Alert area -->
+    <div id="alert-message" class="alert hidden mb-4">
+      <span id="alert-text"></span>
+    </div>
+
+    <!-- Step 1: Fetch form -->
+    <div id="step-fetch" class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title">1. Select time range</h2>
+        <form id="fetch-form" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label"><span class="label-text">Start Time</span></label>
+              <input type="datetime-local" id="start-time" class="input input-bordered" required />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">End Time</span></label>
+              <input type="datetime-local" id="end-time" class="input input-bordered" required />
+            </div>
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Tag Name</span></label>
+            <input type="text" id="tag-name" placeholder="e.g. NCTM 2026" class="input input-bordered" required />
+          </div>
+          <button type="submit" id="fetch-btn" class="btn btn-primary w-full">
+            <span id="fetch-btn-text">Fetch Data</span>
+            <span id="fetch-spinner" class="loading loading-spinner loading-sm hidden"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Step 2: Preview table -->
+    <div id="step-preview" class="card bg-base-100 shadow-xl mt-6 hidden">
+      <div class="card-body">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="card-title">2. Review &amp; select subscribers</h2>
+          <span id="row-count" class="badge badge-lg"></span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th><label><input type="checkbox" id="select-all" class="checkbox checkbox-sm" checked /></label></th>
+                <th>Timestamp</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody id="preview-body"></tbody>
+          </table>
+        </div>
+
+        <div id="progress-section" class="hidden mt-4">
+          <div class="flex justify-between text-sm mb-1">
+            <span id="progress-label">Importing…</span>
+            <span id="progress-pct">0%</span>
+          </div>
+          <progress id="progress-bar" class="progress progress-primary w-full" value="0" max="100"></progress>
+        </div>
+
+        <div class="flex gap-2 mt-4">
+          <button id="send-btn" class="btn btn-primary flex-1">
+            <span id="send-btn-text">Send to Kit</span>
+            <span id="send-spinner" class="loading loading-spinner loading-sm hidden"></span>
+          </button>
+          <button id="back-btn" class="btn btn-ghost">Back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Results -->
+    <div id="step-results" class="card bg-base-100 shadow-xl mt-6 hidden">
+      <div class="card-body">
+        <h2 class="card-title">Results</h2>
+        <div id="results-summary" class="space-y-2"></div>
+        <div id="results-errors" class="mt-4"></div>
+        <button id="restart-btn" class="btn btn-ghost mt-4">Start Over</button>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { supabase, getCurrentUser, signOut } from '/assets/js/supabase-client.js';
+
+// --- Auth gate ---
+const user = await getCurrentUser();
+if (!user) {
+  window.location.href = '/personal/coaching-login/';
+} else {
+  document.getElementById('auth-loading').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+}
+
+// --- State ---
+let previewRows = [];
+
+const VALID_ROLES = ['Teacher', 'Admin'];
+
+// --- Helpers ---
+function showAlert(message, type = 'error') {
+  const el = document.getElementById('alert-message');
+  const txt = document.getElementById('alert-text');
+  el.className = `alert mb-4 ${type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : 'alert-info'}`;
+  txt.textContent = message;
+  el.classList.remove('hidden');
+}
+
+function hideAlert() {
+  document.getElementById('alert-message').classList.add('hidden');
+}
+
+function setLoading(btnTextId, spinnerId, btnId, loading) {
+  document.getElementById(btnTextId).classList.toggle('hidden', loading);
+  document.getElementById(spinnerId).classList.toggle('hidden', !loading);
+  document.getElementById(btnId).disabled = loading;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// --- Validation ---
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+function isValidName(name) {
+  const n = name.trim();
+  if (!n) return false;
+  if (n.includes('@')) return false;       // looks like email
+  if (/^\d+$/.test(n)) return false;       // all digits
+  return true;
+}
+
+// Strip single-letter middle initials (e.g. "A Smith" → "Smith", "Smith J." → "Smith")
+function stripMiddleInitials(lastName) {
+  return lastName.trim().split(/\s+/)
+    .filter(part => !/^[A-Za-z]\.?$/.test(part))
+    .join(' ');
+}
+
+// Normalize role: Teacher and Admin stay; everything else becomes "Other"
+function normalizeRole(raw) {
+  const trimmed = raw.trim();
+  if (VALID_ROLES.includes(trimmed)) return trimmed;
+  return 'Other';
+}
+
+// Format role display: show original value in parens if normalized to Other
+function roleDisplay(raw) {
+  const trimmed = raw.trim();
+  if (VALID_ROLES.includes(trimmed)) return trimmed;
+  if (!trimmed) return 'Other';
+  return `Other (${trimmed})`;
+}
+
+function validateRow(tr) {
+  const firstName = tr.querySelector('.edit-first').value;
+  const lastName = tr.querySelector('.edit-last').value;
+  const email = tr.querySelector('.edit-email').value;
+  let hasError = false;
+
+  // First name
+  const firstEl = tr.querySelector('.edit-first');
+  if (!isValidName(firstName)) {
+    firstEl.classList.add('input-error');
+    hasError = true;
+  } else {
+    firstEl.classList.remove('input-error');
+  }
+
+  // Last name
+  const lastEl = tr.querySelector('.edit-last');
+  if (!isValidName(lastName)) {
+    lastEl.classList.add('input-error');
+    hasError = true;
+  } else {
+    lastEl.classList.remove('input-error');
+  }
+
+  // Email
+  const emailEl = tr.querySelector('.edit-email');
+  if (!isValidEmail(email)) {
+    emailEl.classList.add('input-error');
+    hasError = true;
+  } else {
+    emailEl.classList.remove('input-error');
+  }
+
+  tr.classList.toggle('bg-error/10', hasError);
+  return !hasError;
+}
+
+// --- Logout ---
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await signOut();
+  window.location.href = '/personal/coaching-login/';
+});
+
+// --- Step 1: Fetch data ---
+document.getElementById('fetch-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+
+  const startTime = document.getElementById('start-time').value;
+  const endTime = document.getElementById('end-time').value;
+
+  if (new Date(startTime) >= new Date(endTime)) {
+    showAlert('Start time must be before end time.');
+    return;
+  }
+
+  setLoading('fetch-btn-text', 'fetch-spinner', 'fetch-btn', true);
+
+  try {
+    const { data, error } = await supabase.functions.invoke('import-to-kit', {
+      body: { action: 'preview', startTime, endTime },
+    });
+
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+
+    previewRows = data.rows || [];
+
+    if (previewRows.length === 0) {
+      showAlert('No rows found in that time range.', 'info');
+      return;
+    }
+
+    // Clean up data before display
+    previewRows.forEach(row => {
+      row.lastName = stripMiddleInitials(row.lastName);
+      row.role = normalizeRole(row.role);
+    });
+
+    // Build editable table
+    const tbody = document.getElementById('preview-body');
+    tbody.innerHTML = previewRows.map((row, i) => `
+      <tr data-index="${i}">
+        <td><label><input type="checkbox" class="checkbox checkbox-sm row-check" data-index="${i}" checked /></label></td>
+        <td class="text-xs whitespace-nowrap">${escapeHtml(row.timestamp)}</td>
+        <td><input type="text" class="input input-xs input-bordered w-24 edit-first" value="${escapeHtml(row.firstName)}" /></td>
+        <td><input type="text" class="input input-xs input-bordered w-28 edit-last" value="${escapeHtml(row.lastName)}" /></td>
+        <td><input type="text" class="input input-xs input-bordered w-44 edit-email" value="${escapeHtml(row.email)}" /></td>
+        <td>
+          <select class="select select-xs select-bordered edit-role">
+            <option value="Teacher" ${row.role === 'Teacher' ? 'selected' : ''}>Teacher</option>
+            <option value="Admin" ${row.role === 'Admin' ? 'selected' : ''}>Admin</option>
+            <option value="Other" ${row.role === 'Other' ? 'selected' : ''}>Other</option>
+          </select>
+        </td>
+      </tr>
+    `).join('');
+
+    // Run initial validation on all rows
+    tbody.querySelectorAll('tr').forEach(tr => validateRow(tr));
+
+    document.getElementById('row-count').textContent = `${previewRows.length} rows`;
+    document.getElementById('select-all').checked = true;
+    document.getElementById('step-preview').classList.remove('hidden');
+    document.getElementById('step-results').classList.add('hidden');
+  } catch (err) {
+    console.error(err);
+    showAlert(err.message || 'Failed to fetch data.', 'error');
+  } finally {
+    setLoading('fetch-btn-text', 'fetch-spinner', 'fetch-btn', false);
+  }
+});
+
+// --- Select all ---
+document.getElementById('select-all').addEventListener('change', (e) => {
+  document.querySelectorAll('.row-check').forEach(cb => {
+    cb.checked = e.target.checked;
+  });
+});
+
+// Update select-all when individual checkboxes change, and re-validate on edits
+document.getElementById('preview-body').addEventListener('change', (e) => {
+  if (e.target.classList.contains('row-check')) {
+    const all = document.querySelectorAll('.row-check');
+    const checked = document.querySelectorAll('.row-check:checked');
+    document.getElementById('select-all').checked = all.length === checked.length;
+  }
+  // Re-validate row on any field change
+  const tr = e.target.closest('tr');
+  if (tr) validateRow(tr);
+});
+
+// Also validate on keyup for text inputs
+document.getElementById('preview-body').addEventListener('input', (e) => {
+  const tr = e.target.closest('tr');
+  if (tr) validateRow(tr);
+});
+
+// --- Back button ---
+document.getElementById('back-btn').addEventListener('click', () => {
+  document.getElementById('step-preview').classList.add('hidden');
+  hideAlert();
+});
+
+// --- Restart ---
+document.getElementById('restart-btn').addEventListener('click', () => {
+  document.getElementById('step-preview').classList.add('hidden');
+  document.getElementById('step-results').classList.add('hidden');
+  hideAlert();
+});
+
+// --- Step 2: Send to Kit (batched) ---
+const BATCH_SIZE = 3;
+
+function updateProgress(done, total) {
+  const section = document.getElementById('progress-section');
+  section.classList.remove('hidden');
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progress-bar').value = pct;
+  document.getElementById('progress-pct').textContent = `${pct}%`;
+  document.getElementById('progress-label').textContent = `Imported ${done} of ${total} subscribers…`;
+}
+
+document.getElementById('send-btn').addEventListener('click', async () => {
+  hideAlert();
+  const tagName = document.getElementById('tag-name').value.trim();
+  if (!tagName) {
+    showAlert('Please enter a tag name above.');
+    return;
+  }
+
+  // Read current values from the editable table inputs
+  const checkedBoxes = [...document.querySelectorAll('.row-check:checked')];
+
+  if (checkedBoxes.length === 0) {
+    showAlert('No rows selected.');
+    return;
+  }
+
+  const selectedRows = checkedBoxes.map(cb => {
+    const tr = cb.closest('tr');
+    const idx = parseInt(cb.dataset.index);
+    return {
+      timestamp: previewRows[idx].timestamp,
+      fullName: `${tr.querySelector('.edit-first').value} ${tr.querySelector('.edit-last').value}`.trim(),
+      firstName: tr.querySelector('.edit-first').value.trim(),
+      lastName: tr.querySelector('.edit-last').value.trim(),
+      email: tr.querySelector('.edit-email').value.trim(),
+      role: tr.querySelector('.edit-role').value,
+    };
+  });
+
+  // Warn if any selected rows have validation errors
+  const hasErrors = checkedBoxes.some(cb => {
+    const tr = cb.closest('tr');
+    return !validateRow(tr);
+  });
+  if (hasErrors) {
+    if (!confirm('Some selected rows have validation warnings (highlighted in red). Import anyway?')) return;
+  }
+
+  setLoading('send-btn-text', 'send-spinner', 'send-btn', true);
+  document.getElementById('back-btn').disabled = true;
+
+  let totalImported = 0;
+  let totalDone = 0;
+  const allErrors = [];
+
+  const totalToImport = selectedRows.length;
+  const MAX_PASSES = 10;
+  let rowsToProcess = selectedRows;
+  let passNum = 0;
+
+  showAlert(`Resolving tags…`, 'info');
+  updateProgress(0, totalToImport);
+
+  try {
+    // Resolve all tag IDs once before batching
+    const uniqueRoles = [...new Set(selectedRows.map(r => r.role).filter(Boolean))];
+    const { data: tagData, error: tagError } = await supabase.functions.invoke('import-to-kit', {
+      body: { action: 'resolve-tags', tagName, roles: uniqueRoles },
+    });
+    if (tagError) throw tagError;
+    if (tagData?.error) throw new Error(tagData.error);
+
+    const { mainTagId, roleTagIds } = tagData;
+
+    showAlert(`Importing ${totalToImport} subscribers…`, 'info');
+
+    while (rowsToProcess.length > 0 && passNum < MAX_PASSES) {
+      passNum++;
+      let failedThisPass = [];
+
+      // Split current rows into batches
+      const batches = [];
+      for (let i = 0; i < rowsToProcess.length; i += BATCH_SIZE) {
+        batches.push(rowsToProcess.slice(i, i + BATCH_SIZE));
+      }
+
+      if (passNum > 1) {
+        showAlert(`Retry pass ${passNum}: ${rowsToProcess.length} subscribers remaining. Waiting 30s for rate limit to reset…`, 'info');
+        await new Promise(r => setTimeout(r, 30000));
+        showAlert(`Retry pass ${passNum}: importing ${rowsToProcess.length} subscribers…`, 'info');
+      }
+
+      for (let b = 0; b < batches.length; b++) {
+        const batch = batches[b];
+
+        const { data, error } = await supabase.functions.invoke('import-to-kit', {
+          body: { action: 'import', selectedRows: batch, mainTagId, roleTagIds },
+        });
+
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
+
+        totalImported += data.imported || 0;
+        totalDone += (data.imported || 0);
+        if (data.errors) allErrors.push(...data.errors);
+        if (data.failedRows) failedThisPass.push(...data.failedRows);
+
+        updateProgress(totalDone, totalToImport);
+
+        // Throttle: wait between batches to stay under Kit rate limit
+        if (b < batches.length - 1) {
+          await new Promise(r => setTimeout(r, 3000));
+        }
+      }
+
+      rowsToProcess = failedThisPass;
+    }
+
+    if (rowsToProcess.length > 0) {
+      allErrors.push(`${rowsToProcess.length} subscribers still rate-limited after ${MAX_PASSES} passes`);
+    }
+
+    // Show results
+    const resultsDiv = document.getElementById('step-results');
+    const summaryDiv = document.getElementById('results-summary');
+    const errorsDiv = document.getElementById('results-errors');
+    resultsDiv.classList.remove('hidden');
+
+    summaryDiv.innerHTML = `
+      <div class="stats stats-vertical sm:stats-horizontal shadow w-full">
+        <div class="stat">
+          <div class="stat-title">Selected</div>
+          <div class="stat-value text-2xl">${selectedRows.length}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Imported</div>
+          <div class="stat-value text-2xl text-success">${totalImported}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Tag</div>
+          <div class="stat-value text-lg">${escapeHtml(tagName)}</div>
+        </div>
+      </div>
+    `;
+
+    if (allErrors.length > 0) {
+      errorsDiv.innerHTML = `
+        <div class="alert alert-warning">
+          <div>
+            <p class="font-bold">${allErrors.length} error(s):</p>
+            <ul class="list-disc ml-4 mt-1 text-sm">
+              ${allErrors.map(err => `<li>${escapeHtml(err)}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+    } else {
+      errorsDiv.innerHTML = '';
+    }
+
+    showAlert(`Done! Imported ${totalImported} of ${totalToImport} subscribers${passNum > 1 ? ` (${passNum} passes)` : ''}.`, 'success');
+  } catch (err) {
+    console.error(err);
+    showAlert(`Import stopped at batch — ${totalImported} imported so far. Error: ${err.message}`, 'error');
+  } finally {
+    setLoading('send-btn-text', 'send-spinner', 'send-btn', false);
+    document.getElementById('back-btn').disabled = false;
+    document.getElementById('progress-section').classList.add('hidden');
+  }
+});
+</script>
