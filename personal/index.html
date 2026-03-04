@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Tools</title>
+  <meta name="description" content="Personal tools and dashboards">
+  <link rel="stylesheet" href="/styles/output.css">
+  
+</head>
+<body class="min-h-screen">
+  
+<div class="min-h-screen bg-base-200">
+  <!-- Auth loading -->
+  <div id="auth-loading" class="flex justify-center items-center min-h-screen">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+
+  <!-- Main content (hidden until auth confirmed) -->
+  <div id="app" class="hidden">
+    <div class="container mx-auto px-4 py-10 max-w-4xl">
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Personal Tools</h1>
+        <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <a href="/personal/coaching/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+          <div class="card-body">
+            <div class="text-4xl mb-2">🎯</div>
+            <h2 class="card-title text-lg">Coaching Dashboard</h2>
+            <p class="text-sm text-base-content/70">Manage coaching clients and log session notes, action items, and meeting summaries.</p>
+          </div>
+        </a>
+        
+        <a href="/personal/survey-analysis/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+          <div class="card-body">
+            <div class="text-4xl mb-2">📊</div>
+            <h2 class="card-title text-lg">Survey Analysis</h2>
+            <p class="text-sm text-base-content/70">AI-powered analysis of workshop feedback form responses over a selected time range.</p>
+          </div>
+        </a>
+        
+        <a href="/personal/kit-import/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+          <div class="card-body">
+            <div class="text-4xl mb-2">📧</div>
+            <h2 class="card-title text-lg">Kit Import</h2>
+            <p class="text-sm text-base-content/70">Import Google Form sign-up responses to Kit.com as tagged subscribers.</p>
+          </div>
+        </a>
+        
+        <a href="/personal/pizza/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+          <div class="card-body">
+            <div class="text-4xl mb-2">🍕</div>
+            <h2 class="card-title text-lg">Pizza Dough Calculator</h2>
+            <p class="text-sm text-base-content/70">Step-by-step biga pizza dough recipe calculator. Set hydration, flour type, and ball count.</p>
+          </div>
+        </a>
+        
+        <a href="/personal/pizza-dashboard/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+          <div class="card-body">
+            <div class="text-4xl mb-2">📋</div>
+            <h2 class="card-title text-lg">Pizza Dashboard</h2>
+            <p class="text-sm text-base-content/70">Browse and manage your saved pizza recipes with notes and photos.</p>
+          </div>
+        </a>
+        
+        <a href="/personal/kachuful/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+          <div class="card-body">
+            <div class="text-4xl mb-2">🃏</div>
+            <h2 class="card-title text-lg">Kachuful Score Tracker</h2>
+            <p class="text-sm text-base-content/70">Track bids and scores for Kachuful card game with automatic hand progression and scoring.</p>
+          </div>
+        </a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { getCurrentUser, signOut } from '/assets/js/supabase-client.js';
+
+const user = await getCurrentUser();
+if (!user) {
+  window.location.href = '/personal/coaching-login/';
+} else {
+  document.getElementById('auth-loading').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+}
+
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await signOut();
+  window.location.href = '/personal/coaching-login/';
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey Analysis</title>
+  <meta name="description" content="AI-powered analysis of survey responses">
+  <link rel="stylesheet" href="/styles/output.css">
+  
+</head>
+<body class="min-h-screen">
+  
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <h1 class="text-3xl font-bold text-center mb-8">📊 Survey Analysis</h1>
+
+  <!-- Auth gate -->
+  <div id="auth-loading" class="text-center py-12">
+    <span class="loading loading-spinner loading-lg"></span>
+    <p class="mt-2 text-sm opacity-60">Checking authentication…</p>
+  </div>
+
+  <div id="app" class="hidden">
+    <!-- Alert area -->
+    <div id="alert-message" class="alert hidden mb-4">
+      <span id="alert-text"></span>
+    </div>
+
+    <!-- Step 1: Time range -->
+    <div id="step-fetch" class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title">1. Select time range</h2>
+        <form id="fetch-form" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label"><span class="label-text">Start Time</span></label>
+              <input type="datetime-local" id="start-time" class="input input-bordered" required />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">End Time</span></label>
+              <input type="datetime-local" id="end-time" class="input input-bordered" required />
+            </div>
+          </div>
+          <button type="submit" id="fetch-btn" class="btn btn-primary w-full">
+            <span id="fetch-btn-text">Analyze Responses</span>
+            <span id="fetch-spinner" class="loading loading-spinner loading-sm hidden"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Step 2: Results -->
+    <div id="step-results" class="hidden mt-6 space-y-4">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold">Results</h2>
+        <button id="back-btn" class="btn btn-ghost btn-sm">← New query</button>
+      </div>
+      <div id="results-container" class="space-y-4"></div>
+
+      <!-- Save controls -->
+      <div id="save-section" class="card bg-base-200 shadow mt-4">
+        <div class="card-body py-4">
+          <div class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-end">
+            <div class="form-control flex-1">
+              <label class="label"><span class="label-text">Label (optional)</span></label>
+              <input type="text" id="save-label" placeholder="e.g. NCTM 2026" class="input input-bordered input-sm" />
+            </div>
+            <button id="save-btn" class="btn btn-success btn-sm">
+              <span id="save-btn-text">💾 Save Analysis</span>
+              <span id="save-spinner" class="loading loading-spinner loading-sm hidden"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Past Analyses -->
+    <div id="step-history" class="mt-8">
+      <h2 class="text-2xl font-bold mb-4">Past Analyses</h2>
+      <div id="history-loading" class="text-center py-4 hidden">
+        <span class="loading loading-spinner loading-md"></span>
+      </div>
+      <div id="history-empty" class="text-center py-4 opacity-50 hidden">No saved analyses yet.</div>
+      <div id="history-list" class="space-y-2"></div>
+    </div>
+
+    <div class="text-center mt-4">
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { supabase, getCurrentUser, signOut } from '/assets/js/supabase-client.js';
+
+// --- Auth gate ---
+const user = await getCurrentUser();
+if (!user) {
+  window.location.href = '/personal/coaching-login/';
+} else {
+  document.getElementById('auth-loading').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+}
+
+// --- State ---
+let currentColumns = null;
+let currentStartTime = null;
+let currentEndTime = null;
+
+// --- Helpers ---
+function showAlert(message, type = 'error') {
+  const el = document.getElementById('alert-message');
+  const txt = document.getElementById('alert-text');
+  el.className = `alert mb-4 ${type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : 'alert-info'}`;
+  txt.textContent = message;
+  el.classList.remove('hidden');
+}
+
+function hideAlert() {
+  document.getElementById('alert-message').classList.add('hidden');
+}
+
+function setLoading(loading) {
+  document.getElementById('fetch-btn-text').classList.toggle('hidden', loading);
+  document.getElementById('fetch-spinner').classList.toggle('hidden', !loading);
+  document.getElementById('fetch-btn').disabled = loading;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// --- Logout ---
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await signOut();
+  window.location.href = '/personal/coaching-login/';
+});
+
+// --- Back button ---
+document.getElementById('back-btn').addEventListener('click', () => {
+  document.getElementById('step-results').classList.add('hidden');
+  currentColumns = null;
+  hideAlert();
+});
+
+// --- Fetch & Analyze ---
+document.getElementById('fetch-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+
+  const startTime = document.getElementById('start-time').value;
+  const endTime = document.getElementById('end-time').value;
+
+  if (new Date(startTime) >= new Date(endTime)) {
+    showAlert('Start time must be before end time.');
+    return;
+  }
+
+  setLoading(true);
+  showAlert('Fetching data and generating AI summaries… This may take a minute.', 'info');
+
+  try {
+    const { data, error } = await supabase.functions.invoke('survey-analysis', {
+      body: { startTime, endTime },
+    });
+
+    if (error) {
+      // Extract actual error message from function response
+      let msg = error.message;
+      try {
+        const body = await error.context?.json();
+        if (body?.error) msg = body.error;
+      } catch (_) {}
+      throw new Error(msg);
+    }
+    if (data?.error) throw new Error(data.error);
+
+    const columns = data.columns || [];
+
+    if (columns.length === 0) {
+      showAlert('No data found in that time range.', 'info');
+      return;
+    }
+
+    // Store for saving
+    currentColumns = columns;
+    currentStartTime = startTime;
+    currentEndTime = endTime;
+    document.getElementById('save-section').classList.remove('hidden');
+    document.getElementById('save-btn').disabled = false;
+    document.getElementById('save-btn-text').textContent = '💾 Save Analysis';
+
+    // Render results
+    const container = document.getElementById('results-container');
+    container.innerHTML = columns.map(col => renderColumnCard(col)).join('');
+
+    document.getElementById('step-results').classList.remove('hidden');
+    showAlert(`Analysis complete — ${columns.length} columns analyzed.`, 'success');
+  } catch (err) {
+    console.error(err);
+    showAlert(err.message || 'Failed to analyze survey data.', 'error');
+  } finally {
+    setLoading(false);
+  }
+});
+
+// --- Save Analysis ---
+document.getElementById('save-btn').addEventListener('click', async () => {
+  if (!currentColumns) return;
+
+  const label = document.getElementById('save-label').value.trim() || null;
+  document.getElementById('save-btn-text').classList.add('hidden');
+  document.getElementById('save-spinner').classList.remove('hidden');
+  document.getElementById('save-btn').disabled = true;
+
+  try {
+    const { error } = await supabase.from('survey_analyses').insert({
+      start_time: new Date(currentStartTime).toISOString(),
+      end_time: new Date(currentEndTime).toISOString(),
+      label,
+      columns: currentColumns,
+      user_id: user.id,
+    });
+
+    if (error) throw error;
+
+    document.getElementById('save-btn-text').textContent = '✓ Saved';
+    document.getElementById('save-btn-text').classList.remove('hidden');
+    document.getElementById('save-spinner').classList.add('hidden');
+    showAlert('Analysis saved!', 'success');
+    loadHistory();
+  } catch (err) {
+    console.error(err);
+    document.getElementById('save-btn-text').textContent = '💾 Save Analysis';
+    document.getElementById('save-btn-text').classList.remove('hidden');
+    document.getElementById('save-spinner').classList.add('hidden');
+    document.getElementById('save-btn').disabled = false;
+    showAlert(`Failed to save: ${err.message}`, 'error');
+  }
+});
+
+// --- Shared column renderer ---
+function renderSummaryHtml(summary) {
+  if (!summary) return '';
+  return `<div class="prose prose-sm max-w-none mt-2">
+    ${summary.split('\n').map(p => p.trim() ? `<p>${escapeHtml(p)}</p>` : '').join('')}
+  </div>`;
+}
+
+function renderHighlightedList(items, label, badgeClass = 'badge-accent') {
+  if (!items || items.length === 0) return '';
+  return `
+    <div class="mt-3 p-3 rounded-lg bg-base-200">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="badge ${badgeClass}">${escapeHtml(label)}</span>
+        <span class="text-sm font-medium">${items.length} highlighted</span>
+      </div>
+      <ul class="space-y-2">
+        ${items.map(item => `<li class="text-sm bg-base-100 p-2 rounded border-l-4 border-primary">${escapeHtml(item)}</li>`).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+function renderRawResponses(col) {
+  if (!col.responses || col.responses.length === 0) return '';
+  const responsesHtml = col.responses.map(r => `<li class="py-1 border-b border-base-200 last:border-0">${escapeHtml(r)}</li>`).join('');
+  return `
+    <div class="collapse collapse-arrow bg-base-200 mt-3">
+      <input type="checkbox" />
+      <div class="collapse-title font-medium text-sm">
+        View all responses (${col.responseCount})
+      </div>
+      <div class="collapse-content">
+        <ul class="text-sm max-h-64 overflow-y-auto">${responsesHtml}</ul>
+      </div>
+    </div>
+  `;
+}
+
+function renderRatingCard(col) {
+  const s = col.stats;
+  if (!s) return `<p class="opacity-50">No valid ratings found.</p>`;
+  return `
+    <div class="stats stats-vertical sm:stats-horizontal shadow w-full mt-2">
+      <div class="stat"><div class="stat-title">Min</div><div class="stat-value text-lg">${s.min}</div></div>
+      <div class="stat"><div class="stat-title">Q1</div><div class="stat-value text-lg">${s.q1}</div></div>
+      <div class="stat"><div class="stat-title">Median</div><div class="stat-value text-lg text-primary">${s.median}</div></div>
+      <div class="stat"><div class="stat-title">Q3</div><div class="stat-value text-lg">${s.q3}</div></div>
+      <div class="stat"><div class="stat-title">Max</div><div class="stat-value text-lg">${s.max}</div></div>
+    </div>
+    <div class="text-sm opacity-60 mt-1">Mean: ${s.mean} · n=${s.count}</div>
+  `;
+}
+
+function renderInvitationsList(invitations) {
+  if (!invitations || invitations.length === 0) return '';
+  // Handle both old format (string[]) and new format ({response, name, email}[])
+  const items = invitations.map(item => {
+    if (typeof item === 'string') return { response: item, name: '', email: '' };
+    return item;
+  });
+  return `
+    <div class="mt-3 p-3 rounded-lg bg-base-200">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="badge badge-info">🏫 School/District Invitations</span>
+        <span class="text-sm font-medium">${items.length} found</span>
+      </div>
+      <ul class="space-y-3">
+        ${items.map(inv => `
+          <li class="text-sm bg-base-100 p-3 rounded border-l-4 border-info">
+            <div class="mb-1">${escapeHtml(inv.response)}</div>
+            ${inv.name || inv.email ? `<div class="flex flex-wrap gap-2 mt-2 text-xs">
+              ${inv.name ? `<span class="badge badge-ghost badge-sm">👤 ${escapeHtml(inv.name)}</span>` : ''}
+              ${inv.email ? `<a href="mailto:${escapeHtml(inv.email)}" class="badge badge-ghost badge-sm hover:badge-primary">✉️ ${escapeHtml(inv.email)}</a>` : ''}
+            </div>` : ''}
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+function renderColumnCard(col) {
+  let body = '';
+
+  if (col.type === 'rating') {
+    body = renderRatingCard(col);
+  } else if (col.type === 'testimonials') {
+    body = renderSummaryHtml(col.summary)
+      + renderHighlightedList(col.testimonials, '⭐ Top Testimonials', 'badge-success');
+  } else if (col.type === 'improvements') {
+    body = renderSummaryHtml(col.summary)
+      + renderHighlightedList(col.improvements, '🔧 Key Improvements', 'badge-warning');
+  } else if (col.type === 'invitations') {
+    body = renderSummaryHtml(col.summary)
+      + renderInvitationsList(col.invitations);
+  } else {
+    body = renderSummaryHtml(col.summary);
+  }
+
+  return `
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <div class="flex justify-between items-start gap-2">
+          <h3 class="card-title text-lg">${escapeHtml(col.header)}</h3>
+          <span class="badge badge-primary badge-lg whitespace-nowrap">${col.responseCount} response${col.responseCount !== 1 ? 's' : ''}</span>
+        </div>
+        ${body}
+        ${renderRawResponses(col)}
+      </div>
+    </div>
+  `;
+}
+
+// --- History ---
+function renderColumns(columns) {
+  return columns.map(col => renderColumnCard(col)).join('');
+}
+
+async function loadHistory() {
+  const listEl = document.getElementById('history-list');
+  const emptyEl = document.getElementById('history-empty');
+  const loadingEl = document.getElementById('history-loading');
+
+  loadingEl.classList.remove('hidden');
+  emptyEl.classList.add('hidden');
+
+  try {
+    const { data, error } = await supabase
+      .from('survey_analyses')
+      .select('id, created_at, start_time, end_time, label, columns')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      listEl.innerHTML = '';
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+
+    listEl.innerHTML = data.map(row => {
+      const created = new Date(row.created_at).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'
+      });
+      const start = new Date(row.start_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      const end = new Date(row.end_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      const totalResponses = row.columns.reduce((sum, c) => sum + (c.responseCount || 0), 0);
+      const labelHtml = row.label ? `<span class="badge badge-secondary">${escapeHtml(row.label)}</span>` : '';
+
+      return `
+        <div class="collapse collapse-arrow bg-base-100 shadow">
+          <input type="checkbox" />
+          <div class="collapse-title">
+            <div class="flex flex-wrap items-center gap-2">
+              ${labelHtml}
+              <span class="font-medium">${start} → ${end}</span>
+              <span class="badge badge-ghost badge-sm">${row.columns.length} columns · ${totalResponses} responses</span>
+              <span class="text-xs opacity-50 ml-auto">Saved ${created}</span>
+            </div>
+          </div>
+          <div class="collapse-content space-y-4">
+            <div class="flex justify-end">
+              <button class="btn btn-error btn-xs delete-analysis" data-id="${row.id}">Delete</button>
+            </div>
+            ${renderColumns(row.columns)}
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error(err);
+  } finally {
+    loadingEl.classList.add('hidden');
+  }
+}
+
+// Delete handler
+document.getElementById('history-list').addEventListener('click', async (e) => {
+  const btn = e.target.closest('.delete-analysis');
+  if (!btn) return;
+  if (!confirm('Delete this saved analysis?')) return;
+
+  const id = btn.dataset.id;
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  try {
+    const { error } = await supabase.from('survey_analyses').delete().eq('id', id);
+    if (error) throw error;
+    loadHistory();
+  } catch (err) {
+    console.error(err);
+    showAlert(`Failed to delete: ${err.message}`, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Delete';
+  }
+});
+
+// Load history on page load
+loadHistory();
+</script>
+
+</body>
+</html>
