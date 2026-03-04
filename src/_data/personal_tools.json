@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Coaching Dashboard",
+    "description": "Manage coaching clients and log session notes, action items, and meeting summaries.",
+    "link": "/personal/coaching/",
+    "icon": "🎯"
+  },
+  {
+    "name": "Survey Analysis",
+    "description": "AI-powered analysis of workshop feedback form responses over a selected time range.",
+    "link": "/personal/survey-analysis/",
+    "icon": "📊"
+  },
+  {
+    "name": "Kit Import",
+    "description": "Import Google Form sign-up responses to Kit.com as tagged subscribers.",
+    "link": "/personal/kit-import/",
+    "icon": "📧"
+  },
+  {
+    "name": "Pizza Dough Calculator",
+    "description": "Step-by-step biga pizza dough recipe calculator. Set hydration, flour type, and ball count.",
+    "link": "/personal/pizza/",
+    "icon": "🍕"
+  },
+  {
+    "name": "Pizza Dashboard",
+    "description": "Browse and manage your saved pizza recipes with notes and photos.",
+    "link": "/personal/pizza-dashboard/",
+    "icon": "📋"
+  },
+  {
+    "name": "Kachuful Score Tracker",
+    "description": "Track bids and scores for Kachuful card game with automatic hand progression and scoring.",
+    "link": "/personal/kachuful/",
+    "icon": "🃏"
+  }
+]
