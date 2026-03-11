@@ -100,6 +100,21 @@ let currentColumns = null;
 let currentStartTime = null;
 let currentEndTime = null;
 
+// --- PD Interest tagged set (loaded from Supabase) ---
+const taggedEmails = new Set();
+
+async function loadTaggedEmails() {
+  try {
+    const { data, error } = await supabase
+      .from('kit_tagged_contacts')
+      .select('email');
+    if (error) throw error;
+    (data || []).forEach(row => taggedEmails.add(row.email));
+  } catch (err) {
+    console.error('Failed to load tagged contacts:', err);
+  }
+}
+
 // --- Helpers ---
 function showAlert(message, type = 'error') {
   const el = document.getElementById('alert-message');
@@ -237,9 +252,27 @@ document.getElementById('save-btn').addEventListener('click', async () => {
 // --- Shared column renderer ---
 function renderSummaryHtml(summary) {
   if (!summary) return '';
-  return `<div class="prose prose-sm max-w-none mt-2">
-    ${summary.split('\n').map(p => p.trim() ? `<p>${escapeHtml(p)}</p>` : '').join('')}
-  </div>`;
+  // Guard: AI may return an array instead of a string
+  const text = Array.isArray(summary)
+    ? summary.map(item => `- ${item}`).join('\n')
+    : String(summary);
+
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+  const parts = [];
+  let inList = false;
+
+  for (const line of lines) {
+    if (line.startsWith('- ') || line.startsWith('* ')) {
+      if (!inList) { parts.push('<ul class="list-disc list-inside space-y-1 text-sm mt-2">'); inList = true; }
+      parts.push(`<li>${escapeHtml(line.slice(2))}</li>`);
+    } else {
+      if (inList) { parts.push('</ul>'); inList = false; }
+      parts.push(`<p class="text-sm mt-2">${escapeHtml(line)}</p>`);
+    }
+  }
+  if (inList) parts.push('</ul>');
+
+  return `<div class="mt-2">${parts.join('')}</div>`;
 }
 
 function renderHighlightedList(items, label, badgeClass = 'badge-accent') {
@@ -305,9 +338,13 @@ function renderInvitationsList(invitations) {
         ${items.map(inv => `
           <li class="text-sm bg-base-100 p-3 rounded border-l-4 border-info">
             <div class="mb-1">${escapeHtml(inv.response)}</div>
-            ${inv.name || inv.email ? `<div class="flex flex-wrap gap-2 mt-2 text-xs">
+            ${inv.name || inv.email ? `<div class="flex flex-wrap gap-2 mt-2 text-xs items-center">
               ${inv.name ? `<span class="badge badge-ghost badge-sm">👤 ${escapeHtml(inv.name)}</span>` : ''}
               ${inv.email ? `<a href="mailto:${escapeHtml(inv.email)}" class="badge badge-ghost badge-sm hover:badge-primary">✉️ ${escapeHtml(inv.email)}</a>` : ''}
+              ${inv.email ? (taggedEmails.has(inv.email)
+                ? `<button class="btn btn-xs btn-success" disabled>✓ Tagged</button>`
+                : `<button class="btn btn-xs btn-outline btn-info pd-interest-btn" data-email="${escapeHtml(inv.email)}" data-name="${escapeHtml(inv.name || '')}">🏷️ Tag "PD Interest"</button>`
+              ) : ''}
             </div>` : ''}
           </li>
         `).join('')}
@@ -433,6 +470,50 @@ document.getElementById('history-list').addEventListener('click', async (e) => {
   }
 });
 
-// Load history on page load
+// Load tagged emails then history on page load
+await loadTaggedEmails();
 loadHistory();
+
+// --- Tag PD Interest ---
+document.getElementById('app').addEventListener('click', async (e) => {
+  const btn = e.target.closest('.pd-interest-btn');
+  if (!btn) return;
+
+  const email = btn.dataset.email;
+  if (!email) return;
+
+  btn.disabled = true;
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
+
+  try {
+    const { data, error } = await supabase.functions.invoke('kit-tag-contact', {
+      body: { email, tagName: 'PD Interest' },
+    });
+
+    if (error) {
+      let msg = error.message;
+      try {
+        const body = await error.context?.json();
+        if (body?.error) msg = body.error;
+      } catch (_) {}
+      throw new Error(msg);
+    }
+    if (data?.error) throw new Error(data.error);
+
+    taggedEmails.add(email);
+    await supabase.from('kit_tagged_contacts').upsert(
+      { email, tag_name: 'PD Interest', user_id: user.id },
+      { onConflict: 'email,tag_name', ignoreDuplicates: true }
+    );
+    btn.innerHTML = '✓ Tagged';
+    btn.classList.remove('btn-outline', 'btn-info');
+    btn.classList.add('btn-success');
+  } catch (err) {
+    console.error(err);
+    btn.innerHTML = originalHtml;
+    btn.disabled = false;
+    showAlert(`Failed to tag ${email}: ${err.message}`, 'error');
+  }
+});
 </script>

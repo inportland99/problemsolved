@@ -162,13 +162,12 @@ async function fetchSurveyColumns(
     email: (emailRows[rowIdx]?.[0] || "").trim(),
   }));
 
-  // Collect responses per column
+  // Collect responses per column — keep ALL rows (including empty) so that
+  // responses[i] is always aligned with contacts[i] for every column.
   const columns: ColumnData[] = headers.map((header, colIdx) => {
-    const responses: string[] = [];
-    for (const rowIdx of filteredIndices) {
-      const val = (dataRows[rowIdx]?.[colIdx] || "").trim();
-      if (val) responses.push(val);
-    }
+    const responses: string[] = filteredIndices.map((rowIdx) =>
+      (dataRows[rowIdx]?.[colIdx] || "").trim()
+    );
     return { header: header.trim(), responses };
   });
 
@@ -268,13 +267,14 @@ async function analyzeGeneric(
   header: string,
   responses: string[]
 ): Promise<Record<string, unknown>> {
-  if (responses.length === 0) {
+  const nonEmpty = responses.filter((r) => r !== "");
+  if (nonEmpty.length === 0) {
     return { type: "generic", summary: "No responses in this time range." };
   }
 
   const summary = await callOpenAI(
-    `You are an assistant that analyzes survey responses. Given a list of responses to a survey question, provide a concise summary that identifies the key themes, patterns, and notable insights. Be specific and use numbers where relevant (e.g. "12 out of 30 mentioned…"). Keep the summary to 2-4 paragraphs.`,
-    `Survey question/column: "${header}"\n\nTotal responses: ${responses.length}\n\nResponses:\n${buildResponsesText(responses)}\n\nProvide a concise analytical summary of these responses.`
+    `You are an assistant that analyzes survey responses. Given a list of responses to a survey question, produce a concise bulleted summary using "-" bullets. Identify key themes and notable insights. Use numbers where relevant (e.g. "12/30 mentioned…"). Aim for 3-6 bullets.`,
+    `Survey question/column: "${header}"\n\nTotal responses: ${nonEmpty.length}\n\nResponses:\n${buildResponsesText(nonEmpty)}\n\nProvide a concise bulleted summary of these responses.`
   );
 
   return { type: "generic", summary };
@@ -282,6 +282,7 @@ async function analyzeGeneric(
 
 function analyzeRating(responses: string[]): Record<string, unknown> {
   const nums = responses
+    .filter((r) => r !== "")
     .map((r) => parseFloat(r))
     .filter((n) => !isNaN(n) && n >= 1 && n <= 10);
 
@@ -296,13 +297,14 @@ async function analyzeTestimonials(
   header: string,
   responses: string[]
 ): Promise<Record<string, unknown>> {
-  if (responses.length === 0) {
+  const nonEmpty = responses.filter((r) => r !== "");
+  if (nonEmpty.length === 0) {
     return { type: "testimonials", summary: "No responses in this time range.", testimonials: [] };
   }
 
   const raw = await callOpenAI(
     `You are an assistant that analyzes survey responses for a math educator named Dr. Raj Shah. You will produce JSON output only, no markdown.`,
-    `Survey question: "${header}"\n\nTotal responses: ${responses.length}\n\nResponses:\n${buildResponsesText(responses)}\n\nAnalyze these responses and return a JSON object with exactly two keys:\n1. "summary": A 2-4 paragraph analytical summary identifying key themes, patterns, and notable insights. Be specific with numbers.\n2. "testimonials": An array of 3-5 of the best verbatim responses that could serve as testimonials for Dr. Shah's work. Pick responses that are specific, enthusiastic, and highlight impact.\n\nReturn ONLY valid JSON, no markdown fences.`,
+    `Survey question: "${header}"\n\nTotal responses: ${nonEmpty.length}\n\nResponses:\n${buildResponsesText(nonEmpty)}\n\nAnalyze these responses and return a JSON object with exactly two keys:\n1. "summary": A single TEXT STRING (not an array) containing 3-6 bullet points, each on its own line starting with "- ". Use numbers where relevant (e.g. "18/30 mentioned…").\n2. "testimonials": An array of 3-5 of the best verbatim responses that could serve as testimonials for Dr. Shah's work. Pick responses that are specific, enthusiastic, and highlight impact.\n\nReturn ONLY valid JSON, no markdown fences.`,
     1200
   );
 
@@ -318,13 +320,14 @@ async function analyzeImprovements(
   header: string,
   responses: string[]
 ): Promise<Record<string, unknown>> {
-  if (responses.length === 0) {
+  const nonEmpty = responses.filter((r) => r !== "");
+  if (nonEmpty.length === 0) {
     return { type: "improvements", summary: "No responses in this time range.", improvements: [] };
   }
 
   const raw = await callOpenAI(
     `You are an assistant that analyzes survey feedback for a math educator named Dr. Raj Shah. You will produce JSON output only, no markdown.`,
-    `Survey question: "${header}"\n\nTotal responses: ${responses.length}\n\nResponses:\n${buildResponsesText(responses)}\n\nAnalyze these responses and return a JSON object with exactly two keys:\n1. "summary": A 2-4 paragraph analytical summary identifying key themes, patterns, and actionable insights. Be specific with numbers.\n2. "improvements": An array of 3-5 verbatim responses that most clearly highlight specific improvements or constructive suggestions Dr. Shah can act on.\n\nReturn ONLY valid JSON, no markdown fences.`,
+    `Survey question: "${header}"\n\nTotal responses: ${nonEmpty.length}\n\nResponses:\n${buildResponsesText(nonEmpty)}\n\nAnalyze these responses and return a JSON object with exactly two keys:\n1. "summary": A single TEXT STRING (not an array) containing 3-6 bullet points, each on its own line starting with "- ". Use numbers where relevant.\n2. "improvements": An array of 3-5 verbatim responses that most clearly highlight specific improvements or constructive suggestions Dr. Shah can act on.\n\nReturn ONLY valid JSON, no markdown fences.`,
     1200
   );
 
@@ -341,18 +344,23 @@ async function analyzeInvitations(
   responses: string[],
   contacts: RowContact[]
 ): Promise<Record<string, unknown>> {
-  if (responses.length === 0) {
+  // Pair each response with its contact BEFORE filtering empties, so that
+  // the index the AI sees always maps to the correct person.
+  const pairs = responses
+    .map((r, i) => ({ response: r, contact: contacts[i] }))
+    .filter((p) => p.response !== "");
+
+  if (pairs.length === 0) {
     return { type: "invitations", summary: "No responses in this time range.", invitations: [] };
   }
 
-  // Build responses with row numbers so AI can reference them
-  const responsesText = responses
-    .map((r, i) => `${i + 1}. ${r}`)
+  const responsesText = pairs
+    .map((p, i) => `${i + 1}. ${p.response}`)
     .join("\n");
 
   const raw = await callOpenAI(
     `You are an assistant that analyzes survey feedback for a math educator named Dr. Raj Shah. You will produce JSON output only, no markdown.`,
-    `Survey question: "${header}"\n\nTotal responses: ${responses.length}\n\nResponses:\n${responsesText}\n\nAnalyze these responses and return a JSON object with exactly two keys:\n1. "summary": A 2-4 paragraph analytical summary identifying key themes, patterns, and notable insights. Be specific with numbers.\n2. "invitation_indices": An array of the 1-based response numbers (integers) where the respondent mentions wanting Dr. Shah to come to their school, district, or organization, or expresses interest in further collaboration or booking. Include ALL such responses. If none exist, return an empty array.\n\nReturn ONLY valid JSON, no markdown fences.`,
+    `Survey question: "${header}"\n\nTotal responses: ${pairs.length}\n\nResponses:\n${responsesText}\n\nAnalyze these responses and return a JSON object with exactly two keys:\n1. "summary": A single TEXT STRING (not an array) containing 3-6 bullet points, each on its own line starting with "- ". Use numbers where relevant.\n2. "invitation_indices": An array of the 1-based response numbers (integers) where the respondent mentions wanting Dr. Shah to come to their school, district, or organization, or expresses interest in further collaboration or booking. Include ALL such responses. If none exist, return an empty array.\n\nReturn ONLY valid JSON, no markdown fences.`,
     1200
   );
 
@@ -360,15 +368,15 @@ async function analyzeInvitations(
     const parsed = JSON.parse(stripMarkdownFences(raw));
     const indices: number[] = parsed.invitation_indices || [];
 
-    // Map indices back to responses with contact info
+    // Map 1-based AI indices back to the correctly paired contact info
     const invitations = indices
-      .filter((i: number) => i >= 1 && i <= responses.length)
+      .filter((i: number) => i >= 1 && i <= pairs.length)
       .map((i: number) => {
-        const idx = i - 1; // convert to 0-based
+        const pair = pairs[i - 1];
         return {
-          response: responses[idx],
-          name: contacts[idx]?.name || "Unknown",
-          email: contacts[idx]?.email || "",
+          response: pair.response,
+          name: pair.contact?.name || "Unknown",
+          email: pair.contact?.email || "",
         };
       });
 
