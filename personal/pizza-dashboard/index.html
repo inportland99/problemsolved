@@ -69,6 +69,10 @@
     <!-- Recipe Info Grid -->
     <div class="grid grid-cols-2 gap-4 mb-6">
       <div>
+        <p class="text-sm text-gray-600">Pizza Type</p>
+        <p class="font-semibold" id="view-pizza-type"></p>
+      </div>
+      <div>
         <p class="text-sm text-gray-600">Flour Type</p>
         <p class="font-semibold" id="view-flour-type"></p>
       </div>
@@ -138,8 +142,27 @@
     <input type="hidden" id="edit-recipe-id">
     
     <div class="space-y-4">
+      <!-- Title -->
+      <div class="form-control">
+        <label class="label"><span class="label-text">Title</span></label>
+        <input type="text" id="edit-title" class="input input-bordered" placeholder="e.g. Friday Night Margherita">
+      </div>
+
       <!-- Recipe Details -->
       <div class="grid grid-cols-2 gap-4">
+        <div class="form-control">
+          <label class="label"><span class="label-text">Pizza Type</span></label>
+          <select id="edit-pizza-type" class="select select-bordered">
+            <option value="">—</option>
+            <option value="neapolitan">Neapolitan</option>
+            <option value="newyork">New York</option>
+            <option value="detroit">Detroit</option>
+            <option value="sicilian">Sicilian</option>
+            <option value="roman">Roman</option>
+            <option value="grandma">Grandma</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
         <div class="form-control">
           <label class="label"><span class="label-text">Flour Type</span></label>
           <select id="edit-flour-type" class="select select-bordered">
@@ -148,6 +171,7 @@
             <option value="allpurpose">All Purpose</option>
             <option value="other">Other</option>
           </select>
+          <input type="text" id="edit-flour-type-other" class="input input-bordered mt-2 hidden" placeholder="e.g. 50% semolina 50% 00 flour">
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text">Dough Balls</span></label>
@@ -317,12 +341,23 @@ function createRecipeCard(recipe) {
         </figure>
       ` : ''}
       <div class="card-body">
-        <div class="flex justify-between items-start mb-2">
-          <h2 class="card-title text-lg">${recipe.flour_type.charAt(0).toUpperCase() + recipe.flour_type.slice(1)} Pizza</h2>
-          <div class="badge badge-primary">${recipe.hydration}%</div>
-        </div>
+        <h2 class="card-title text-lg mb-2">${recipe.title || 'Untitled Pizza'}</h2>
         
         <div class="text-sm space-y-1 mb-2">
+        ${recipe.pizza_type ? `
+          <div class="flex justify-between">
+            <span class="text-gray-600">Style:</span>
+            <span class="font-semibold">${pizzaTypeDisplayName(recipe.pizza_type)}</span>
+          </div>
+        ` : ''}
+          <div class="flex justify-between">
+            <span class="text-gray-600">Flour:</span>
+            <span class="font-semibold">${flourDisplayName(recipe.flour_type)}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Hydration:</span>
+            <span class="font-semibold">${recipe.hydration}%</span>
+          </div>
           <div class="flex justify-between">
             <span class="text-gray-600">Dough balls:</span>
             <span class="font-semibold">${recipe.dough_balls}</span>
@@ -369,14 +404,25 @@ function createRecipeCard(recipe) {
   `;
 }
 
+// Display name helpers
+function flourDisplayName(value) {
+  const names = { semolina: 'Semolina', '00pizza': '00 Pizza', allpurpose: 'All Purpose', other: 'Other' };
+  return names[value] || value;
+}
+
+function pizzaTypeDisplayName(value) {
+  const names = { neapolitan: 'Neapolitan', newyork: 'New York', detroit: 'Detroit', sicilian: 'Sicilian', roman: 'Roman', grandma: 'Grandma', other: 'Other' };
+  return names[value] || value;
+}
+
 // Open view modal
 function openViewModal(recipe) {
   // Set title
-  const flourName = recipe.flour_type.charAt(0).toUpperCase() + recipe.flour_type.slice(1);
-  document.getElementById('view-recipe-title').textContent = `${flourName} Pizza`;
+  document.getElementById('view-recipe-title').textContent = recipe.title || 'Untitled Pizza';
   
   // Set recipe details
-  document.getElementById('view-flour-type').textContent = flourName;
+  document.getElementById('view-pizza-type').textContent = recipe.pizza_type ? pizzaTypeDisplayName(recipe.pizza_type) : '—';
+  document.getElementById('view-flour-type').textContent = flourDisplayName(recipe.flour_type);
   document.getElementById('view-hydration').textContent = `${recipe.hydration}%`;
   document.getElementById('view-dough-balls').textContent = recipe.dough_balls;
   document.getElementById('view-ball-size').textContent = `${recipe.ball_size}g`;
@@ -397,10 +443,18 @@ function openViewModal(recipe) {
   
   if (recipe.image_urls && recipe.image_urls.length > 0) {
     photosGrid.innerHTML = recipe.image_urls.map((url, index) => `
-      <div class="cursor-pointer hover:opacity-80 transition-opacity" onclick="openFullImage('${url}')">
+      <div class="cursor-pointer hover:opacity-80 transition-opacity gallery-photo" data-url="${encodeURI(url)}">
         <img src="${url}" alt="Pizza photo ${index + 1}" class="w-full h-32 object-cover rounded-lg" />
       </div>
     `).join('');
+    // Use event delegation for gallery clicks
+    photosGrid.querySelectorAll('.gallery-photo').forEach(el => {
+      el.addEventListener('click', () => {
+        const imageUrl = decodeURI(el.dataset.url);
+        document.getElementById('fullimage-img').src = imageUrl;
+        document.getElementById('fullimage-modal').showModal();
+      });
+    });
     photosContainer.classList.remove('hidden');
   } else {
     photosContainer.classList.add('hidden');
@@ -409,16 +463,26 @@ function openViewModal(recipe) {
   document.getElementById('view-modal').showModal();
 }
 
-// Open full image in lightbox
-window.openFullImage = function(url) {
-  document.getElementById('fullimage-img').src = url;
-  document.getElementById('fullimage-modal').showModal();
-};
+// Open edit modal
+let currentEditRecipe = null;
 
 // Open edit modal
 function openEditModal(recipe) {
+  currentEditRecipe = recipe;
   document.getElementById('edit-recipe-id').value = recipe.id;
-  document.getElementById('edit-flour-type').value = recipe.flour_type;
+  document.getElementById('edit-title').value = recipe.title || '';
+  document.getElementById('edit-pizza-type').value = recipe.pizza_type || '';
+  // Set flour type — if it's not a predefined value, select "other" and fill the text input
+  const knownFlourTypes = ['semolina', '00pizza', 'allpurpose', 'other'];
+  if (knownFlourTypes.includes(recipe.flour_type)) {
+    document.getElementById('edit-flour-type').value = recipe.flour_type;
+    document.getElementById('edit-flour-type-other').value = '';
+    document.getElementById('edit-flour-type-other').classList.toggle('hidden', recipe.flour_type !== 'other');
+  } else {
+    document.getElementById('edit-flour-type').value = 'other';
+    document.getElementById('edit-flour-type-other').value = recipe.flour_type || '';
+    document.getElementById('edit-flour-type-other').classList.remove('hidden');
+  }
   document.getElementById('edit-dough-balls').value = recipe.dough_balls;
   document.getElementById('edit-ball-size').value = recipe.ball_size;
   document.getElementById('edit-hydration').value = recipe.hydration;
@@ -454,12 +518,25 @@ function openEditModal(recipe) {
     previewContainer.innerHTML = '<p class="text-sm text-gray-500">No photos yet</p>';
   }
   
-  // Clear new image preview
+  // Clear file input and new image preview
+  document.getElementById('edit-image').value = '';
   document.getElementById('new-image-preview').classList.add('hidden');
   document.getElementById('new-image-grid').innerHTML = '';
   
   document.getElementById('edit-modal').showModal();
 }
+
+// Toggle flour type other input
+document.getElementById('edit-flour-type').addEventListener('change', (e) => {
+  const otherInput = document.getElementById('edit-flour-type-other');
+  if (e.target.value === 'other') {
+    otherInput.classList.remove('hidden');
+    otherInput.focus();
+  } else {
+    otherInput.classList.add('hidden');
+    otherInput.value = '';
+  }
+});
 
 // Preview selected images
 document.getElementById('edit-image').addEventListener('change', (e) => {
@@ -491,7 +568,12 @@ document.getElementById('edit-image').addEventListener('change', (e) => {
 // Save edit
 document.getElementById('save-edit-btn').addEventListener('click', async () => {
   const recipeId = document.getElementById('edit-recipe-id').value;
-  const flourType = document.getElementById('edit-flour-type').value;
+  const title = document.getElementById('edit-title').value.trim();
+  const pizzaType = document.getElementById('edit-pizza-type').value;
+  const flourTypeSelect = document.getElementById('edit-flour-type').value;
+  const flourType = flourTypeSelect === 'other'
+    ? (document.getElementById('edit-flour-type-other').value.trim() || 'other')
+    : flourTypeSelect;
   const doughBalls = parseInt(document.getElementById('edit-dough-balls').value);
   const ballSize = parseInt(document.getElementById('edit-ball-size').value);
   const hydration = parseInt(document.getElementById('edit-hydration').value);
@@ -529,6 +611,8 @@ document.getElementById('save-edit-btn').addEventListener('click', async () => {
   
   // Update recipe
   const updateData = {
+    title: title || null,
+    pizza_type: pizzaType || null,
     flour_type: flourType,
     dough_balls: doughBalls,
     ball_size: ballSize,
@@ -542,12 +626,8 @@ document.getElementById('save-edit-btn').addEventListener('click', async () => {
   }
   
   if (newImageUrls.length > 0) {
-    // Get existing images from the current recipe
-    const result = await getUserPizzaLogs();
-    const currentRecipe = result.data?.find(r => r.id === recipeId);
-    const existingUrls = currentRecipe?.image_urls || [];
-    
-    // Append new images to existing ones
+    // Append new images to existing ones from the stored recipe reference
+    const existingUrls = currentEditRecipe?.image_urls || [];
     updateData.image_urls = [...existingUrls, ...newImageUrls];
   }
   
