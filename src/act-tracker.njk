@@ -1,0 +1,141 @@
+---
+layout: minimal.njk
+title: ACT Practice Tracker
+permalink: /act-tracker/
+---
+
+<section class="max-w-5xl mx-auto px-4 py-10">
+
+  <h1 class="text-3xl font-bold mb-2">ACT Practice Tracker</h1>
+  <p class="text-base-content/60 mb-8">Daily practice: 1 reading passage · 15 English problems · 10 Math problems · Review answers</p>
+
+  {# Tab toggles #}
+  <div role="tablist" class="tabs tabs-bordered mb-8">
+    <button role="tab" class="tab tab-active text-base font-medium" id="tab-tracker-btn" onclick="switchTab('tracker')">Weekly tracker</button>
+    <button role="tab" class="tab text-base font-medium" id="tab-errors-btn" onclick="switchTab('errors')">Error log</button>
+  </div>
+
+  {# ── TRACKER TAB ── #}
+  <div id="tab-tracker">
+
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <span class="text-lg font-medium" id="week-label">Week of —</span>
+      <div class="flex gap-2">
+        <button class="btn btn-sm btn-outline" onclick="changeWeek(-1)">← Prev</button>
+        <button class="btn btn-sm btn-outline" onclick="changeWeek(0)">This week</button>
+        <button class="btn btn-sm btn-outline" onclick="changeWeek(1)">Next →</button>
+      </div>
+    </div>
+
+    {# Grid — built by JS #}
+    <div class="overflow-x-auto rounded-xl border border-base-300">
+      <table class="table table-sm w-full text-sm" id="tracker-table">
+        <thead class="bg-base-200">
+          <tr id="day-header-row">
+            <th class="w-24"></th>
+            {# Day columns injected by JS #}
+          </tr>
+        </thead>
+        <tbody id="tracker-body">
+          {# Rows injected by JS #}
+        </tbody>
+      </table>
+    </div>
+
+    {# Summary cards #}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+      <div class="stat bg-base-200 rounded-xl p-4">
+        <div class="stat-title text-xs">Days complete</div>
+        <div class="stat-value text-2xl" id="stat-days">0 / 7</div>
+        <div class="stat-desc">all 3 tasks done</div>
+      </div>
+      <div class="stat bg-base-200 rounded-xl p-4">
+        <div class="stat-title text-xs">Reading avg</div>
+        <div class="stat-value text-2xl" id="stat-reading">—</div>
+        <div class="stat-desc">passage score</div>
+      </div>
+      <div class="stat bg-base-200 rounded-xl p-4">
+        <div class="stat-title text-xs">English avg</div>
+        <div class="stat-value text-2xl" id="stat-english">—</div>
+        <div class="stat-desc">out of 15</div>
+      </div>
+      <div class="stat bg-base-200 rounded-xl p-4">
+        <div class="stat-title text-xs">Math avg</div>
+        <div class="stat-value text-2xl" id="stat-math">—</div>
+        <div class="stat-desc">out of 10</div>
+      </div>
+    </div>
+
+    {# Progress bar #}
+    <div class="mt-6 bg-base-200 rounded-xl p-4">
+      <div class="flex justify-between text-sm mb-2">
+        <span class="text-base-content/60">Weekly completion</span>
+        <span class="font-medium" id="bar-pct">0%</span>
+      </div>
+      <progress class="progress progress-primary w-full" id="week-progress" value="0" max="100"></progress>
+    </div>
+
+  </div>{# end tab-tracker #}
+
+
+  {# ── ERROR LOG TAB ── #}
+  <div id="tab-errors" class="hidden">
+
+    {# Add error form #}
+    <div class="card bg-base-200 rounded-xl mb-6">
+      <div class="card-body p-5">
+        <h2 class="card-title text-base mb-3">Log a missed problem</h2>
+        <div class="flex flex-wrap gap-3 items-end">
+          <div class="form-control">
+            <label class="label py-1"><span class="label-text text-xs">Section</span></label>
+            <select class="select select-bordered select-sm" id="new-section" onchange="populateCatSelect()">
+              <option value="reading">Reading</option>
+              <option value="english">English</option>
+              <option value="math">Math</option>
+            </select>
+          </div>
+          <div class="form-control">
+            <label class="label py-1"><span class="label-text text-xs">Category</span></label>
+            <select class="select select-bordered select-sm w-48" id="new-cat">
+              <option value="">— pick —</option>
+            </select>
+          </div>
+          <div class="form-control flex-1 min-w-52">
+            <label class="label py-1"><span class="label-text text-xs">What went wrong (one sentence)</span></label>
+            <input type="text" class="input input-bordered input-sm w-full" id="new-note"
+              placeholder="e.g. Forgot comma rules with introductory clauses" />
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addError()">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    {# Filter row #}
+    <div class="flex flex-wrap gap-3 items-center mb-5">
+      <span class="text-sm text-base-content/60">Filter:</span>
+      <select class="select select-bordered select-sm" id="filter-section" onchange="updateFilterCats(); renderErrors()">
+        <option value="all">All sections</option>
+        <option value="reading">Reading</option>
+        <option value="english">English</option>
+        <option value="math">Math</option>
+      </select>
+      <select class="select select-bordered select-sm" id="filter-cat" onchange="renderErrors()">
+        <option value="all">All categories</option>
+      </select>
+      <button class="btn btn-ghost btn-sm ml-auto text-error" onclick="clearAllErrors()">Clear all</button>
+    </div>
+
+    {# Error list #}
+    <div id="err-list" class="flex flex-col gap-3"></div>
+
+    {# Heatmap #}
+    <div class="mt-8">
+      <h2 class="text-base font-medium text-base-content/60 mb-4">Most common error types</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="heat-grid"></div>
+    </div>
+
+  </div>{# end tab-errors #}
+
+</section>
+
+<script src="/assets/js/act-tracker.js"></script>

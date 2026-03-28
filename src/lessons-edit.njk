@@ -82,15 +82,20 @@ description: Create or edit a math lesson
         <label class="label">
           <span class="label-text font-semibold">Anticipated Strategies</span>
         </label>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button type="button" class="btn btn-sm btn-outline strategy-preset" data-value="Make a table">Make a table</button>
+          <button type="button" class="btn btn-sm btn-outline strategy-preset" data-value="Draw a diagram">Draw a diagram</button>
+          <button type="button" class="btn btn-sm btn-outline strategy-preset" data-value="Guess/check/revise">Guess/check/revise</button>
+          <button type="button" class="btn btn-sm btn-outline strategy-preset" data-value="Wishful thinking">Wishful thinking</button>
+          <button type="button" class="btn btn-sm btn-outline strategy-preset" data-value="Go to extremes">Go to extremes</button>
+          <button type="button" class="btn btn-sm btn-outline strategy-preset" data-value="Be creative">Be creative</button>
+          <button type="button" class="btn btn-sm btn-outline strategy-preset" data-value="Solve a simpler problem">Solve a simpler problem</button>
+          <button type="button" class="btn btn-sm btn-outline strategy-preset" data-value="Seek patterns/structure">Seek patterns/structure</button>
+          <button type="button" class="btn btn-sm btn-ghost strategy-preset" data-value="">Other strategy</button>
+        </div>
         <div id="strategies-container" class="space-y-2">
           <!-- Strategy items will be added here -->
         </div>
-        <button type="button" id="add-strategy" class="btn btn-outline btn-sm mt-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Add Strategy
-        </button>
       </div>
 
       <!-- Connecting Questions -->
@@ -277,9 +282,11 @@ document.getElementById('remove-diagram').addEventListener('click', () => {
   document.getElementById('diagram-preview').classList.add('hidden');
 });
 
-// Add strategy button
-document.getElementById('add-strategy').addEventListener('click', () => {
-  createItemRow('strategies-container');
+// Strategy preset buttons
+document.querySelectorAll('.strategy-preset').forEach(btn => {
+  btn.addEventListener('click', () => {
+    createItemRow('strategies-container', btn.dataset.value);
+  });
 });
 
 // Add question button
