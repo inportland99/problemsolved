@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Portal</title>
+  <meta name="description" content="Teacher portal dashboard">
+  <link rel="stylesheet" href="/styles/output.css">
+  
+</head>
+<body class="min-h-screen">
+  
+<div class="min-h-screen bg-base-200">
+  <!-- Auth loading -->
+  <div id="auth-loading" class="flex justify-center items-center min-h-screen">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+
+  <!-- Main content (hidden until auth confirmed) -->
+  <div id="app" class="hidden">
+    <div class="container mx-auto px-4 py-10 max-w-4xl">
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">📐 Teacher Portal</h1>
+        <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <a href="/reyn/lesson-index/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+          <div class="card-body">
+            <div class="text-4xl mb-2">📚</div>
+            <h2 class="card-title text-lg">Lessons</h2>
+            <p class="text-sm text-base-content/70">Browse, create, and manage math lessons for problem-based learning.</p>
+          </div>
+        </a>
+
+        <a href="/reyn/observation-index/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+          <div class="card-body">
+            <div class="text-4xl mb-2">📋</div>
+            <h2 class="card-title text-lg">Observations</h2>
+            <p class="text-sm text-base-content/70">Record and review classroom lesson observations.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { getCurrentUser } from '/assets/js/lessons-supabase-client.js';
+import { logout } from '/assets/js/reyn-auth-guard.js';
+
+const user = await getCurrentUser();
+if (!user) {
+  window.location.href = '/reyn/login/';
+} else {
+  document.getElementById('auth-loading').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+}
+
+document.getElementById('logout-btn').addEventListener('click', logout);
+</script>
+
+</body>
+</html>

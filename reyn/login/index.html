@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Portal Login</title>
+  <meta name="description" content="Login to the teacher portal">
+  <link rel="stylesheet" href="/styles/output.css">
+  
+</head>
+<body class="min-h-screen">
+  
+<div class="min-h-screen bg-base-200 flex items-center justify-center">
+  <div class="container mx-auto px-4 py-8 max-w-md">
+    <h1 class="text-3xl font-bold text-center mb-8">📐 Teacher Portal</h1>
+    
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <!-- Alert messages -->
+        <div id="alert-message" class="alert hidden mb-4">
+          <span id="alert-text"></span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form">
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Email</span>
+            </label>
+            <input type="email" id="login-email" placeholder="your@email.com" 
+                   class="input input-bordered" required />
+          </div>
+
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Password</span>
+            </label>
+            <input type="password" id="login-password" placeholder="••••••••" 
+                   class="input input-bordered" required />
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full">
+            <span id="login-btn-text">Login</span>
+            <span id="login-spinner" class="loading loading-spinner loading-sm hidden"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { signIn, getCurrentUser } from '/assets/js/lessons-supabase-client.js';
+
+// If already logged in, redirect to lessons
+const user = await getCurrentUser();
+if (user) {
+  window.location.href = '/reyn/';
+}
+
+// Alert helper
+function showAlert(message, type = 'error') {
+  const alert = document.getElementById('alert-message');
+  const alertText = document.getElementById('alert-text');
+  
+  alert.className = `alert mb-4 ${type === 'error' ? 'alert-error' : 'alert-success'}`;
+  alertText.textContent = message;
+  alert.classList.remove('hidden');
+}
+
+// Login form
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  
+  document.getElementById('login-btn-text').classList.add('hidden');
+  document.getElementById('login-spinner').classList.remove('hidden');
+  
+  const { data, error } = await signIn(email, password);
+  
+  document.getElementById('login-btn-text').classList.remove('hidden');
+  document.getElementById('login-spinner').classList.add('hidden');
+  
+  if (error) {
+    showAlert(error.message || 'Failed to login', 'error');
+  } else {
+    showAlert('Login successful! Redirecting...', 'success');
+    setTimeout(() => {
+      window.location.href = '/reyn/';
+    }, 1000);
+  }
+});
+</script>
+
+</body>
+</html>

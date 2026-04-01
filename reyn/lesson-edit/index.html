@@ -14,12 +14,15 @@
   <!-- Header -->
   <div class="navbar bg-base-100 shadow-lg">
     <div class="flex-1">
-      <a href="/lessons/" class="btn btn-ghost normal-case text-xl">
+      <a href="/reyn/lesson-index/" class="btn btn-ghost normal-case text-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
         Back to Lessons
       </a>
+    </div>
+    <div class="flex-none">
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
     </div>
   </div>
 
@@ -134,14 +137,21 @@
           <span id="submit-text">Create Lesson</span>
           <span id="submit-loading" class="loading loading-spinner hidden"></span>
         </button>
-        <a href="/lessons/" class="btn btn-outline">Cancel</a>
+        <a href="/reyn/lesson-index/" class="btn btn-outline">Cancel</a>
       </div>
     </form>
   </div>
 </div>
 
 <script type="module">
+import { requireAuth, logout } from '/assets/js/reyn-auth-guard.js';
 import { getLessonById, createLesson, updateLesson, uploadLessonImage } from '/assets/js/lessons-db.js';
+
+// Auth guard — redirects to login if not authenticated
+await requireAuth();
+
+// Logout button
+document.getElementById('logout-btn').addEventListener('click', logout);
 
 let isEditMode = false;
 let existingDiagramUrl = null;
@@ -366,7 +376,7 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
       showAlert(isEditMode ? 'Lesson updated!' : 'Lesson created!', 'success');
       // Redirect after short delay
       setTimeout(() => {
-        window.location.href = '/lessons/';
+        window.location.href = '/reyn/lesson-index/';
       }, 1000);
     } else {
       showAlert(result.error?.message || 'Failed to save lesson', 'error');

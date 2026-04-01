@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson Observation Form</title>
+  <meta name="description" content="Lesson observation form for classroom visits">
+  <link rel="stylesheet" href="/styles/output.css">
+  
+</head>
+<body class="min-h-screen">
+  
+<div class="min-h-screen bg-base-200">
+  <!-- Navbar -->
+  <div class="navbar bg-base-100 shadow-lg">
+    <div class="flex-1">
+      <a href="/reyn/observation-index/" class="btn btn-ghost normal-case text-xl">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Observations
+      </a>
+    </div>
+    <div class="flex-none">
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-8 max-w-3xl">
+    <h1 id="page-title" class="text-3xl font-bold mb-8">New Observation</h1>
+
+    <!-- Alert messages -->
+    <div id="alert-container" class="mb-4"></div>
+
+    <form id="observation-form" class="space-y-6">
+      <!-- Meta fields -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Teacher Name</span></label>
+          <input type="text" id="teacherName" class="input input-bordered" placeholder="Enter teacher name">
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Grade / Course</span></label>
+          <select id="gradeCourse" class="select select-bordered w-full" onchange="document.getElementById('gradeCourseOther').classList.toggle('hidden', this.value !== 'other')">
+            <option value="">Select grade or course</option>
+            
+            <option>KG</option>
+            
+            <option>1st Grade</option>
+            
+            <option>2nd Grade</option>
+            
+            <option>3rd Grade</option>
+            
+            <option>4th Grade</option>
+            
+            <option>5th Grade</option>
+            
+            <option>6th Grade</option>
+            
+            <option>7th Grade</option>
+            
+            <option>8th Grade</option>
+            
+            <option>Algebra</option>
+            
+            <option>Algebra 2</option>
+            
+            <option>Geometry</option>
+            
+            <option>PreCalculus</option>
+            
+            <option>Calculus</option>
+            
+            <option value="other">Other...</option>
+          </select>
+          <input type="text" id="gradeCourseOther" class="input input-bordered mt-2 hidden" placeholder="Specify grade or course">
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Lesson</span></label>
+          <input type="text" id="lesson" class="input input-bordered" placeholder="Enter lesson topic">
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Date</span></label>
+          <input type="date" id="obsDate" class="input input-bordered">
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Observer's Name</span></label>
+          <input type="text" id="observerName" class="input input-bordered" placeholder="Enter observer name">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Planning -->
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold">Planning</span></label>
+        <input type="range" id="planningScore" min="0" max="5" step="0.1" value="0" class="range range-primary">
+        <div class="flex justify-between text-xs px-2 mt-1"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+        <textarea id="planningNotes" class="textarea textarea-bordered mt-2" placeholder="Notes on planning…"></textarea>
+      </div>
+
+      <!-- Launch -->
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold">Launch</span></label>
+        <input type="range" id="launchScore" min="0" max="5" step="0.1" value="0" class="range range-primary">
+        <div class="flex justify-between text-xs px-2 mt-1"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+        <textarea id="launchNotes" class="textarea textarea-bordered mt-2" placeholder="Notes on launch…"></textarea>
+      </div>
+
+      <!-- Problem Solving -->
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold">Problem Solving</span></label>
+        <input type="range" id="problemSolvingScore" min="0" max="5" step="0.1" value="0" class="range range-primary">
+        <div class="flex justify-between text-xs px-2 mt-1"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+        <textarea id="problemSolvingNotes" class="textarea textarea-bordered mt-2" placeholder="Notes on problem solving…"></textarea>
+      </div>
+
+      <!-- Closing -->
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold">Closing</span></label>
+        <input type="range" id="closingScore" min="0" max="5" step="0.1" value="0" class="range range-primary">
+        <div class="flex justify-between text-xs px-2 mt-1"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+        <textarea id="closingNotes" class="textarea textarea-bordered mt-2" placeholder="Notes on closing…"></textarea>
+      </div>
+
+      <!-- Additional Notes -->
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold">Additional Notes</span></label>
+        <textarea id="additionalNotes" class="textarea textarea-bordered" placeholder="Any additional notes…"></textarea>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-4 pt-4">
+        <button type="submit" id="save-btn" class="btn btn-primary flex-1">
+          <span id="save-text">Save Observation</span>
+          <span id="save-spinner" class="loading loading-spinner hidden"></span>
+        </button>
+        <button type="button" class="btn btn-outline" onclick="window.print()">Print / PDF</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import { requireAuth, logout } from '/assets/js/reyn-auth-guard.js';
+import { createObservation, updateObservation, getObservationById } from '/assets/js/observations-db.js';
+
+// Auth guard
+await requireAuth();
+
+// Logout
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+// Check if viewing existing observation
+const urlParams = new URLSearchParams(window.location.search);
+const obsId = urlParams.get('id');
+let isViewMode = false;
+
+// Alert helper
+function showAlert(message, type = 'info') {
+  const container = document.getElementById('alert-container');
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type} shadow-lg`;
+  alert.innerHTML = `<span>${message}</span>`;
+  container.appendChild(alert);
+  setTimeout(() => alert.remove(), 5000);
+}
+
+// Set default date
+document.getElementById('obsDate').valueAsDate = new Date();
+
+// Load existing observation if ?id= provided
+if (obsId) {
+  isViewMode = true;
+  document.getElementById('page-title').textContent = 'View Observation';
+  document.getElementById('save-text').textContent = 'Update Observation';
+
+  const result = await getObservationById(obsId);
+  if (result.success) {
+    const obs = result.data;
+    document.getElementById('teacherName').value = obs.teacher_name || '';
+    const gradeOptions = ["KG","1st Grade","2nd Grade","3rd Grade","4th Grade","5th Grade","6th Grade","7th Grade","8th Grade","Algebra","Algebra 2","Geometry","PreCalculus","Calculus"];
+    const gradeVal = obs.grade_course || '';
+    if (gradeOptions.includes(gradeVal)) {
+      document.getElementById('gradeCourse').value = gradeVal;
+    } else if (gradeVal) {
+      document.getElementById('gradeCourse').value = 'other';
+      document.getElementById('gradeCourseOther').value = gradeVal;
+      document.getElementById('gradeCourseOther').classList.remove('hidden');
+    }
+    document.getElementById('lesson').value = obs.lesson || '';
+    document.getElementById('obsDate').value = obs.observation_date || '';
+    document.getElementById('observerName').value = obs.observer_name || '';
+    document.getElementById('planningScore').value = obs.planning_score || 0;
+    document.getElementById('planningNotes').value = obs.planning_notes || '';
+    document.getElementById('launchScore').value = obs.launch_score || 0;
+    document.getElementById('launchNotes').value = obs.launch_notes || '';
+    document.getElementById('problemSolvingScore').value = obs.problem_solving_score || 0;
+    document.getElementById('problemSolvingNotes').value = obs.problem_solving_notes || '';
+    document.getElementById('closingScore').value = obs.closing_score || 0;
+    document.getElementById('closingNotes').value = obs.closing_notes || '';
+    document.getElementById('additionalNotes').value = obs.additional_notes || '';
+  } else {
+    showAlert('Failed to load observation', 'error');
+  }
+}
+
+// Save observation
+document.getElementById('observation-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const saveBtn = document.getElementById('save-btn');
+  const saveText = document.getElementById('save-text');
+  const saveSpinner = document.getElementById('save-spinner');
+
+  saveBtn.disabled = true;
+  saveText.classList.add('hidden');
+  saveSpinner.classList.remove('hidden');
+
+  const data = {
+    teacherName: document.getElementById('teacherName').value.trim(),
+    gradeCourse: (() => { const s = document.getElementById('gradeCourse'); return (s.value === 'other' ? document.getElementById('gradeCourseOther').value : s.value).trim(); })(),
+    lesson: document.getElementById('lesson').value.trim(),
+    observationDate: document.getElementById('obsDate').value,
+    observerName: document.getElementById('observerName').value.trim(),
+    planningScore: parseFloat(document.getElementById('planningScore').value),
+    planningNotes: document.getElementById('planningNotes').value.trim(),
+    launchScore: parseFloat(document.getElementById('launchScore').value),
+    launchNotes: document.getElementById('launchNotes').value.trim(),
+    problemSolvingScore: parseFloat(document.getElementById('problemSolvingScore').value),
+    problemSolvingNotes: document.getElementById('problemSolvingNotes').value.trim(),
+    closingScore: parseFloat(document.getElementById('closingScore').value),
+    closingNotes: document.getElementById('closingNotes').value.trim(),
+    additionalNotes: document.getElementById('additionalNotes').value.trim()
+  };
+
+  const result = obsId ? await updateObservation(obsId, data) : await createObservation(data);
+
+  saveBtn.disabled = false;
+  saveText.classList.remove('hidden');
+  saveSpinner.classList.add('hidden');
+
+  if (result.success) {
+    showAlert(obsId ? 'Observation updated!' : 'Observation saved!', 'success');
+    setTimeout(() => {
+      window.location.href = '/reyn/observation-index/';
+    }, 1000);
+  } else {
+    showAlert(result.error?.message || 'Failed to save observation', 'error');
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observations</title>
+  <meta name="description" content="Browse lesson observations">
+  <link rel="stylesheet" href="/styles/output.css">
+  
+</head>
+<body class="min-h-screen">
+  
+<div class="min-h-screen bg-base-200">
+  <!-- Header -->
+  <div class="navbar bg-base-100 shadow-lg">
+    <div class="flex-1">
+      <a href="/reyn/lesson-index/" class="btn btn-ghost normal-case text-xl">📐 Teacher Portal</a>
+    </div>
+    <div class="flex-none gap-2">
+      <a href="/reyn/lesson-index/" class="btn btn-ghost btn-sm">Lessons</a>
+      <a href="/reyn/observation-edit/" class="btn btn-primary btn-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        New Observation
+      </a>
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <h1 class="text-3xl font-bold mb-8">Observations</h1>
+
+    <!-- Alert messages -->
+    <div id="alert-container" class="mb-4"></div>
+
+    <!-- Loading state -->
+    <div id="loading" class="flex justify-center items-center py-12">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden text-center py-12">
+      <div class="text-6xl mb-4">📋</div>
+      <h2 class="text-2xl font-bold mb-2">No observations yet</h2>
+      <p class="text-gray-600 mb-6">Start by creating your first observation!</p>
+      <a href="/reyn/observation-edit/" class="btn btn-primary">Create First Observation</a>
+    </div>
+
+    <!-- Observations Grid -->
+    <div id="observations-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Cards inserted here -->
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<dialog id="delete-modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">Delete Observation?</h3>
+    <p class="mb-4">Are you sure you want to delete the observation for <strong id="delete-obs-name"></strong>? This cannot be undone.</p>
+    <input type="hidden" id="delete-obs-id">
+    <div class="modal-action">
+      <button id="confirm-delete-btn" class="btn btn-error">Delete</button>
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<script type="module">
+import { requireAuth, logout, isAdmin } from '/assets/js/reyn-auth-guard.js';
+import { getAllObservations, deleteObservation } from '/assets/js/observations-db.js';
+
+// Auth guard
+const user = await requireAuth();
+const adminUser = isAdmin(user);
+
+// Logout
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+// Alert helper
+function showAlert(message, type = 'info') {
+  const container = document.getElementById('alert-container');
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type} shadow-lg`;
+  alert.innerHTML = `<span>${message}</span>`;
+  container.appendChild(alert);
+  setTimeout(() => alert.remove(), 5000);
+}
+
+// Format date
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric'
+  });
+}
+
+// Score badge color
+function scoreBadge(score) {
+  if (score == null) return '';
+  const val = parseFloat(score);
+  let color = 'badge-ghost';
+  if (val >= 4) color = 'badge-success';
+  else if (val >= 2.5) color = 'badge-warning';
+  else if (val > 0) color = 'badge-error';
+  return `<div class="badge ${color} badge-sm">${val.toFixed(1)}</div>`;
+}
+
+// Create observation card
+function createCard(obs) {
+  return `
+    <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+      <div class="card-body">
+        <h2 class="card-title text-lg">${obs.teacher_name || 'Unknown Teacher'}</h2>
+        <p class="text-sm text-gray-600">${obs.lesson || 'No lesson specified'}</p>
+        <p class="text-xs text-gray-500">${obs.grade_course || ''}</p>
+
+        <div class="flex flex-wrap gap-1 mt-2">
+          ${obs.planning_score != null ? `<div class="tooltip" data-tip="Planning">${scoreBadge(obs.planning_score)}</div>` : ''}
+          ${obs.launch_score != null ? `<div class="tooltip" data-tip="Launch">${scoreBadge(obs.launch_score)}</div>` : ''}
+          ${obs.problem_solving_score != null ? `<div class="tooltip" data-tip="Problem Solving">${scoreBadge(obs.problem_solving_score)}</div>` : ''}
+          ${obs.closing_score != null ? `<div class="tooltip" data-tip="Closing">${scoreBadge(obs.closing_score)}</div>` : ''}
+        </div>
+
+        <div class="text-xs text-gray-500 mt-2 border-t pt-2">
+          ${formatDate(obs.observation_date)} · ${obs.observer_name || 'Unknown observer'}
+        </div>
+
+        <div class="card-actions justify-end mt-4">
+          <a href="/reyn/observation-show/?id=${obs.id}" class="btn btn-sm btn-outline">View</a>
+          <a href="/reyn/observation-edit/?id=${obs.id}" class="btn btn-sm btn-outline btn-primary">Edit</a>
+          ${adminUser ? `<button class="btn btn-sm btn-outline btn-error delete-btn" data-id="${obs.id}" data-name="${obs.teacher_name || 'this observation'}">Delete</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Load observations
+async function loadObservations() {
+  const loading = document.getElementById('loading');
+  const emptyState = document.getElementById('empty-state');
+  const grid = document.getElementById('observations-grid');
+
+  loading.classList.remove('hidden');
+  emptyState.classList.add('hidden');
+  grid.classList.add('hidden');
+
+  const result = await getAllObservations();
+
+  loading.classList.add('hidden');
+
+  if (!result.success) {
+    showAlert(result.error?.message || 'Failed to load observations', 'error');
+    return;
+  }
+
+  if (result.data.length === 0) {
+    emptyState.classList.remove('hidden');
+    return;
+  }
+
+  grid.classList.remove('hidden');
+  grid.innerHTML = result.data.map(obs => createCard(obs)).join('');
+
+  // Attach delete listeners (admin only)
+  if (adminUser) {
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('delete-obs-id').value = btn.dataset.id;
+        document.getElementById('delete-obs-name').textContent = btn.dataset.name;
+        document.getElementById('delete-modal').showModal();
+      });
+    });
+  }
+}
+
+// Confirm delete
+document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+  const id = document.getElementById('delete-obs-id').value;
+  document.getElementById('delete-modal').close();
+  const result = await deleteObservation(id);
+  if (result.success) {
+    showAlert('Observation deleted', 'success');
+    loadObservations();
+  } else {
+    showAlert(result.error?.message || 'Failed to delete observation', 'error');
+  }
+});
+
+loadObservations();
+</script>
+
+</body>
+</html>

@@ -16,13 +16,15 @@
     <div class="flex-1">
       <a href="/" class="btn btn-ghost normal-case text-xl">📐 Math Lessons</a>
     </div>
-    <div class="flex-none">
-      <a href="/lessons-edit/" class="btn btn-primary btn-sm">
+    <div class="flex-none gap-2">
+      <a href="/reyn/observation-index/" class="btn btn-ghost btn-sm">Observations</a>
+      <a href="/reyn/lesson-edit/" class="btn btn-primary btn-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         New Lesson
       </a>
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
     </div>
   </div>
 
@@ -41,7 +43,7 @@
       <div class="text-6xl mb-4">📐</div>
       <h2 class="text-2xl font-bold mb-2">No lessons yet</h2>
       <p class="text-gray-600 mb-6">Start by creating your first math lesson!</p>
-      <a href="/lessons-edit/" class="btn btn-primary">Create First Lesson</a>
+      <a href="/reyn/lesson-edit/" class="btn btn-primary">Create First Lesson</a>
     </div>
 
     <!-- Lessons Grid -->
@@ -123,7 +125,14 @@
 </dialog>
 
 <script type="module">
+import { requireAuth, logout } from '/assets/js/reyn-auth-guard.js';
 import { getAllLessons, deleteLesson } from '/assets/js/lessons-db.js';
+
+// Auth guard — redirects to login if not authenticated
+await requireAuth();
+
+// Logout button
+document.getElementById('logout-btn').addEventListener('click', logout);
 
 // Alert helper
 function showAlert(message, type = 'info') {
@@ -179,7 +188,7 @@ async function loadLessons() {
   result.data.forEach(lesson => {
     document.getElementById(`view-${lesson.id}`).addEventListener('click', () => openViewModal(lesson));
     document.getElementById(`edit-${lesson.id}`).addEventListener('click', () => {
-      window.location.href = `/lessons-edit/?id=${lesson.id}`;
+      window.location.href = `/reyn/lesson-edit/?id=${lesson.id}`;
     });
     document.getElementById(`delete-${lesson.id}`).addEventListener('click', () => openDeleteModal(lesson));
   });
