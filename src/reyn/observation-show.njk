@@ -1,0 +1,191 @@
+---
+layout: minimal.njk
+title: Observation
+description: View lesson observation details
+---
+
+<div class="min-h-screen bg-base-200">
+  <!-- Navbar -->
+  <div class="navbar bg-base-100 shadow-lg">
+    <div class="flex-1">
+      <a href="/reyn/observation-index/" class="btn btn-ghost normal-case text-xl">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Observations
+      </a>
+    </div>
+    <div class="flex-none gap-2">
+      <a id="edit-link" href="#" class="btn btn-primary btn-sm hidden">Edit</a>
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading" class="flex justify-center items-center py-12">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+
+  <!-- Content -->
+  <div id="content" class="hidden container mx-auto px-4 py-8 max-w-3xl">
+    <div id="alert-container" class="mb-4"></div>
+
+    <!-- Meta info -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+      <div class="card-body">
+        <h1 id="teacher-name" class="text-3xl font-bold"></h1>
+        <div class="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Grade / Course</p>
+            <p id="grade-course" class="mt-1"></p>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Lesson</p>
+            <p id="lesson" class="mt-1"></p>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</p>
+            <p id="obs-date" class="mt-1"></p>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Observer</p>
+            <p id="observer-name" class="mt-1"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score sections -->
+    <div class="space-y-4">
+
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="card-title">Planning</h2>
+            <span id="planning-score" class="badge badge-lg font-bold text-base"></span>
+          </div>
+          <p id="planning-notes" class="text-gray-600 whitespace-pre-wrap text-sm"></p>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="card-title">Launch</h2>
+            <span id="launch-score" class="badge badge-lg font-bold text-base"></span>
+          </div>
+          <p id="launch-notes" class="text-gray-600 whitespace-pre-wrap text-sm"></p>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="card-title">Problem Solving</h2>
+            <span id="problem-solving-score" class="badge badge-lg font-bold text-base"></span>
+          </div>
+          <p id="problem-solving-notes" class="text-gray-600 whitespace-pre-wrap text-sm"></p>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="card-title">Closing</h2>
+            <span id="closing-score" class="badge badge-lg font-bold text-base"></span>
+          </div>
+          <p id="closing-notes" class="text-gray-600 whitespace-pre-wrap text-sm"></p>
+        </div>
+      </div>
+
+      <div id="additional-notes-section" class="card bg-base-100 shadow hidden">
+        <div class="card-body">
+          <h2 class="card-title mb-2">Additional Notes</h2>
+          <p id="additional-notes" class="text-gray-600 whitespace-pre-wrap text-sm"></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { requireAuth, logout } from '/assets/js/reyn-auth-guard.js';
+import { getObservationById } from '/assets/js/observations-db.js';
+
+await requireAuth();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+const urlParams = new URLSearchParams(window.location.search);
+const obsId = urlParams.get('id');
+
+if (!obsId) {
+  window.location.href = '/reyn/observation-index/';
+}
+
+function showAlert(message, type = 'info') {
+  const container = document.getElementById('alert-container');
+  const el = document.createElement('div');
+  el.className = `alert alert-${type} shadow-lg`;
+  el.innerHTML = `<span>${message}</span>`;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '—';
+  const date = new Date(dateString + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function setScore(elementId, score) {
+  const el = document.getElementById(elementId);
+  if (score == null) {
+    el.textContent = '—';
+    el.classList.add('badge-ghost');
+    return;
+  }
+  const val = parseFloat(score);
+  el.textContent = val.toFixed(1);
+  if (val >= 4)      el.classList.add('badge-success');
+  else if (val >= 2.5) el.classList.add('badge-warning');
+  else                 el.classList.add('badge-error');
+}
+
+document.getElementById('edit-link').href = `/reyn/observation-edit/?id=${obsId}`;
+document.getElementById('edit-link').classList.remove('hidden');
+
+const result = await getObservationById(obsId);
+document.getElementById('loading').classList.add('hidden');
+
+if (!result.success) {
+  showAlert('Failed to load observation', 'error');
+} else {
+  const obs = result.data;
+
+  document.getElementById('teacher-name').textContent = obs.teacher_name || 'Unknown Teacher';
+  document.getElementById('grade-course').textContent  = obs.grade_course || '—';
+  document.getElementById('lesson').textContent        = obs.lesson || '—';
+  document.getElementById('obs-date').textContent      = formatDate(obs.observation_date);
+  document.getElementById('observer-name').textContent = obs.observer_name || '—';
+
+  setScore('planning-score', obs.planning_score);
+  document.getElementById('planning-notes').textContent      = obs.planning_notes || '';
+
+  setScore('launch-score', obs.launch_score);
+  document.getElementById('launch-notes').textContent        = obs.launch_notes || '';
+
+  setScore('problem-solving-score', obs.problem_solving_score);
+  document.getElementById('problem-solving-notes').textContent = obs.problem_solving_notes || '';
+
+  setScore('closing-score', obs.closing_score);
+  document.getElementById('closing-notes').textContent       = obs.closing_notes || '';
+
+  if (obs.additional_notes) {
+    document.getElementById('additional-notes').textContent = obs.additional_notes;
+    document.getElementById('additional-notes-section').classList.remove('hidden');
+  }
+
+  document.getElementById('content').classList.remove('hidden');
+}
+</script>
