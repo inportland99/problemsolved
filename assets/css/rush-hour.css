@@ -11,8 +11,12 @@
   user-select: none;
 }
 
-/* ---------- Board + exit row ---------- */
+/* ---------- Board + exit row ----------
+   --cell and --gap are mirrored here so #exit-label (a sibling of
+   #rush-hour-board) can reference them when computing its vertical offset. */
 #board-and-exit {
+  --cell: 72px;
+  --gap:  4px;
   position: relative;
   display: flex;
   align-items: center;      /* vertically center exit arrow with board */
@@ -64,21 +68,27 @@
   pointer-events: none;
 }
 
-/* ---------- Exit notch on the right wall ---------- */
+/* ---------- Exit notch on the right wall ----------
+   The notch sits over the 4px right border in row 2 to hide it, and then
+   continues 8px past the wall so the purple lips clearly extend OUTWARD
+   from the board (forming a small protruding doorway), instead of the
+   previous flush-with-wall look where the lips appeared to face inward. */
 #rush-hour-board::after {
   content: '';
   position: absolute;
-  /* sits on the right border, vertically aligned with row 2 (0-indexed) = exit row */
-  right: -4px;
+  right: -12px;                                  /* lip extends 8px past wall */
   top:  calc(2 * (var(--cell) + var(--gap)));
-  width: 8px;
+  width: 12px;                                   /* 4 wall-cover + 8 outward */
   height: var(--cell);
   background: #e8e0f8;   /* same as board bg, hides the border */
   border-top: 4px solid #5741AC;
   border-bottom: 4px solid #5741AC;
 }
 
-/* Exit arrow label */
+/* Exit arrow label.
+   align-items: center on the parent puts this at the BOARD's vertical
+   center. The exit (row 2, 0-indexed) is half a (cell + gap) above the
+   board's center, so we shift the label up by that amount. */
 #exit-label {
   display: flex;
   flex-direction: column;
@@ -88,6 +98,7 @@
   font-weight: bold;
   font-size: 13px;
   gap: 3px;
+  transform: translateY(calc(-0.5 * (var(--cell) + var(--gap))));
 }
 
 #exit-label svg {
@@ -407,6 +418,10 @@
 
 /* ---------- Responsive ---------- */
 @media (max-width: 520px) {
+  #board-and-exit {
+    --cell: 50px;
+    --gap:  3px;
+  }
   #rush-hour-board {
     --cell: 50px;
     --gap:  3px;
