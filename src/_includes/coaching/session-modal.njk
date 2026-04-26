@@ -1,0 +1,41 @@
+<!-- ═══ ADD/EDIT SESSION MODAL ═══ -->
+<dialog id="session-modal" class="modal">
+  <div class="modal-box max-w-2xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg mb-4" id="session-modal-title">New Session</h3>
+
+    <input type="hidden" id="session-edit-id">
+
+    <div class="space-y-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text">Date & Time *</span></label>
+        <input type="datetime-local" id="session-date" class="input input-bordered" required>
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">Meeting Summary *</span></label>
+        <textarea id="session-summary" class="textarea textarea-bordered h-24" placeholder="What was discussed..." required></textarea>
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">My Notes</span></label>
+        <textarea id="session-notes" class="textarea textarea-bordered h-20" placeholder="Private coaching notes..."></textarea>
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">Action Items (1-3)</span></label>
+        <div id="action-items-container" class="space-y-2">
+          <input type="text" class="input input-bordered w-full action-item-input" placeholder="Action item 1">
+          <input type="text" class="input input-bordered w-full action-item-input" placeholder="Action item 2">
+          <input type="text" class="input input-bordered w-full action-item-input" placeholder="Action item 3">
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-action">
+      <button id="save-session-btn" class="btn btn-primary">Save Session</button>
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>

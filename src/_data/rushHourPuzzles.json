@@ -1,0 +1,5644 @@
+{
+  "easy": [
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 9,
+      "redBackwardMoves": 0,
+      "uniqueOptimalPaths": 1,
+      "avgBranching": 6.08,
+      "score": 18.32,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 9,
+      "redBackwardMoves": 0,
+      "uniqueOptimalPaths": 1,
+      "avgBranching": 5.5,
+      "score": 18.15,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 5,
+      "redBackwardMoves": 2,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 8.25,
+      "score": 17.5,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 3,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 5,
+      "redBackwardMoves": 2,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 7.58,
+      "score": 17.3,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 3,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 6,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 8.25,
+      "score": 17.2,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 3,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 5,
+      "redBackwardMoves": 2,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 6.58,
+      "score": 17,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 3,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 6,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 7.58,
+      "score": 17,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 3,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 11,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 0,
+      "uniqueOptimalPaths": 1,
+      "avgBranching": 6.18,
+      "score": 16.85,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 0,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 5,
+      "redBackwardMoves": 2,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 5.83,
+      "score": 16.77,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 3,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 6,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 6.58,
+      "score": 16.7,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 3,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 0,
+      "uniqueOptimalPaths": 10,
+      "avgBranching": 6.83,
+      "score": 16.67,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 0,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 11,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 0,
+      "uniqueOptimalPaths": 1,
+      "avgBranching": 5.55,
+      "score": 16.66,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 0,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 5,
+      "redBackwardMoves": 2,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 5,
+      "score": 16.52,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 6,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 5.83,
+      "score": 16.47,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 3,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 5,
+      "redBackwardMoves": 2,
+      "uniqueOptimalPaths": 35,
+      "avgBranching": 8.33,
+      "score": 16.47,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 0,
+      "uniqueOptimalPaths": 10,
+      "avgBranching": 5.58,
+      "score": 16.29,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 0,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 5,
+      "redBackwardMoves": 2,
+      "uniqueOptimalPaths": 35,
+      "avgBranching": 7.75,
+      "score": 16.29,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 6,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 6,
+      "avgBranching": 5,
+      "score": 16.22,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 9,
+      "redBackwardMoves": 0,
+      "uniqueOptimalPaths": 45,
+      "avgBranching": 6.58,
+      "score": 16.19,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 3,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 0,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "easy",
+      "minMoves": 12,
+      "vehiclesMoved": 9,
+      "redBackwardMoves": 0,
+      "uniqueOptimalPaths": 45,
+      "avgBranching": 6.5,
+      "score": 16.17,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 2,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 0,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    }
+  ],
+  "moderate": [
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 4617,
+      "avgBranching": 7.28,
+      "score": 26.92,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 4617,
+      "avgBranching": 7.28,
+      "score": 26.92,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 3,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 5985,
+      "avgBranching": 7.36,
+      "score": 26.79,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 24,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 1596,
+      "avgBranching": 7.38,
+      "score": 26.59,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 8664,
+      "avgBranching": 7.32,
+      "score": 26.56,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 24,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 1596,
+      "avgBranching": 7.25,
+      "score": 26.55,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 23,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 342,
+      "avgBranching": 7.39,
+      "score": 26.52,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 11970,
+      "avgBranching": 7.36,
+      "score": 26.37,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 3,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 12882,
+      "avgBranching": 7.36,
+      "score": 26.33,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 10,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 67680,
+      "avgBranching": 7.28,
+      "score": 26.31,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 15219,
+      "avgBranching": 7.56,
+      "score": 26.29,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 24,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 3021,
+      "avgBranching": 7.63,
+      "score": 26.28,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 9,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 32424,
+      "avgBranching": 7.32,
+      "score": 26.26,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 13680,
+      "avgBranching": 7.24,
+      "score": 26.26,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 3,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 24,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 2964,
+      "avgBranching": 7.46,
+      "score": 26.24,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 9,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 32424,
+      "avgBranching": 7.24,
+      "score": 26.24,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 24,
+      "vehiclesMoved": 9,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 6606,
+      "avgBranching": 7.33,
+      "score": 26.22,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 1,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 24,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 3021,
+      "avgBranching": 7.42,
+      "score": 26.22,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 3,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 25,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 14364,
+      "avgBranching": 7.2,
+      "score": 26.22,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 3,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "moderate",
+      "minMoves": 24,
+      "vehiclesMoved": 8,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 3192,
+      "avgBranching": 7.42,
+      "score": 26.18,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 2,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    }
+  ],
+  "hard": [
+    {
+      "difficulty": "hard",
+      "minMoves": 28,
+      "vehiclesMoved": 11,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 8707905,
+      "avgBranching": 7.04,
+      "score": 26.82,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "hard",
+      "minMoves": 28,
+      "vehiclesMoved": 11,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 11288025,
+      "avgBranching": 7.04,
+      "score": 26.67,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 2,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "hard",
+      "minMoves": 29,
+      "vehiclesMoved": 11,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 61215000,
+      "avgBranching": 6.93,
+      "score": 26.62,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "hard",
+      "minMoves": 29,
+      "vehiclesMoved": 11,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 73213140,
+      "avgBranching": 6.93,
+      "score": 26.51,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "hard",
+      "minMoves": 28,
+      "vehiclesMoved": 11,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 16340760,
+      "avgBranching": 7.07,
+      "score": 26.46,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "hard",
+      "minMoves": 28,
+      "vehiclesMoved": 10,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 7462500,
+      "avgBranching": 7.11,
+      "score": 26.44,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 3,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "hard",
+      "minMoves": 28,
+      "vehiclesMoved": 10,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 8925150,
+      "avgBranching": 7.21,
+      "score": 26.36,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 3,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "hard",
+      "minMoves": 28,
+      "vehiclesMoved": 11,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 24296130,
+      "avgBranching": 7.04,
+      "score": 26.21,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 1,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    },
+    {
+      "difficulty": "hard",
+      "minMoves": 28,
+      "vehiclesMoved": 11,
+      "redBackwardMoves": 1,
+      "uniqueOptimalPaths": 28703835,
+      "avgBranching": 7.21,
+      "score": 26.16,
+      "vehicles": [
+        {
+          "id": "T",
+          "row": 2,
+          "col": 0,
+          "length": 2,
+          "dir": "H",
+          "isTarget": true
+        },
+        {
+          "id": "A",
+          "row": 4,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "B",
+          "row": 1,
+          "col": 2,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "C",
+          "row": 0,
+          "col": 1,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "D",
+          "row": 1,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "E",
+          "row": 0,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "F",
+          "row": 2,
+          "col": 5,
+          "length": 3,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "G",
+          "row": 0,
+          "col": 4,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "H",
+          "row": 0,
+          "col": 2,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "I",
+          "row": 5,
+          "col": 1,
+          "length": 2,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "J",
+          "row": 5,
+          "col": 3,
+          "length": 3,
+          "dir": "H",
+          "isTarget": false
+        },
+        {
+          "id": "K",
+          "row": 4,
+          "col": 0,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        },
+        {
+          "id": "L",
+          "row": 2,
+          "col": 3,
+          "length": 2,
+          "dir": "V",
+          "isTarget": false
+        }
+      ]
+    }
+  ],
+  "expert": []
+}

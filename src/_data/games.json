@@ -24,6 +24,12 @@
     "thumbnail": "/images/shapesum_sample.png"
   },
   {
+    "name": "Rush Hour",
+    "description": "Slide the blocking cars out of the way to guide the red car to the exit. A new puzzle every day!",
+    "link": "/games/rush-hour",
+    "thumbnail": "/images/rush_hour_sample.png"
+  },
+  {
     "name": "SET",
     "description": "Find all 6 SETs among 12 cards! A SET is 3 cards where each attribute (number, shape, shading, color) is all the same or all different.",
     "link": "/games/set",

@@ -38,7 +38,7 @@ import { getCurrentUser, signOut } from '/assets/js/supabase-client.js';
 
 const user = await getCurrentUser();
 if (!user) {
-  window.location.href = '/personal/coaching-login/';
+  window.location.href = '/personal/coaching/login/';
 } else {
   document.getElementById('auth-loading').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
@@ -46,6 +46,6 @@ if (!user) {
 
 document.getElementById('logout-btn').addEventListener('click', async () => {
   await signOut();
-  window.location.href = '/personal/coaching-login/';
+  window.location.href = '/personal/coaching/login/';
 });
 </script>

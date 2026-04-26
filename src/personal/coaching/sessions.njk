@@ -1,0 +1,69 @@
+---
+layout: minimal.njk
+title: Coaching Sessions
+description: Session log for coaching client
+---
+
+<div class="min-h-screen bg-base-200">
+  <!-- Header -->
+  <div class="navbar bg-base-100 shadow-lg">
+    <div class="flex-1">
+      <a href="/personal/coaching/" class="btn btn-ghost normal-case text-xl">🎯 Coaching</a>
+    </div>
+    <div class="flex-none gap-2">
+      <span id="user-email" class="text-sm text-gray-600"></span>
+      <button id="logout-btn" class="btn btn-sm btn-outline">Logout</button>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Alert messages -->
+    <div id="alert-container" class="mb-4"></div>
+
+    <!-- Sessions header -->
+    <div class="flex items-center gap-4 mb-6">
+      <a href="/personal/coaching/" class="btn btn-ghost btn-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
+      </a>
+      <div class="flex-1">
+        <h1 class="text-3xl font-bold" id="session-client-name"></h1>
+        <p class="text-sm text-gray-600" id="session-client-info"></p>
+      </div>
+      <button id="add-session-btn" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        New Session
+      </button>
+    </div>
+
+    <!-- Empty sessions -->
+    <div id="empty-sessions" class="hidden text-center py-12">
+      <div class="text-6xl mb-4">📋</div>
+      <h2 class="text-2xl font-bold mb-2">No sessions yet</h2>
+      <p class="text-gray-600 mb-6">Log your first session with this client.</p>
+      <button class="btn btn-primary" id="add-first-session-btn">Log First Session</button>
+    </div>
+
+    <!-- Sessions list -->
+    <div id="sessions-list" class="space-y-4"></div>
+  </div>
+</div>
+
+{% include "coaching/session-modal.njk" %}
+{% include "coaching/view-session-modal.njk" %}
+{% include "coaching/delete-session-modal.njk" %}
+
+<style>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>
+
+<script type="module" src="/assets/js/coaching/sessions.js"></script>

@@ -1,0 +1,452 @@
+/* =============================================
+   Rush Hour – board & vehicle styles
+   ============================================= */
+
+/* ---------- Board wrapper ---------- */
+#rush-hour-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 4px;
+  user-select: none;
+}
+
+/* ---------- Board + exit row ---------- */
+#board-and-exit {
+  position: relative;
+  display: flex;
+  align-items: center;      /* vertically center exit arrow with board */
+}
+
+/* ---------- Board ---------- */
+#rush-hour-board {
+  --cell: 72px;
+  --gap:  4px;
+  --cols: 6;
+  --rows: 6;
+
+  box-sizing: content-box;  /* border is outside; calc() describes the content area exactly */
+  position: relative;
+  width:  calc(var(--cols) * var(--cell) + (var(--cols) - 1) * var(--gap));
+  height: calc(var(--rows) * var(--cell) + (var(--rows) - 1) * var(--gap));
+
+  background: #e8e0f8;
+  border: 4px solid #5741AC;
+  border-radius: 8px;
+  overflow: visible;         /* so exit notch (::after) can stick out */
+}
+
+/* Faint grid lines */
+#rush-hour-board::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent,
+      transparent calc(var(--cell) - 1px),
+      rgba(87,65,172,0.15) calc(var(--cell) - 1px),
+      rgba(87,65,172,0.15) var(--cell),
+      transparent var(--cell),
+      transparent calc(var(--cell) + var(--gap))
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent calc(var(--cell) - 1px),
+      rgba(87,65,172,0.15) calc(var(--cell) - 1px),
+      rgba(87,65,172,0.15) var(--cell),
+      transparent var(--cell),
+      transparent calc(var(--cell) + var(--gap))
+    );
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* ---------- Exit notch on the right wall ---------- */
+#rush-hour-board::after {
+  content: '';
+  position: absolute;
+  /* sits on the right border, vertically aligned with row 2 (0-indexed) = exit row */
+  right: -4px;
+  top:  calc(2 * (var(--cell) + var(--gap)));
+  width: 8px;
+  height: var(--cell);
+  background: #e8e0f8;   /* same as board bg, hides the border */
+  border-top: 4px solid #5741AC;
+  border-bottom: 4px solid #5741AC;
+}
+
+/* Exit arrow label */
+#exit-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 10px;
+  color: #5741AC;
+  font-weight: bold;
+  font-size: 13px;
+  gap: 3px;
+}
+
+#exit-label svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* ---------- Vehicles ----------
+   Each car gets its 3D look from layered backgrounds + insets:
+     1. base color           → background-color: var(--car-color)
+     2. windshield strip     → brighter band across the middle (per-orientation)
+     3. directional lighting → highlight on one side, shadow on the other
+     4. inset shadows        → soft top highlight + bottom bevel
+     5. drop shadow          → lifts the car off the board
+   Orientation-specific gradients live in .dir-h / .dir-v below. */
+.vehicle {
+  position: absolute;
+  border-radius: 10px;
+  cursor: default;
+  transition: box-shadow 0.12s ease;
+  /* flexbox lays out the two end-arrows */
+  display: flex;
+  flex-direction: row;         /* horizontal by default */
+  align-items: stretch;        /* arrows fill the full cross-axis */
+  justify-content: space-between;
+  overflow: hidden;            /* clip arrow corners to border-radius */
+  background-color: var(--car-color, #888);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.40),
+    inset 0 -2px 4px rgba(0,0,0,0.28),
+    0 3px 7px rgba(0,0,0,0.30);
+}
+
+/* Horizontal car (length 2), front = right.
+   Body gradients only — the windshield is now an SVG-masked overlay on
+   a child .windshield div. Layers here:
+     1. Darker tail section on the back (left) edge
+     2. Bright front-bumper accent on the front (right) edge
+     3. Top-down lighting (highlight on top, shadow on bottom) */
+.vehicle.dir-h {
+  background-image:
+    linear-gradient(to right,
+      rgba(0,0,0,0.32) 0%,
+      rgba(0,0,0,0.10) 8%,
+      transparent 18%),
+    linear-gradient(to right,
+      transparent 78%,
+      rgba(255,255,255,0.20) 92%,
+      rgba(255,255,255,0.05) 100%),
+    linear-gradient(to bottom,
+      rgba(255,255,255,0.24) 0%,
+      rgba(0,0,0,0.05) 55%,
+      rgba(0,0,0,0.24) 100%);
+}
+
+/* Horizontal truck (length 3), front = right. The cab windshield is provided
+   by the SVG mask on .windshield. Body layers here keep the cab/trailer
+   divider line, the trailer back-end darker accent, the front bumper, and
+   top-down lighting. */
+.vehicle.truck.dir-h {
+  background-image:
+    linear-gradient(to right,
+      transparent 65%,
+      rgba(0,0,0,0.40) 66.3%,
+      rgba(0,0,0,0.40) 67%,
+      transparent 68%),
+    linear-gradient(to right,
+      rgba(0,0,0,0.32) 0%,
+      rgba(0,0,0,0.08) 6%,
+      transparent 14%),
+    linear-gradient(to right,
+      transparent 88%,
+      rgba(255,255,255,0.18) 96%,
+      rgba(255,255,255,0.05) 100%),
+    linear-gradient(to bottom,
+      rgba(255,255,255,0.24) 0%,
+      rgba(0,0,0,0.05) 55%,
+      rgba(0,0,0,0.24) 100%);
+}
+
+/* ---------- Headlights ----------
+   Two small glowing dots on the "front" end of each vehicle. Direction is
+   driven by the [data-front] attribute set in renderBoard():
+     data-front="pos" → horizontal cars face right, vertical cars face down
+     data-front="neg" → horizontal cars face left,  vertical cars face up
+   The target (red) car is always rendered with data-front="pos" so its
+   headlights point at the exit. */
+.vehicle::before,
+.vehicle::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  /* Tinted with the car's color: light wash of car-color over white. */
+  background: color-mix(in srgb, var(--car-color, #fff) 22%, white);
+  border-radius: 50%;
+  box-shadow: 0 0 5px 1px color-mix(in srgb, var(--car-color, #fff) 35%, white);
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Horizontal car, front = right */
+.vehicle.dir-h[data-front="pos"]::before { top: 8px;    right: 8px; }
+.vehicle.dir-h[data-front="pos"]::after  { bottom: 8px; right: 8px; }
+
+/* Horizontal car, front = left */
+.vehicle.dir-h[data-front="neg"]::before { top: 8px;    left: 8px; }
+.vehicle.dir-h[data-front="neg"]::after  { bottom: 8px; left: 8px; }
+
+/* Vertical car, front = down */
+.vehicle.dir-v[data-front="pos"]::before { left: 8px;  bottom: 8px; }
+.vehicle.dir-v[data-front="pos"]::after  { right: 8px; bottom: 8px; }
+
+/* Vertical car, front = up */
+.vehicle.dir-v[data-front="neg"]::before { left: 8px;  top: 8px; }
+.vehicle.dir-v[data-front="neg"]::after  { right: 8px; top: 8px; }
+
+/* Vertical car (length 2), front = down. Mirrors dir-h logic 90° rotated.
+   Windshield handled by the SVG mask on .windshield. */
+.vehicle.dir-v {
+  flex-direction: column;
+  background-image:
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.32) 0%,
+      rgba(0,0,0,0.10) 8%,
+      transparent 18%),
+    linear-gradient(to bottom,
+      transparent 78%,
+      rgba(255,255,255,0.20) 92%,
+      rgba(255,255,255,0.05) 100%),
+    linear-gradient(to right,
+      rgba(255,255,255,0.24) 0%,
+      rgba(0,0,0,0.05) 55%,
+      rgba(0,0,0,0.24) 100%);
+}
+
+/* Vertical truck (length 3), front = down. Cab at bottom 1/3, trailer above.
+   Windshield handled by the SVG mask on .windshield. */
+.vehicle.truck.dir-v {
+  background-image:
+    linear-gradient(to bottom,
+      transparent 65%,
+      rgba(0,0,0,0.40) 66.3%,
+      rgba(0,0,0,0.40) 67%,
+      transparent 68%),
+    linear-gradient(to bottom,
+      rgba(0,0,0,0.32) 0%,
+      rgba(0,0,0,0.08) 6%,
+      transparent 14%),
+    linear-gradient(to bottom,
+      transparent 88%,
+      rgba(255,255,255,0.18) 96%,
+      rgba(255,255,255,0.05) 100%),
+    linear-gradient(to right,
+      rgba(255,255,255,0.24) 0%,
+      rgba(0,0,0,0.05) 55%,
+      rgba(0,0,0,0.24) 100%);
+}
+
+.vehicle.selected {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.40),
+    inset 0 -2px 4px rgba(0,0,0,0.28),
+    0 0 0 3px #fff,
+    0 0 0 6px #5741AC;
+  z-index: 10;
+}
+
+/* The player's target car (red) — background-color so gradients still apply.
+   --car-color is set so the headlight tint picks up the red. */
+.vehicle.target-car {
+  background-color: #e53e3e;
+  --car-color: #e53e3e;
+  z-index: 5;
+}
+
+.vehicle.target-car.selected {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.40),
+    inset 0 -2px 4px rgba(0,0,0,0.28),
+    0 0 0 3px #fff,
+    0 0 0 6px #e53e3e;
+}
+
+/* Target-car headlights: bigger 4-point starbursts, lightly tinted red. */
+.vehicle.target-car::before,
+.vehicle.target-car::after {
+  width: 11px;
+  height: 11px;
+  background: color-mix(in srgb, var(--car-color) 15%, white);
+  border-radius: 0;
+  clip-path: polygon(
+    50% 0%, 58% 42%, 100% 50%, 58% 58%,
+    50% 100%, 42% 58%, 0% 50%, 42% 42%
+  );
+  box-shadow: 0 0 10px 3px color-mix(in srgb, var(--car-color) 30%, white);
+}
+.vehicle.target-car.dir-h[data-front="pos"]::before { top: 6px;    right: 6px; }
+.vehicle.target-car.dir-h[data-front="pos"]::after  { bottom: 6px; right: 6px; }
+/* ---------- Windshield overlay ----------
+   A translucent white layer clipped to a per-vehicle SVG mask. The mask
+   silhouette comes from one of four files in /assets/img/rush-hour/, picked
+   by the .dir-h/.dir-v + .truck class combination. */
+.vehicle .windshield {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.48);
+  pointer-events: none;
+  z-index: 1;
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+}
+
+.vehicle.dir-h .windshield {
+  -webkit-mask-image: url('/assets/img/rush-hour/windshield-car-h.svg');
+          mask-image: url('/assets/img/rush-hour/windshield-car-h.svg');
+}
+
+.vehicle.dir-v .windshield {
+  -webkit-mask-image: url('/assets/img/rush-hour/windshield-car-v.svg');
+          mask-image: url('/assets/img/rush-hour/windshield-car-v.svg');
+}
+
+.vehicle.truck.dir-h .windshield {
+  -webkit-mask-image: url('/assets/img/rush-hour/windshield-truck-h.svg');
+          mask-image: url('/assets/img/rush-hour/windshield-truck-h.svg');
+}
+
+.vehicle.truck.dir-v .windshield {
+  -webkit-mask-image: url('/assets/img/rush-hour/windshield-truck-v.svg');
+          mask-image: url('/assets/img/rush-hour/windshield-truck-v.svg');
+}
+
+/* Support front='neg' if we ever set it on a non-target vehicle later. */
+.vehicle.truck.dir-h[data-front="neg"] .windshield {
+  transform: scaleX(-1);
+}
+
+.vehicle.truck.dir-v[data-front="neg"] .windshield {
+  transform: scaleY(-1);
+}
+
+/* ---------- Per-vehicle end arrows ---------- */
+.vehicle-arrow {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  border: none;
+  background: rgba(0,0,0,0.18);
+  color: rgba(255,255,255,0.95);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
+  /* width (H) or height (V) set per orientation below */
+}
+
+/* Horizontal vehicle: arrows have fixed width, stretch to full height */
+.vehicle:not(.dir-v) .vehicle-arrow {
+  width: 28px;
+}
+
+/* Vertical vehicle: arrows have fixed height, stretch to full width */
+.vehicle.dir-v .vehicle-arrow {
+  height: 28px;
+}
+
+.vehicle-arrow:hover:not(:disabled) {
+  background: rgba(0,0,0,0.35);
+}
+
+.vehicle-arrow:disabled {
+  opacity: 0.2;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ---------- Move counter ---------- */
+#move-counter {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+/* ---------- Win overlay ---------- */
+#win-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  border-radius: 4px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #5741AC;
+  z-index: 20;
+}
+
+#win-overlay.visible {
+  display: flex;
+}
+
+/* ---------- Stopwatch (reuse existing pattern) ---------- */
+#stopwatch {
+  margin: 10px;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 520px) {
+  #rush-hour-board {
+    --cell: 50px;
+    --gap:  3px;
+  }
+
+  .vehicle {
+    border-radius: 7px;
+  }
+
+  /* Smaller, slightly closer headlights on compact boards */
+  .vehicle::before,
+  .vehicle::after {
+    width: 5px;
+    height: 5px;
+    box-shadow: 0 0 4px 1px color-mix(in srgb, var(--car-color, #fff) 35%, white);
+  }
+  .vehicle.dir-h[data-front="pos"]::before { top: 6px;    right: 6px; }
+  .vehicle.dir-h[data-front="pos"]::after  { bottom: 6px; right: 6px; }
+  .vehicle.dir-h[data-front="neg"]::before { top: 6px;    left: 6px; }
+  .vehicle.dir-h[data-front="neg"]::after  { bottom: 6px; left: 6px; }
+  .vehicle.dir-v[data-front="pos"]::before { left: 6px;  bottom: 6px; }
+  .vehicle.dir-v[data-front="pos"]::after  { right: 6px; bottom: 6px; }
+  .vehicle.dir-v[data-front="neg"]::before { left: 6px;  top: 6px; }
+  .vehicle.dir-v[data-front="neg"]::after  { right: 6px; top: 6px; }
+
+  .vehicle:not(.dir-v) .vehicle-arrow {
+    width: 22px;
+    font-size: 12px;
+  }
+
+  .vehicle.dir-v .vehicle-arrow {
+    height: 22px;
+    font-size: 12px;
+  }
+
+  #move-counter {
+    font-size: 18px;
+  }
+
+  #stopwatch {
+    font-size: 20px;
+  }
+}

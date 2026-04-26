@@ -127,6 +127,64 @@ When adding new pages:
 %}
 ```
 
+## Rush Hour Daily Puzzle Game
+
+The Rush Hour game lives at `src/games/rush-hour.njk`, `src/assets/js/rush-hour.js`, and `src/assets/css/rush-hour.css`.
+
+### Puzzle Library
+
+Puzzles are defined in the `PUZZLES` array near the top of `rush-hour.js`. Each puzzle is an array of vehicle objects:
+
+```javascript
+[
+  { id: 'T', row: 2, col: 0, length: 2, dir: 'H', isTarget: true  },
+  { id: 'A', row: 1, col: 2, length: 2, dir: 'V', isTarget: false },
+  // ...
+]
+```
+
+### Vehicle Object Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | string | Unique identifier within the puzzle (e.g. `'A'`, `'B'`). Also drives color assignment. |
+| `row` | int 0–5 | Top-most row the vehicle occupies (0 = top). |
+| `col` | int 0–5 | Left-most column the vehicle occupies (0 = left). |
+| `length` | 2 or 3 | Number of cells the vehicle spans. |
+| `dir` | `'H'` or `'V'` | Horizontal (slides left/right) or Vertical (slides up/down). |
+| `isTarget` | bool | `true` for exactly one vehicle per puzzle — the red car that must exit. |
+
+### Board Conventions
+
+- Grid is **6×6**, cells addressed `(row, col)` starting at `(0,0)` top-left.
+- The **exit** is on the **right wall of row 2** (0-indexed, third row from top).
+- The **target car** (`isTarget: true`) must be `dir: 'H'` and placed on row 2.
+- **Win condition**: target car's right edge reaches column 5 (`col + length - 1 >= 5`).
+- Horizontal vehicles occupy `(row, col)` through `(row, col + length - 1)`.
+- Vertical vehicles occupy `(row, col)` through `(row + length - 1, col)`.
+
+### Puzzle Validity Rules
+
+1. **No overlapping cells** — every cell may be occupied by at most one vehicle.
+2. **In bounds** — all vehicle cells must be within rows 0–5, cols 0–5.
+3. **Exactly one target car** — `isTarget: true` on exactly one vehicle per puzzle.
+4. **Target on exit row** — target car must be `row: 2, dir: 'H'`.
+5. **Solvable** — there must exist a sequence of legal moves that brings the target car to `col >= 4`. The engine has no built-in solver, so puzzles must be verified externally before adding.
+
+### Adding Puzzles
+
+Append new puzzles to the `PUZZLES` array in `rush-hour.js`. The daily puzzle rotates via `puzzleNumber % PUZZLES.length`, so adding more puzzles automatically extends the cycle.
+
+### Testing / Previewing Puzzles
+
+Append `?puzzle=N` (0-indexed) to the URL to force a specific puzzle, bypassing the daily rotation and localStorage state:
+
+- `/games/rush-hour/?puzzle=0` — first puzzle
+- `/games/rush-hour/?puzzle=1` — second puzzle
+- etc.
+
+This does **not** affect the real daily saved state.
+
 ## Development Notes
 
 - The build process runs Tailwind CLI separately from Eleventy

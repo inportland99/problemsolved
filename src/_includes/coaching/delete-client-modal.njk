@@ -1,0 +1,15 @@
+<!-- ═══ DELETE CLIENT MODAL ═══ -->
+<dialog id="delete-client-modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">Delete Client?</h3>
+    <p class="mb-2">Are you sure you want to delete <strong id="delete-client-name"></strong>?</p>
+    <p class="text-sm text-gray-600 mb-4">This will also delete all their session logs. This action cannot be undone.</p>
+    <input type="hidden" id="delete-client-id">
+    <div class="modal-action">
+      <button id="confirm-delete-client" class="btn btn-error">Delete</button>
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>
