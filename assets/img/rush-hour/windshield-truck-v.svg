@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 150" preserveAspectRatio="none">
+  <!-- Trapezoidal windshield for a vertical length-3 truck. Cab is the bottom
+       1/3 (y=100..150). Long base on the front (bottom), short base on the
+       back (top).
+         long base height (front, bottom): 40 → x = 5..45
+         short base height (back, top):    26 → x = 12..38
+         distance front-to-back:           15 → y = 110..125 -->
+  <polygon points="12,120 38,120 45,130 5,130" fill="#ffffff"/>
+  <!-- Back detail: shallow arcs at the trailer's rear edge (vertical). -->
+  <path d="M 12 118 L 12 102" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  <path d="M 38 118 L 38 102" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" preserveAspectRatio="none">
+  <!-- Trapezoidal windshield for a horizontal length-2 car. The long base is
+       on the front (right) and the short base on the back (left). The shape
+       is shifted toward the front of the car.
+         long base height (front, right): 40 → y = 5..45
+         short base height (back, left):  26 → y = 12..38
+         distance front-to-back:          15 → x = 59..74 -->
+  <polygon points="67,12 82,5 82,45 67,38" fill="#ffffff"/>
+  <!-- Back detail: shallow arcs along the rear roof and rear bumper. -->
+  <path d="M 20 13 L 65 13" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  <path d="M 20 37 L 65 37" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  <path d="M 5 45 L 18 37" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  <path d="M 5 5 L 18 13" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  <path d="M 19 14 L 19 36" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</svg>

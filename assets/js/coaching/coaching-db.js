@@ -1,4 +1,4 @@
-import { supabase, getCurrentUser } from './supabase-client.js';
+import { supabase, getCurrentUser } from '/assets/js/supabase-client.js';
 
 // ─── Clients ───
 
@@ -23,6 +23,25 @@ export async function getClients() {
     }));
 
     return { success: true, data: clients };
+  } catch (err) {
+    return { success: false, error: { message: err.message } };
+  }
+}
+
+export async function getClient(id) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return { success: false, error: { message: 'You must be logged in' } };
+
+    const { data, error } = await supabase
+      .from('coaching_clients')
+      .select('*')
+      .eq('id', id)
+      .eq('coach_id', user.id)
+      .single();
+
+    if (error) return { success: false, error };
+    return { success: true, data };
   } catch (err) {
     return { success: false, error: { message: err.message } };
   }
