@@ -47,14 +47,24 @@ export async function getClient(id) {
   }
 }
 
-export async function addClient({ name, email, phone, notes }) {
+export async function addClient({
+  name, email, phone, notes,
+  personal_values, strengths, goals, special_notes
+}) {
   try {
     const user = await getCurrentUser();
     if (!user) return { success: false, error: { message: 'You must be logged in' } };
 
     const { data, error } = await supabase
       .from('coaching_clients')
-      .insert([{ coach_id: user.id, name, email, phone, notes }])
+      .insert([{
+        coach_id: user.id,
+        name, email, phone, notes,
+        personal_values: personal_values || [],
+        strengths: strengths || [],
+        goals: goals || [],
+        special_notes: special_notes || null
+      }])
       .select();
 
     if (error) return { success: false, error };
