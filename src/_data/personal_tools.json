@@ -30,6 +30,12 @@
     "icon": "📋"
   },
   {
+    "name": "ACT Math Practice",
+    "description": "Daily ACT math practice with spaced repetition. Missed problems come back tomorrow; mastered ones space out over time.",
+    "link": "/personal/act-practice/",
+    "icon": "📐"
+  },
+  {
     "name": "Kachuful Score Tracker",
     "description": "Track bids and scores for Kachuful card game with automatic hand progression and scoring.",
     "link": "/personal/kachuful/",
