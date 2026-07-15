@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACT Math Practice</title>
+  <meta name="description" content="Daily ACT math practice with spaced repetition">
+  <link rel="stylesheet" href="/styles/output.css">
+  
+</head>
+<body class="min-h-screen">
+  
+<!-- KaTeX CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+<style>
+  @media print {
+    .no-print { display: none !important; }
+    #print-report { display: block !important; }
+    body { background: white; }
+
+    .pr-header { margin-bottom: 1rem; border-bottom: 2px solid #5741AC; padding-bottom: 0.5rem; }
+    .pr-header h1 { font-size: 1.4rem; font-weight: bold; color: #5741AC; margin: 0; }
+    .pr-header p  { font-size: 0.85rem; color: #555; margin: 0.2rem 0 0; }
+
+    .pr-problem { margin-bottom: 1.1rem; padding: 0.6rem 0.8rem; border: 1px solid #ddd;
+                  border-radius: 6px; page-break-inside: avoid; }
+    .pr-problem.wrong   { border-left: 4px solid #ef4444; }
+    .pr-problem.correct { border-left: 4px solid #22c55e; }
+
+    .pr-meta  { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: #666; margin-bottom: 0.4rem; }
+    .pr-num   { font-weight: bold; color: #333; }
+    .pr-topic { background: #ede9fe; color: #5741AC; padding: 1px 6px; border-radius: 10px; font-size: 0.72rem; }
+    .pr-result     { margin-left: auto; font-weight: bold; }
+    .pr-result.ok  { color: #16a34a; }
+    .pr-result.bad { color: #dc2626; }
+
+    .pr-hint { font-size: 0.72rem; color: #92400e; background: #fef3c7;
+               border: 1px solid #fcd34d; border-radius: 4px;
+               padding: 1px 5px; display: inline-block; margin-bottom: 0.3rem; }
+
+    .pr-question { font-size: 0.9rem; margin-bottom: 0.45rem; line-height: 1.4; }
+    .pr-choices  { font-size: 0.82rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.15rem 1rem; }
+    .pr-choice   { display: flex; align-items: baseline; gap: 0.25rem; }
+    .pr-choice-label { font-weight: bold; min-width: 1.1rem; }
+
+    .pr-choice.selected-wrong  .pr-choice-label { color: #dc2626; }
+    .pr-choice.selected-wrong  .pr-choice-text  { color: #dc2626; text-decoration: line-through; }
+    .pr-choice.correct-answer  .pr-choice-label { color: #16a34a; }
+    .pr-choice.correct-answer  .pr-choice-text  { color: #16a34a; font-weight: 600; }
+    .pr-choice.selected-correct .pr-choice-label { color: #16a34a; }
+    .pr-choice.selected-correct .pr-choice-text  { color: #16a34a; font-weight: 600; }
+  }
+  @media screen { #print-report { display: none; } }
+</style>
+
+<div class="min-h-screen bg-base-200 no-print">
+
+  <!-- Login Screen -->
+  <div id="screen-login" class="flex items-center justify-center min-h-screen px-4">
+    <div class="card bg-base-100 shadow-xl w-full max-w-md">
+      <div class="card-body">
+        <div class="text-center mb-2">
+          <div class="text-5xl mb-3">📐</div>
+          <h1 class="text-2xl font-bold">ACT Math Practice</h1>
+          <p class="text-base-content/60 text-sm mt-1">Daily practice · Spaced repetition</p>
+        </div>
+        <div class="form-control mt-4">
+          <label class="label"><span class="label-text">Passphrase</span></label>
+          <input id="passphrase-input" type="password" placeholder="Enter your passphrase"
+                 class="input input-bordered w-full">
+        </div>
+        <div id="login-error" class="text-error text-sm hidden mt-1">Incorrect passphrase. Please try again.</div>
+        <button id="login-btn" class="btn btn-primary w-full mt-4">
+          <span id="login-btn-text">Continue</span>
+          <span id="login-spinner" class="loading loading-spinner loading-sm hidden"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Home Screen -->
+  <div id="screen-home" class="hidden flex items-center justify-center min-h-screen px-4">
+    <div class="card bg-base-100 shadow-xl w-full max-w-md">
+      <div class="card-body text-center">
+        <div class="text-5xl mb-3">📐</div>
+        <h1 class="text-2xl font-bold">ACT Math Practice</h1>
+        <p class="text-base-content/60 text-sm mt-1 mb-6">Daily practice · Spaced repetition</p>
+        <button id="start-btn" class="btn btn-primary w-full">Start Today's Practice</button>
+        <button id="home-history-btn" class="btn btn-outline w-full mt-3">📅 View History</button>
+        <button id="home-logout-btn" class="btn btn-ghost btn-sm mt-5 text-base-content/40">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="screen-loading" class="hidden flex items-center justify-center min-h-screen">
+    <div class="flex flex-col items-center gap-4">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+      <p class="text-base-content/60">Loading…</p>
+    </div>
+  </div>
+
+  <!-- Session Screen -->
+  <div id="screen-session" class="hidden max-w-2xl mx-auto px-4 py-8">
+    <div class="mb-3">
+      <span id="session-counter" class="text-sm font-medium text-base-content/60">0 / 20 correct</span>
+    </div>
+    <progress id="session-progress" class="progress progress-primary w-full mb-6" value="0" max="20"></progress>
+    <div class="card bg-base-100 shadow mb-5">
+      <div class="card-body">
+        <div id="question-text" class="text-lg leading-relaxed min-h-[3rem]"></div>
+      </div>
+    </div>
+    <div id="choices-container" class="flex flex-col gap-3"></div>
+
+    <!-- Hint area -->
+    <div id="hint-area" class="mt-4 space-y-2">
+      <button id="hint1-btn" class="btn btn-ghost btn-xs text-warning gap-1">
+        💡 Show problem type
+      </button>
+      <div id="hint1-content" class="hidden rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+        <p class="text-xs text-yellow-700 mb-0.5">Problem type:</p>
+        <p id="hint1-topic" class="font-semibold text-yellow-900 text-sm"></p>
+      </div>
+      <div>
+        <button id="hint2-btn" class="hidden btn btn-ghost btn-xs text-blue-500 gap-1">
+          💡 Hint 2: See a similar solved problem
+        </button>
+      </div>
+      <div id="hint2-content" class="hidden rounded-lg border border-blue-200 bg-blue-50 p-3">
+        <p class="text-xs font-semibold text-blue-800 mb-1">Similar problem:</p>
+        <div id="hint2-question" class="text-sm mb-2 leading-relaxed"></div>
+        <p class="text-xs text-blue-800">Answer: <span id="hint2-answer" class="font-bold text-primary"></span></p>
+      </div>
+    </div>
+
+    <div id="feedback-area" class="hidden mt-5 card border-2">
+      <div class="card-body py-4 px-5">
+        <div id="feedback-message" class="text-lg font-bold"></div>
+        <div id="feedback-correct-wrap" class="hidden mt-1">
+          <span class="text-sm text-base-content/60">Correct answer: </span>
+          <span id="feedback-correct-label" class="font-semibold text-sm"></span>
+          <span id="feedback-correct-math" class="text-sm ml-1"></span>
+        </div>
+        <button id="next-btn" class="btn btn-primary btn-sm mt-3 w-fit">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Screen -->
+  <div id="screen-summary" class="hidden max-w-2xl mx-auto px-4 py-10">
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body text-center">
+        <div class="text-5xl mb-2">🎉</div>
+        <h2 class="text-2xl font-bold mb-1">Session Complete!</h2>
+        <div id="summary-encouragement" class="text-base-content/60 text-sm mb-6"></div>
+        <div class="stats stats-vertical sm:stats-horizontal shadow w-full">
+          <div class="stat">
+            <div class="stat-title">Score</div>
+            <div id="summary-score" class="stat-value text-primary">0/20</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Attempts</div>
+            <div id="summary-correct" class="stat-value text-base-content">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Time</div>
+            <div id="summary-time" class="stat-value">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Problems due tomorrow</div>
+            <div id="summary-tomorrow" class="stat-value text-warning">0</div>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-6 justify-center flex-wrap">
+          <button id="print-btn" class="btn btn-outline btn-sm">🖨 Print Report</button>
+          <button id="done-btn" class="btn btn-primary">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Done Screen (nothing due today) -->
+  <div id="screen-done" class="hidden flex items-center justify-center min-h-screen px-4">
+    <div class="card bg-base-100 shadow-xl w-full max-w-md text-center">
+      <div class="card-body">
+        <div class="text-5xl mb-3">✅</div>
+        <h2 class="text-2xl font-bold">All caught up for today!</h2>
+        <p class="text-base-content/60 mt-2 text-sm">Great work. Come back tomorrow for your next set of problems.</p>
+        <div id="done-next-count" class="badge badge-outline mt-4 mx-auto"></div>
+        <div class="flex gap-3 mt-5 justify-center">
+          <button id="done-history-btn" class="btn btn-outline btn-sm">📅 View History</button>
+          <button id="done-home-btn" class="btn btn-ghost btn-sm">← Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Screen -->
+  <div id="screen-history" class="hidden max-w-2xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold">📅 Practice History</h2>
+      <button id="history-back-btn" class="btn btn-ghost btn-sm">← Home</button>
+    </div>
+    <div id="history-loading" class="text-center py-10">
+      <span class="loading loading-spinner loading-md text-primary"></span>
+    </div>
+    <div id="history-list" class="hidden flex flex-col gap-3"></div>
+    <div id="history-empty" class="hidden text-center text-base-content/60 py-10">
+      No sessions recorded yet. Complete a practice session to see your history here.
+    </div>
+  </div>
+
+</div>
+
+<!-- Print Report (screen-hidden, print-visible) -->
+<div id="print-report"></div>
+
+<!-- Embed problem data at build time -->
+<script>
+window.ACT_PROBLEMS = [{"id":"percent-of-number","topic":"Percentages","difficulty":1,"template":"What is {p}% of {n}?","params":{"p":{"values":[10,20,25,30,50,75,80]},"n":{"values":[20,40,60,80,100,120,160,200]}},"answerExpr":"n * p / 100","answerFormat":"integer","distractorExprs":["n * p / 10","n / p * 100","n + p","n - p"]},{"id":"percent-increase","topic":"Percentages","difficulty":2,"template":"A price increases from ${old} to ${new_val}. What is the percent increase?","params":{"old":{"values":[50,100,200,400]},"r":{"values":[10,20,25,50]}},"derived":{"new_val":"old * (1 + r / 100)"},"answerExpr":"r","answerFormat":"integer","distractorExprs":["r + 10","r / 2","r * 2","new_val - old"]},{"id":"mean-of-five","topic":"Statistics","difficulty":1,"template":"What is the mean of {a}, {b}, {c}, {d}, and {e}?","params":{"a":{"type":"int","min":2,"max":18},"b":{"type":"int","min":2,"max":18},"c":{"type":"int","min":2,"max":18},"d":{"type":"int","min":2,"max":18},"e":{"type":"int","min":2,"max":18}},"validate":"(a + b + c + d + e) % 5 === 0","answerExpr":"(a + b + c + d + e) / 5","answerFormat":"integer","distractorExprs":["(a + b + c + d + e) / 4","(a + b + c + d + e) / 5 + 2","(a + b + c + d + e) / 5 - 2","a + b + c + d + e"]},{"id":"ratio-larger-part","topic":"Ratios & Proportions","difficulty":2,"template":"A total of {n} students are divided into two groups in a ratio of {p} to {q}. How many students are in the larger group?","params":{"p":{"values":[2,3,3,4,5,5]},"q":{"values":[1,1,2,1,2,3]},"n":{"values":[12,15,18,20,24,25,30,35,40]}},"validate":"n % (p + q) === 0","answerExpr":"n * p / (p + q)","answerFormat":"integer","distractorExprs":["n * q / (p + q)","n * p / q","n / p","n / 2"]},{"id":"unit-rate","topic":"Ratios & Proportions","difficulty":2,"template":"If {n} identical items cost a total of ${total}, how much do {m} of those items cost?","params":{"n":{"values":[4,5,6,8,10]},"price":{"values":[3,4,5,6,7,8]},"m":{"type":"int","min":2,"max":15}},"derived":{"total":"n * price"},"answerExpr":"m * price","answerFormat":"integer","distractorExprs":["m * price + n","m * total","total / m","m + price"]},{"id":"solve-linear-one-var","topic":"Linear Equations","difficulty":1,"template":"Solve for \\(x\\): \\({a}x {b_str} = {c}\\)","params":{"a":{"values":[2,3,4,5,6]},"x_sol":{"type":"int","min":-6,"max":6}},"derived":{"b":"Math.floor(Math.random() * 11) - 5","c":"a * x_sol + b","b_str":"b >= 0 ? '+ ' + b : '- ' + Math.abs(b)"},"validate":"x_sol !== 0","answerExpr":"x_sol","answerFormat":"integer","distractorExprs":["x_sol + 1","x_sol - 1","-x_sol","x_sol + a"]},{"id":"solve-linear-clean","topic":"Linear Equations","difficulty":1,"template":"Solve for \\(x\\): \\({a}x + {b} = {c}\\)","params":{"a":{"values":[2,3,4,5]},"b":{"type":"int","min":1,"max":12},"x_sol":{"type":"int","min":1,"max":8}},"derived":{"c":"a * x_sol + b"},"answerExpr":"x_sol","answerFormat":"integer","distractorExprs":["x_sol + 1","x_sol - 1","c - b","a + b"]},{"id":"solve-two-sides","topic":"Linear Equations","difficulty":2,"template":"Solve for \\(x\\): \\({a}x + {b} = {c}x + {d}\\)","params":{"a":{"values":[5,6,7,8]},"c":{"values":[1,2,3,4]},"x_sol":{"type":"int","min":1,"max":8}},"derived":{"diff_b_d":"Math.floor(Math.random() * 7) - 3","b":"diff_b_d + 4","d":"b + (a - c) * x_sol"},"answerExpr":"x_sol","answerFormat":"integer","distractorExprs":["x_sol + 2","x_sol - 1","-x_sol","a - c"]},{"id":"evaluate-polynomial","topic":"Algebraic Expressions","difficulty":2,"template":"If \\(x = {v}\\), what is the value of \\({a}x^2 + {b}x + {c}\\)?","params":{"a":{"values":[1,2,3]},"b":{"type":"int","min":-5,"max":5},"c":{"type":"int","min":-8,"max":8},"v":{"type":"int","min":-4,"max":4}},"answerExpr":"a * v * v + b * v + c","answerFormat":"integer","distractorExprs":["a * v * v + b * v + c + a","a * v + b * v + c","a * v * v - b * v + c","a * v * v + b * v"]},{"id":"larger-root-quadratic","topic":"Quadratic Equations","difficulty":3,"template":"What is the larger solution of \\(x^2 - {s}x + {p} = 0\\)?","params":{"r1":{"values":[4,5,6,7,8]},"r2":{"values":[1,2,3]}},"validate":"r1 > r2","derived":{"s":"r1 + r2","p":"r1 * r2"},"answerExpr":"r1","answerFormat":"integer","distractorExprs":["r2","s","p","r1 - r2"]},{"id":"consecutive-integers","topic":"Number Properties","difficulty":2,"template":"Three consecutive integers have a sum of {target}. What is the smallest of the three integers?","params":{"x":{"type":"int","min":5,"max":25}},"derived":{"target":"3 * x + 3"},"answerExpr":"x","answerFormat":"integer","distractorExprs":["x + 1","x - 1","x + 2","x + 3"]},{"id":"function-value","topic":"Functions","difficulty":2,"template":"If \\(f(x) = {a}x^2 + {b}x + {c}\\), what is \\(f({v})\\)?","params":{"a":{"values":[1,2,3]},"b":{"type":"int","min":-4,"max":4},"c":{"type":"int","min":-6,"max":6},"v":{"type":"int","min":-3,"max":4}},"answerExpr":"a * v * v + b * v + c","answerFormat":"integer","distractorExprs":["a * v * v + b * v + c + 1","a * v + b + c","a * v * v - b * v + c","a * v * v + b * v - c"]},{"id":"function-composition","topic":"Functions","difficulty":3,"template":"If \\(f(x) = {a}x + {b}\\) and \\(g(x) = {c}x + {d}\\), what is \\(f(g({v}))\\)?","params":{"a":{"values":[2,3,4]},"b":{"type":"int","min":-4,"max":4},"c":{"values":[2,3,4]},"d":{"type":"int","min":-4,"max":4},"v":{"type":"int","min":1,"max":5}},"answerExpr":"a * (c * v + d) + b","answerFormat":"integer","distractorExprs":["c * (a * v + b) + d","a * c * v + b + d","a * v + b + c * v + d","a * (c * v + d) - b"]},{"id":"arithmetic-sequence","topic":"Sequences","difficulty":2,"template":"An arithmetic sequence has first term {a} and common difference {d}. What is the {n}th term?","params":{"a":{"type":"int","min":1,"max":15},"d":{"type":"int","min":2,"max":8},"n":{"type":"int","min":5,"max":12}},"answerExpr":"a + (n - 1) * d","answerFormat":"integer","distractorExprs":["a + n * d","a + (n - 1) * d + d","a * n + d","a + (n - 2) * d"]},{"id":"system-of-equations","topic":"Systems of Equations","difficulty":3,"template":"Solve the system: \\({a1}x + {b1}y = {c1}\\) and \\({a2}x + {b2}y = {c2}\\). What is \\(x + y\\)?","params":{"x_sol":{"type":"int","min":1,"max":5},"y_sol":{"type":"int","min":1,"max":5},"a1":{"values":[1,2,3]},"b1":{"values":[1,2,3]},"a2":{"values":[1,2,3]},"b2":{"values":[1,2,4]}},"validate":"a1 * b2 - a2 * b1 !== 0","derived":{"c1":"a1 * x_sol + b1 * y_sol","c2":"a2 * x_sol + b2 * y_sol"},"answerExpr":"x_sol + y_sol","answerFormat":"integer","distractorExprs":["x_sol - y_sol","x_sol * y_sol","x_sol + y_sol + 1","x_sol + y_sol - 1"]},{"id":"slope-two-points","topic":"Coordinate Geometry","difficulty":2,"template":"What is the slope of the line passing through \\(({x1}, {y1})\\) and \\(({x2}, {y2})\\)?","params":{"x1":{"type":"int","min":-6,"max":6},"y1":{"type":"int","min":-6,"max":6},"x2":{"type":"int","min":-6,"max":6},"y2":{"type":"int","min":-6,"max":6}},"validate":"x1 !== x2 && (y2 - y1) !== 0 && (y2 - y1) !== (x2 - x1)","answerExpr":"(y2 - y1) / (x2 - x1)","answerFormat":"fraction","distractorExprs":["(x2 - x1) / (y2 - y1)","(y1 - y2) / (x2 - x1)","(y2 - y1) / (x2 + x1)","(y2 + y1) / (x2 - x1)"]},{"id":"midpoint-x","topic":"Coordinate Geometry","difficulty":1,"template":"What is the x-coordinate of the midpoint of the segment from \\(({x1}, {y1})\\) to \\(({x2}, {y2})\\)?","params":{"x1":{"type":"int","min":-8,"max":8},"y1":{"type":"int","min":-8,"max":8},"x2":{"type":"int","min":-8,"max":8},"y2":{"type":"int","min":-8,"max":8}},"validate":"(x1 + x2) % 2 === 0","answerExpr":"(x1 + x2) / 2","answerFormat":"integer","distractorExprs":["(y1 + y2) / 2","x1 + x2","Math.abs(x2 - x1) / 2","(x1 + x2) / 2 + 1"]},{"id":"distance-integer","topic":"Coordinate Geometry","difficulty":2,"template":"What is the distance between the points \\((0, 0)\\) and \\(({dx}, {dy})\\)?","params":{"dx":{"type":"int","min":1,"max":15},"dy":{"type":"int","min":1,"max":15}},"validate":"Math.abs(Math.sqrt(dx*dx + dy*dy) - Math.round(Math.sqrt(dx*dx + dy*dy))) < 0.001","answerExpr":"Math.round(Math.sqrt(dx * dx + dy * dy))","answerFormat":"integer","distractorExprs":["dx + dy","Math.abs(dx - dy)","Math.round(Math.sqrt(dx * dx + dy * dy)) + 1","Math.round(Math.sqrt(dx * dx + dy * dy)) - 1"]},{"id":"y-intercept","topic":"Coordinate Geometry","difficulty":2,"template":"A line has slope \\({m}\\) and passes through the point \\(({x1}, {y1})\\). What is the y-intercept?","params":{"m":{"type":"int","min":-4,"max":4},"x1":{"type":"int","min":-5,"max":5},"y1":{"type":"int","min":-8,"max":8}},"validate":"m !== 0","answerExpr":"y1 - m * x1","answerFormat":"integer","distractorExprs":["y1 + m * x1","y1 - x1","m + y1","y1 / m + x1"]},{"id":"parallel-slope","topic":"Coordinate Geometry","difficulty":1,"template":"Line \\(k\\) has equation \\(y = {m}x + {b}\\). What is the slope of any line parallel to line \\(k\\)?","params":{"m":{"type":"int","min":-5,"max":5},"b":{"type":"int","min":-6,"max":6}},"validate":"m !== 0","answerExpr":"m","answerFormat":"integer","distractorExprs":["-m","m + 1","m - 1","b"]},{"id":"area-triangle","topic":"Plane Geometry","difficulty":1,"template":"A triangle has base {b} units and height {h} units. What is its area in square units?","params":{"b":{"values":[4,6,8,10,12,14,16,20]},"h":{"values":[3,4,5,6,7,8,9,10]}},"answerExpr":"b * h / 2","answerFormat":"integer","distractorExprs":["b * h","b + h","2 * (b + h)","b * h / 2 + b"]},{"id":"area-circle-pi","topic":"Plane Geometry","difficulty":1,"template":"What is the area of a circle with radius {r}? (Express your answer in terms of \\(\\pi\\).)","params":{"r":{"type":"int","min":2,"max":10}},"answerExpr":"r * r","answerFormat":"pi-coefficient","distractorExprs":["2 * r","r * r * 2","r * r - r","r * r + r"]},{"id":"pythagorean-hypotenuse","topic":"Plane Geometry","difficulty":2,"template":"A right triangle has legs of length {a} and {b}. What is the length of the hypotenuse?","params":{"a":{"type":"int","min":1,"max":15},"b":{"type":"int","min":1,"max":15}},"validate":"Math.abs(Math.sqrt(a*a + b*b) - Math.round(Math.sqrt(a*a + b*b))) < 0.001","answerExpr":"Math.round(Math.sqrt(a * a + b * b))","answerFormat":"integer","distractorExprs":["a + b","Math.abs(a - b)","Math.round(Math.sqrt(a * a + b * b)) + 2","Math.round(Math.sqrt(a * a + b * b)) - 1"]},{"id":"third-angle","topic":"Plane Geometry","difficulty":1,"template":"Two angles of a triangle measure {a}° and {b}°. What is the measure of the third angle?","params":{"a":{"type":"int","min":25,"max":85},"b":{"type":"int","min":25,"max":85}},"validate":"a + b < 175 && a + b > 5","answerExpr":"180 - a - b","answerFormat":"integer","distractorExprs":["a + b","360 - a - b","180 - a","90 - a"]},{"id":"rectangle-perimeter","topic":"Plane Geometry","difficulty":1,"template":"A rectangle has length {l} and width {w}. What is its perimeter?","params":{"l":{"type":"int","min":5,"max":20},"w":{"type":"int","min":3,"max":14}},"answerExpr":"2 * (l + w)","answerFormat":"integer","distractorExprs":["l * w","l + w","4 * (l + w)","2 * l + w"]},{"id":"rectangle-diagonal","topic":"Plane Geometry","difficulty":3,"template":"A rectangle has length {l} and width {w}. What is the length of its diagonal?","params":{"l":{"type":"int","min":1,"max":15},"w":{"type":"int","min":1,"max":15}},"validate":"Math.abs(Math.sqrt(l*l + w*w) - Math.round(Math.sqrt(l*l + w*w))) < 0.001","answerExpr":"Math.round(Math.sqrt(l * l + w * w))","answerFormat":"integer","distractorExprs":["l + w","Math.abs(l - w)","Math.round(Math.sqrt(l * l + w * w)) + 1","l * w / (l + w)"]},{"id":"sin-of-angle","topic":"Trigonometry","difficulty":3,"template":"In a right triangle, the leg opposite angle \\(\\theta\\) has length {a} and the other leg has length {b}. What is \\(\\sin(\\theta)\\)?","params":{"a":{"type":"int","min":1,"max":12},"b":{"type":"int","min":1,"max":12}},"validate":"Math.abs(Math.sqrt(a*a + b*b) - Math.round(Math.sqrt(a*a + b*b))) < 0.001","answerExpr":"a / Math.round(Math.sqrt(a * a + b * b))","answerFormat":"fraction","distractorExprs":["b / Math.round(Math.sqrt(a * a + b * b))","a / b","b / a","Math.round(Math.sqrt(a * a + b * b)) / a"]},{"id":"cos-of-angle","topic":"Trigonometry","difficulty":3,"template":"In a right triangle, the leg adjacent to angle \\(\\theta\\) has length {b} and the hypotenuse has length {hyp}. What is \\(\\cos(\\theta)\\)?","params":{"a":{"type":"int","min":1,"max":12},"b":{"type":"int","min":1,"max":12}},"validate":"Math.abs(Math.sqrt(a*a + b*b) - Math.round(Math.sqrt(a*a + b*b))) < 0.001","derived":{"hyp":"Math.round(Math.sqrt(a * a + b * b))"},"answerExpr":"b / hyp","answerFormat":"fraction","distractorExprs":["a / hyp","b / a","a / b","hyp / b"]},{"id":"conditional-probability-and","topic":"Probability","difficulty":2,"template":"The probability that event A will occur is {pa}. If event A occurs, the probability that event B will occur is {pb}. What is the probability that both A and B will occur?","params":{"pa":{"values":[0.1,0.2,0.25,0.3,0.4,0.5]},"pb":{"values":[0.1,0.2,0.25,0.3,0.4,0.5]}},"answerExpr":"pa * pb","answerFormat":"decimal2","distractorExprs":["pa + pb","pa + pb - pa * pb","Math.abs(pa - pb)","pa * pa"]},{"id":"vieta-sum-of-roots","topic":"Quadratic Equations","difficulty":2,"template":"One solution of \\(x^2 - {s}x + {p} = 0\\) is \\(x = {r1}\\). What is the other solution?","params":{"r1":{"values":[4,5,6,7,8,9,10]},"r2":{"type":"int","min":1,"max":6}},"validate":"r1 > r2","derived":{"s":"r1 + r2","p":"r1 * r2"},"answerExpr":"r2","answerFormat":"integer","distractorExprs":["s","p","r1 - s","r2 + 2"]},{"id":"fraction-sequential-spending","topic":"Fractions & Percents","difficulty":3,"template":"A student starts with some money. She spends \\(\\frac{1}{p}\\) of her total at an amusement park, then spends \\(\\frac{1}{q}\\) of her remaining money on a meal. If she has ${left} left, how much did she start with?","params":{"p":{"values":[2,4,5]},"q":{"values":[3,4,5]},"left":{"values":[24,30,36,40,48,60,72,80,90]}},"validate":"(left * p * q) % ((p - 1) * (q - 1)) === 0","answerExpr":"left * p * q / ((p - 1) * (q - 1))","answerFormat":"integer","distractorExprs":["left * (p + q)","left * p","left * q","left * p * q / ((p - 1) * (q - 1)) + left"]},{"id":"pythagorean-identity-cos","topic":"Trigonometry","difficulty":2,"template":"Given that \\(\\sin^2 x = \\frac{p}{q}\\), what is the value of \\(\\cos^2 x\\)?","params":{"q":{"values":[4,5,6,8,9,10,12,15,16,18,20]},"p":{"type":"int","min":1,"max":15}},"validate":"p < q","answerExpr":"(q - p) / q","answerFormat":"fraction","distractorExprs":["p / (q - p)","(q + p) / q","p / q","(q - p) / p"]},{"id":"normal-distribution-upper","topic":"Statistics","difficulty":2,"template":"In a normal distribution, approximately 68% of data falls within 1 standard deviation of the mean. A data set has mean {m} and standard deviation {s}. What is the upper bound of the interval containing the middle 68% of the data?","params":{"m":{"type":"int","min":50,"max":200},"s":{"type":"int","min":5,"max":30}},"answerExpr":"m + s","answerFormat":"integer","distractorExprs":["m - s","m + 2*s","m + s/2","m*s"]},{"id":"complementary-trig-cofunction","topic":"Trigonometry","difficulty":2,"template":"In right triangle \\(\\triangle EFG\\), \\(\\angle F\\) is a right angle, so \\(\\angle E\\) and \\(\\angle G\\) are complementary. If \\(\\cos E = \\frac{p}{q}\\), what is the value of \\(\\sin G\\)?","params":{"a":{"type":"int","min":1,"max":12},"b":{"type":"int","min":1,"max":12}},"validate":"Math.abs(Math.sqrt(a*a + b*b) - Math.round(Math.sqrt(a*a + b*b))) < 0.001","derived":{"hyp":"Math.round(Math.sqrt(a * a + b * b))","p":"a","q":"hyp"},"answerExpr":"a / hyp","answerFormat":"fraction","distractorExprs":["b / hyp","a / b","hyp / a","b / a"]},{"id":"sphere-volume-ratio","topic":"Plane Geometry","difficulty":3,"template":"What is the ratio of the volume of a sphere with radius {r1} to the volume of a sphere with radius {r2}? (Note: volume of a sphere = \\(\\frac{4}{3}\\pi r^3\\).)","params":{"r1":{"values":[2,3,4,5]},"r2":{"values":[4,5,6,8,10]}},"validate":"r1 < r2","answerExpr":"(r1 * r1 * r1) / (r2 * r2 * r2)","answerFormat":"fraction","distractorExprs":["(r1 * r1) / (r2 * r2)","r1 / r2","(r2 * r2 * r2) / (r1 * r1 * r1)","r1 * r1 / (r2 * r2 * r2)"]},{"id":"circle-inscribed-square","topic":"Plane Geometry","difficulty":2,"template":"A circle is inscribed in a square that has a perimeter of {perim} units. What is the circumference of the circle in terms of \\(\\pi\\)?","params":{"perim":{"values":[16,20,24,32,40,48,64]}},"answerExpr":"perim / 4","answerFormat":"pi-coefficient","distractorExprs":["perim / 2","perim / 8","perim * perim / 64","perim / 4 + 1"]},{"id":"exponential-growth-rate","topic":"Functions","difficulty":2,"template":"A quantity is modeled by \\(y = {a}({factor})^x\\), where \\(x\\) is the number of years. By what percent does the quantity increase each year?","params":{"a":{"values":[5,10,20,50,85,100,200]},"r":{"values":[1,2,3,4,5,8,10,12,15,20,25]}},"derived":{"factor":"(100 + r) / 100"},"answerExpr":"r","answerFormat":"integer","distractorExprs":["100 - r","r * 10","100 + r","r / 2"]},{"id":"linear-function-total-cost","topic":"Linear Equations","difficulty":2,"template":"A membership has a one-time fee of ${fixed} and a monthly fee of ${rate}. What is the total cost, in dollars, for {years} years?","params":{"fixed":{"values":[25,50,75,100]},"rate":{"values":[20,25,30,40,50]},"years":{"values":[1,2,3,4,5]}},"answerExpr":"fixed + rate * years * 12","answerFormat":"integer","distractorExprs":["fixed + rate * years","rate * years * 12","fixed * years + rate * 12","fixed + rate * (years * 12 + 1)"]},{"id":"sphere-inscribed-cube","topic":"Plane Geometry","difficulty":3,"template":"A sphere is inscribed in a cube with side length {s} cm. What is the volume of the sphere in terms of \\(\\pi\\)? (Note: volume of a sphere = \\(\\frac{4}{3}\\pi r^3\\).)","params":{"s":{"values":[6,12,18,24]}},"answerExpr":"s * s * s / 6","answerFormat":"pi-coefficient","distractorExprs":["s * s * s / 3","s * s * s","s * s * s / 12","s * s / 4"]},{"id":"border-area","topic":"Plane Geometry","difficulty":2,"template":"A rectangle is {l} units long and {w} units wide. A uniform border of width {t} unit(s) surrounds the rectangle on all sides. What is the area of the border?","params":{"l":{"type":"int","min":8,"max":20},"w":{"type":"int","min":5,"max":15},"t":{"values":[1,2,3]}},"answerExpr":"2*t*(l+w) + 4*t*t","answerFormat":"integer","distractorExprs":["2*t*(l+w)","(l+2*t)*(w+2*t)","l*w + 2*t*(l+w)","4*t*(l+w)"]},{"id":"weight-limit-max-items","topic":"Ratios & Proportions","difficulty":2,"template":"A vehicle has a weight limit of {limit} pounds. Each item weighs {wt} pounds. What is the maximum number of items that can be loaded without exceeding the limit?","params":{"wt":{"type":"int","min":4,"max":20},"limit":{"type":"int","min":120,"max":600}},"answerExpr":"Math.floor(limit / wt)","answerFormat":"integer","distractorExprs":["Math.ceil(limit / wt)","Math.floor(limit / wt) + 1","Math.round(limit / wt)","Math.floor(limit / wt) - 1"]},{"id":"triangle-rectangle-ratio","topic":"Plane Geometry","difficulty":3,"template":"The area of a triangle is {k} times the area of a rectangle. The base of the triangle equals the length of the rectangle. What is the value of \\(\\frac{h}{w}\\), where \\(h\\) is the height of the triangle and \\(w\\) is the width of the rectangle?","params":{"k":{"values":[2,3,4,5,6]}},"answerExpr":"2 * k","answerFormat":"integer","distractorExprs":["k","k / 2","2 / k","k * k"]},{"id":"population-density","topic":"Ratios & Proportions","difficulty":1,"template":"A town has a population of {pop} people and covers {area} square miles. What is the population density, in people per square mile, rounded to the nearest whole number?","params":{"area":{"values":[5,10,15,20,25,50]},"pop":{"type":"int","min":200,"max":2000}},"validate":"pop % area === 0","answerExpr":"pop / area","answerFormat":"integer","distractorExprs":["area / pop","pop * area","pop / area + 10","pop / area * 10"]},{"id":"parabola-axis-of-symmetry","topic":"Coordinate Geometry","difficulty":2,"template":"A parabola has x-intercepts {r1} and {r2}. What is the x-coordinate of the vertex (the axis of symmetry)?","params":{"r1":{"type":"int","min":-12,"max":-1},"r2":{"type":"int","min":-12,"max":-1}},"validate":"(r1 + r2) % 2 === 0 && r1 !== r2","answerExpr":"(r1 + r2) / 2","answerFormat":"integer","distractorExprs":["r1","r2","Math.abs(r1 + r2) / 2","(r1 + r2) / 2 + 1"]},{"id":"find-constant-given-factor","topic":"Quadratic Equations","difficulty":3,"template":"One factor of \\(x^2 - {sum_rs}x + c\\) is \\((x - {r})\\). What is the value of c?","params":{"r":{"type":"int","min":2,"max":9},"s":{"type":"int","min":1,"max":8}},"validate":"r !== s","derived":{"sum_rs":"r + s"},"answerExpr":"r * s","answerFormat":"integer","distractorExprs":["r + s","r * s + r","r * s - r","-r * s"]},{"id":"weighted-mean-table","topic":"Statistics","difficulty":2,"template":"A survey of {total} people shows {n1} people scored {v1}, {n2} people scored {v2}, and {n3} people scored {v3}. What is the mean score?","params":{"n1":{"type":"int","min":10,"max":50},"n2":{"type":"int","min":10,"max":50},"n3":{"type":"int","min":10,"max":50},"v1":{"values":[1,2]},"v2":{"values":[2,3]},"v3":{"values":[3,4,5]}},"validate":"v1 < v2 && v2 < v3","derived":{"total":"n1 + n2 + n3"},"answerExpr":"(n1*v1 + n2*v2 + n3*v3) / (n1 + n2 + n3)","answerFormat":"decimal1","distractorExprs":["(v1 + v2 + v3) / 3","(n1*v1 + n2*v2 + n3*v3) / 3","v3","(n1*v1 + n2*v2 + n3*v3) / (n1 + n2 + n3) + 0.5"]},{"id":"unit-conversion","topic":"Unit Conversion","difficulty":3,"scenarios":[{"template":"A car travels at {rate} miles per hour. What is its speed in kilometers per hour? (Note: 1 mile ≈ 1.609 km)","params":{"rate":{"values":[30,40,45,50,55,60,65,70,80]}},"answerExpr":"rate * 1.609","answerFormat":"decimal1","distractorExprs":["rate / 1.609","rate + 1.609","rate * 1.06","rate * 1.609 / 60"]},{"template":"A speed limit sign reads {rate} kilometers per hour. What is this limit in miles per hour? (Note: 1 km ≈ 0.621 miles)","params":{"rate":{"values":[50,60,80,90,100,110,120]}},"answerExpr":"rate * 0.621","answerFormat":"decimal1","distractorExprs":["rate / 0.621","rate + 0.621","rate * 0.621 / 60","rate * 1.609"]},{"template":"A vehicle travels at {rate} miles per hour. What is its speed in meters per second? (Note: 1 mile = 1,609 meters)","params":{"rate":{"values":[36,45,54,60,72,90]}},"answerExpr":"rate * 1609 / 3600","answerFormat":"decimal1","distractorExprs":["rate * 3600 / 1609","rate * 1609 / 60","rate / 1609 * 3600","rate * 1609 / 3600 * 60"]},{"template":"A pump moves {rate} gallons per minute. How many liters per hour does it pump? (Note: 1 gallon ≈ 3.785 liters)","params":{"rate":{"values":[2,3,4,5,6,8,10]}},"answerExpr":"rate * 3.785 * 60","answerFormat":"decimal1","distractorExprs":["rate * 3.785","rate * 3.785 / 60","rate * 60 / 3.785","rate / 3.785 * 60"]},{"template":"A car gets {rate} miles per gallon. What is this fuel efficiency in kilometers per liter? (Note: 1 mile ≈ 1.609 km and 1 gallon ≈ 3.785 liters)","params":{"rate":{"values":[20,25,30,35,40,45,50]}},"answerExpr":"rate * 1.609 / 3.785","answerFormat":"decimal1","distractorExprs":["rate * 3.785 / 1.609","rate * 1.609 * 3.785","rate / 1.609 / 3.785","rate * 1.609"]}]},{"id":"target-average","topic":"Statistics","difficulty":3,"scenarios":[{"template":"A student scored {s1}, {s2}, and {s3} on the first 3 tests. What score must the student earn on the 4th test to achieve an overall average of {target}?","params":{"s1":{"type":"int","min":70,"max":95},"s2":{"type":"int","min":70,"max":95},"s3":{"type":"int","min":70,"max":95},"target":{"type":"int","min":76,"max":94}},"validate":"4 * target - (s1 + s2 + s3) >= 50 && 4 * target - (s1 + s2 + s3) <= 100","answerExpr":"4 * target - (s1 + s2 + s3)","answerFormat":"integer","distractorExprs":["3 * target - (s1 + s2 + s3)","target","Math.round((s1 + s2 + s3) / 3)","4 * target - (s1 + s2 + s3) + 4"]},{"template":"A student scored {s1}, {s2}, {s3}, and {s4} on the first 4 tests. What score must the student earn on the 5th test to achieve an overall average of {target}?","params":{"s1":{"type":"int","min":70,"max":95},"s2":{"type":"int","min":70,"max":95},"s3":{"type":"int","min":70,"max":95},"s4":{"type":"int","min":70,"max":95},"target":{"type":"int","min":76,"max":94}},"validate":"5 * target - (s1 + s2 + s3 + s4) >= 50 && 5 * target - (s1 + s2 + s3 + s4) <= 100","answerExpr":"5 * target - (s1 + s2 + s3 + s4)","answerFormat":"integer","distractorExprs":["4 * target - (s1 + s2 + s3 + s4)","target","Math.round((s1 + s2 + s3 + s4) / 4)","5 * target - (s1 + s2 + s3 + s4) - 5"]}]},{"id":"simple-probability","topic":"Probability","difficulty":2,"template":"A bag contains {r} red marbles and {b} blue marbles. If one marble is chosen at random, what is the probability it is red?","params":{"r":{"type":"int","min":1,"max":9},"b":{"type":"int","min":1,"max":9}},"validate":"r !== b","answerExpr":"r / (r + b)","answerFormat":"fraction","distractorExprs":["b / (r + b)","r / b","(r + 1) / (r + b)","r / (r + b + 1)"]}];
+</script>
+
+<!-- KaTeX -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+        onload="window._katexReady = true; if(window._appReady) window._startApp();"></script>
+
+<!-- Supabase -->
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+window._supabaseClient = createClient(
+  'https://skgqvheszlquwflignze.supabase.co',
+  'sb_publishable_MpxJeWK8VVF8mjScUtv8qg_4TepfyAG'
+);
+window._supabaseReady = true;
+if (window._appReady && window._katexReady) window._startApp();
+</script>
+
+<script defer src="/assets/js/act-practice.js"></script>
+
+</body>
+</html>

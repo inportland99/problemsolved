@@ -511,26 +511,39 @@
     showModal('shareModal');
   }
 
-  // ─── Win-overlay par helper ───────────────────────────────────────────
+  // ─── Par helpers ────────────────────────────────────────────────────────
+  /** Returns the current puzzle's optimal move count, or null if unknown. */
+  function currentPar() {
+    const meta = PUZZLE_META[puzzleIndex];
+    return meta && typeof meta.minMoves === 'number' ? meta.minMoves : null;
+  }
+
+  /** Updates the persistent "Par N" indicator next to the clock. */
+  function updateParDisplay() {
+    const value = document.getElementById('par-value');
+    const wrap  = document.getElementById('par-display');
+    if (!value || !wrap) return;
+    const par = currentPar();
+    if (par === null) {
+      wrap.style.display = 'none';
+    } else {
+      wrap.style.display = '';
+      value.textContent = ` ${par}`;
+    }
+  }
+
+  /** Populates the win overlay's optimal-moves line. */
   function setWinPar(overlay) {
     const parLine = overlay.querySelector('#win-par-line');
     const parSpan = overlay.querySelector('#win-par');
-    const diffSpan = overlay.querySelector('#win-par-diff');
     if (!parLine || !parSpan) return;
-    const meta = PUZZLE_META[puzzleIndex];
-    const par = meta && typeof meta.minMoves === 'number' ? meta.minMoves : null;
+    const par = currentPar();
     if (par === null) {
       parLine.style.display = 'none';
       return;
     }
     parLine.style.display = '';
     parSpan.textContent = par;
-    if (diffSpan) {
-      const delta = moves - par;
-      if (delta <= 0)      diffSpan.textContent = ' — perfect!';
-      else if (delta === 1) diffSpan.textContent = ' — 1 move over par';
-      else                  diffSpan.textContent = ` — ${delta} moves over par`;
-    }
   }
 
   // ─── Reset ────────────────────────────────────────────────────────────
@@ -599,6 +612,7 @@
 
     renderBoard();
     updateMoveCounter();
+    updateParDisplay();
 
     // Timer – start paused until user dismisses welcome
     document.getElementById('timer').textContent = ' ' + formatTime(elapsed);

@@ -410,10 +410,15 @@
 }
 
 /* ---------- Stopwatch (reuse existing pattern) ---------- */
-#stopwatch {
+#stopwatch,
+#par-display {
   margin: 10px;
   font-weight: bold;
   font-size: 24px;
+}
+
+#par-display {
+  color: #5741AC;
 }
 
 /* ---------- Responsive ---------- */
@@ -461,7 +466,8 @@
     font-size: 18px;
   }
 
-  #stopwatch {
+  #stopwatch,
+  #par-display {
     font-size: 20px;
   }
 }

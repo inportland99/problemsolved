@@ -85,6 +85,14 @@ async function loadClients() {
 }
 
 // ─── Client Modal ───
+// Convert a newline-separated textarea value into a clean array of items.
+function parseLines(value) {
+  return (value || '')
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0);
+}
+
 function openAddClientModal() {
   document.getElementById('client-modal-title').textContent = 'Add Client';
   document.getElementById('client-edit-id').value = '';
@@ -92,6 +100,10 @@ function openAddClientModal() {
   document.getElementById('client-email').value = '';
   document.getElementById('client-phone').value = '';
   document.getElementById('client-notes').value = '';
+  document.getElementById('client-personal-values').value = '';
+  document.getElementById('client-strengths').value = '';
+  document.getElementById('client-goals').value = '';
+  document.getElementById('client-special-notes').value = '';
   document.getElementById('client-modal').showModal();
 }
 
@@ -102,6 +114,10 @@ function openEditClientModal(client) {
   document.getElementById('client-email').value = client.email || '';
   document.getElementById('client-phone').value = client.phone || '';
   document.getElementById('client-notes').value = client.notes || '';
+  document.getElementById('client-personal-values').value = (client.personal_values || []).join('\n');
+  document.getElementById('client-strengths').value = (client.strengths || []).join('\n');
+  document.getElementById('client-goals').value = (client.goals || []).join('\n');
+  document.getElementById('client-special-notes').value = client.special_notes || '';
   document.getElementById('client-modal').showModal();
 }
 
@@ -111,6 +127,10 @@ document.getElementById('save-client-btn').addEventListener('click', async () =>
   const email = document.getElementById('client-email').value.trim() || null;
   const phone = document.getElementById('client-phone').value.trim() || null;
   const notes = document.getElementById('client-notes').value.trim() || null;
+  const personal_values = parseLines(document.getElementById('client-personal-values').value);
+  const strengths = parseLines(document.getElementById('client-strengths').value);
+  const goals = parseLines(document.getElementById('client-goals').value);
+  const special_notes = document.getElementById('client-special-notes').value.trim() || null;
 
   if (!name) { showAlert('Name is required', 'error'); return; }
 
@@ -118,9 +138,10 @@ document.getElementById('save-client-btn').addEventListener('click', async () =>
   btn.disabled = true;
   btn.innerHTML = '<span class="loading loading-spinner"></span> Saving...';
 
+  const payload = { name, email, phone, notes, personal_values, strengths, goals, special_notes };
   const result = id
-    ? await updateClient(id, { name, email, phone, notes })
-    : await addClient({ name, email, phone, notes });
+    ? await updateClient(id, payload)
+    : await addClient(payload);
 
   btn.disabled = false;
   btn.textContent = 'Save Client';

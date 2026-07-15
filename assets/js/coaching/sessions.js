@@ -28,6 +28,27 @@ let sessionsData = [];
 let viewingSession = null;
 
 // ─── Load Client Info ───
+function renderListCard(elementId, items) {
+  const el = document.getElementById(elementId);
+  const list = Array.isArray(items) ? items.filter(i => i && i.trim()) : [];
+  if (list.length === 0) {
+    el.innerHTML = '<span class="text-gray-400">\u2014</span>';
+    return;
+  }
+  el.innerHTML = `<ul class="list-disc list-inside space-y-1">${
+    list.map(item => `<li>${escapeHtml(item)}</li>`).join('')
+  }</ul>`;
+}
+
+function renderTextCard(elementId, text) {
+  const el = document.getElementById(elementId);
+  if (!text || !text.trim()) {
+    el.innerHTML = '<span class="text-gray-400">\u2014</span>';
+    return;
+  }
+  el.textContent = text;
+}
+
 async function loadClientInfo() {
   const result = await getClient(clientId);
   if (!result.success) {
@@ -40,6 +61,12 @@ async function loadClientInfo() {
   document.getElementById('session-client-info').textContent =
     [client.email, client.phone].filter(Boolean).join(' · ');
   document.getElementById('user-email').textContent = user.email;
+
+  // Dashboard cards
+  renderListCard('client-values-card', client.personal_values);
+  renderListCard('client-strengths-card', client.strengths);
+  renderListCard('client-goals-card', client.goals);
+  renderTextCard('client-notes-card', client.special_notes);
 }
 
 // ─── Load Sessions ───
