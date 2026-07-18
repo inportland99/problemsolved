@@ -3,39 +3,78 @@
     "id": "percent-of-number",
     "topic": "Percentages",
     "difficulty": 1,
-    "template": "What is {p}% of {n}?",
-    "params": {
-      "p": { "values": [10, 20, 25, 30, 50, 75, 80] },
-      "n": { "values": [20, 40, 60, 80, 100, 120, 160, 200] }
-    },
-    "answerExpr": "n * p / 100",
-    "answerFormat": "integer",
-    "distractorExprs": [
-      "n * p / 10",
-      "n / p * 100",
-      "n + p",
-      "n - p"
+    "scenarios": [
+      {
+        "template": "What is {p}% of {n}?",
+        "params": {
+          "p": { "values": [10, 20, 25, 30, 50, 75, 80] },
+          "n": { "values": [20, 40, 60, 80, 100, 120, 160, 200] }
+        },
+        "answerExpr": "n * p / 100",
+        "answerFormat": "integer",
+        "distractorExprs": ["n * p / 10", "n / p * 100", "n + p", "n - p"]
+      },
+      {
+        "template": "{p}% of a number is {y}. What is the number?",
+        "params": {
+          "p": { "values": [10, 20, 25, 30, 50, 75, 80] },
+          "n": { "values": [20, 40, 60, 80, 100, 120, 160, 200] }
+        },
+        "validate": "(n * p) % 100 === 0",
+        "derived": { "y": "n * p / 100" },
+        "answerExpr": "n",
+        "answerFormat": "integer",
+        "distractorExprs": ["y * p", "y * p / 100", "y * 100", "y + p"]
+      }
     ]
   },
   {
     "id": "percent-increase",
     "topic": "Percentages",
     "difficulty": 2,
-    "template": "A price increases from ${old} to ${new_val}. What is the percent increase?",
-    "params": {
-      "old": { "values": [50, 100, 200, 400] },
-      "r":   { "values": [10, 20, 25, 50] }
-    },
-    "derived": {
-      "new_val": "old * (1 + r / 100)"
-    },
-    "answerExpr": "r",
-    "answerFormat": "integer",
-    "distractorExprs": [
-      "r + 10",
-      "r / 2",
-      "r * 2",
-      "new_val - old"
+    "scenarios": [
+      {
+        "template": "A price increases from ${old} to ${new_val}. What is the percent increase?",
+        "params": { "old": { "values": [50, 100, 200, 400] }, "r": { "values": [10, 20, 25, 50] } },
+        "derived": { "new_val": "old * (100 + r) / 100" },
+        "answerExpr": "r",
+        "answerFormat": "integer",
+        "distractorExprs": ["r + 10", "r / 2", "r * 2", "new_val - old"]
+      },
+      {
+        "template": "A price was increased by {r}% to ${new_val}. What was the original price?",
+        "params": { "old": { "values": [50, 100, 200, 400] }, "r": { "values": [10, 20, 25, 50] } },
+        "derived": { "new_val": "old * (100 + r) / 100" },
+        "answerExpr": "old",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "new_val",
+          "new_val * (100 - r) / 100",
+          "new_val * (100 + r) / 100",
+          "new_val * r / 100"
+        ]
+      },
+      {
+        "template": "A price decreases from ${old} to ${new_val}. What is the percent decrease?",
+        "params": { "old": { "values": [50, 100, 200, 400] }, "r": { "values": [10, 20, 25, 50] } },
+        "derived": { "new_val": "old * (100 - r) / 100" },
+        "answerExpr": "r",
+        "answerFormat": "integer",
+        "distractorExprs": ["r + 10", "r / 2", "r * 2", "100 - r"]
+      },
+      {
+        "template": "A price was decreased by {r}% to ${new_val}. What was the original price?",
+        "params": { "old": { "values": [50, 100, 200, 400] }, "r": { "values": [10, 20, 25, 50] } },
+        "derived": { "new_val": "old * (100 - r) / 100" },
+        "answerExpr": "old",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "new_val",
+          "new_val * (100 + r) / 100",
+          "new_val * (100 - r) / 100",
+          "new_val * r / 100"
+        ]
+      }
     ]
   },
   {
@@ -127,49 +166,42 @@
     ]
   },
   {
-    "id": "solve-linear-clean",
-    "topic": "Linear Equations",
-    "difficulty": 1,
-    "template": "Solve for \\(x\\): \\({a}x + {b} = {c}\\)",
-    "params": {
-      "a":     { "values": [2, 3, 4, 5] },
-      "b":     { "type": "int", "min": 1, "max": 12 },
-      "x_sol": { "type": "int", "min": 1, "max": 8 }
-    },
-    "derived": {
-      "c": "a * x_sol + b"
-    },
-    "answerExpr": "x_sol",
-    "answerFormat": "integer",
-    "distractorExprs": [
-      "x_sol + 1",
-      "x_sol - 1",
-      "c - b",
-      "a + b"
-    ]
-  },
-  {
     "id": "solve-two-sides",
-    "topic": "Linear Equations",
+    "topic": "Linear Inequalities",
     "difficulty": 2,
-    "template": "Solve for \\(x\\): \\({a}x + {b} = {c}x + {d}\\)",
-    "params": {
-      "a":     { "values": [5, 6, 7, 8] },
-      "c":     { "values": [1, 2, 3, 4] },
-      "x_sol": { "type": "int", "min": 1, "max": 8 }
-    },
-    "derived": {
-      "diff_b_d": "Math.floor(Math.random() * 7) - 3",
-      "b": "diff_b_d + 4",
-      "d": "b + (a - c) * x_sol"
-    },
-    "answerExpr": "x_sol",
-    "answerFormat": "integer",
-    "distractorExprs": [
-      "x_sol + 2",
-      "x_sol - 1",
-      "-x_sol",
-      "a - c"
+    "scenarios": [
+      {
+        "template": "What is the smallest integer value of \\(x\\) that satisfies \\({a}x + {b} > {c}x + {d}\\)?",
+        "params": {
+          "a":     { "values": [5, 6, 7, 8] },
+          "c":     { "values": [1, 2, 3, 4] },
+          "x_sol": { "type": "int", "min": 1, "max": 8 }
+        },
+        "derived": {
+          "diff_b_d": "Math.floor(Math.random() * 7) - 3",
+          "b": "diff_b_d + 4",
+          "d": "b + (a - c) * x_sol"
+        },
+        "answerExpr": "x_sol + 1",
+        "answerFormat": "integer",
+        "distractorExprs": ["x_sol", "x_sol + 2", "x_sol - 1", "x_sol + 3"]
+      },
+      {
+        "template": "What is the largest integer value of \\(x\\) that satisfies \\({a}x + {b} < {c}x + {d}\\)?",
+        "params": {
+          "a":     { "values": [5, 6, 7, 8] },
+          "c":     { "values": [1, 2, 3, 4] },
+          "x_sol": { "type": "int", "min": 2, "max": 9 }
+        },
+        "derived": {
+          "diff_b_d": "Math.floor(Math.random() * 7) - 3",
+          "b": "diff_b_d + 4",
+          "d": "b + (a - c) * x_sol"
+        },
+        "answerExpr": "x_sol - 1",
+        "answerFormat": "integer",
+        "distractorExprs": ["x_sol", "x_sol + 1", "x_sol - 2", "x_sol + 2"]
+      }
     ]
   },
   {
@@ -323,6 +355,38 @@
     ]
   },
   {
+    "id": "word-problem-three-vars",
+    "topic": "Algebraic Word Problems",
+    "difficulty": 3,
+    "scenarios": [
+      {
+        "template": "The value of X is {a} times the value of Y. The value of Z is {k} less than the value of X. The sum of X, Y, and Z is {S}. What is the value of Y?",
+        "params": {
+          "Y": { "type": "int", "min": 2, "max": 10 },
+          "a": { "values": [2, 3, 4, 5] },
+          "k": { "type": "int", "min": 1, "max": 15 }
+        },
+        "validate": "a * Y > k",
+        "derived": { "S": "(2 * a + 1) * Y - k" },
+        "answerExpr": "Y",
+        "answerFormat": "integer",
+        "distractorExprs": ["a * Y", "a * Y - k", "Y + k", "Y + a"]
+      },
+      {
+        "template": "The value of X is {a} times the value of Y. The value of Z is {k} more than the value of Y. The sum of X, Y, and Z is {S}. What is the value of Y?",
+        "params": {
+          "Y": { "type": "int", "min": 2, "max": 10 },
+          "a": { "values": [2, 3, 4, 5] },
+          "k": { "type": "int", "min": 1, "max": 12 }
+        },
+        "derived": { "S": "(a + 2) * Y + k" },
+        "answerExpr": "Y",
+        "answerFormat": "integer",
+        "distractorExprs": ["a * Y", "Y + k", "Y + a", "Y - 1"]
+      }
+    ]
+  },
+  {
     "id": "slope-two-points",
     "topic": "Coordinate Geometry",
     "difficulty": 2,
@@ -347,33 +411,51 @@
     "id": "midpoint-x",
     "topic": "Coordinate Geometry",
     "difficulty": 1,
-    "template": "What is the x-coordinate of the midpoint of the segment from \\(({x1}, {y1})\\) to \\(({x2}, {y2})\\)?",
-    "params": {
-      "x1": { "type": "int", "min": -8, "max": 8 },
-      "y1": { "type": "int", "min": -8, "max": 8 },
-      "x2": { "type": "int", "min": -8, "max": 8 },
-      "y2": { "type": "int", "min": -8, "max": 8 }
-    },
-    "validate": "(x1 + x2) % 2 === 0",
-    "answerExpr": "(x1 + x2) / 2",
-    "answerFormat": "integer",
-    "distractorExprs": [
-      "(y1 + y2) / 2",
-      "x1 + x2",
-      "Math.abs(x2 - x1) / 2",
-      "(x1 + x2) / 2 + 1"
+    "scenarios": [
+      {
+        "template": "What is the x-coordinate of the midpoint of the segment from \\(({x1}, {y1})\\) to \\(({x2}, {y2})\\)?",
+        "params": {
+          "x1": { "type": "int", "min": -8, "max": 8 },
+          "y1": { "type": "int", "min": -8, "max": 8 },
+          "x2": { "type": "int", "min": -8, "max": 8 },
+          "y2": { "type": "int", "min": -8, "max": 8 }
+        },
+        "validate": "(x1 + x2) % 2 === 0",
+        "answerExpr": "(x1 + x2) / 2",
+        "answerFormat": "integer",
+        "distractorExprs": ["(y1 + y2) / 2", "x1 + x2", "Math.abs(x2 - x1) / 2", "(x1 + x2) / 2 + 1"]
+      },
+      {
+        "template": "What is the y-coordinate of the midpoint of the segment from \\(({x1}, {y1})\\) to \\(({x2}, {y2})\\)?",
+        "params": {
+          "x1": { "type": "int", "min": -8, "max": 8 },
+          "y1": { "type": "int", "min": -8, "max": 8 },
+          "x2": { "type": "int", "min": -8, "max": 8 },
+          "y2": { "type": "int", "min": -8, "max": 8 }
+        },
+        "validate": "(y1 + y2) % 2 === 0",
+        "answerExpr": "(y1 + y2) / 2",
+        "answerFormat": "integer",
+        "distractorExprs": ["(x1 + x2) / 2", "y1 + y2", "Math.abs(y2 - y1) / 2", "(y1 + y2) / 2 + 1"]
+      }
     ]
   },
   {
     "id": "distance-integer",
     "topic": "Coordinate Geometry",
     "difficulty": 2,
-    "template": "What is the distance between the points \\((0, 0)\\) and \\(({dx}, {dy})\\)?",
+    "template": "What is the distance between the points \\(({x1}, {y1})\\) and \\(({x2}, {y2})\\)?",
     "params": {
-      "dx": { "type": "int", "min": 1, "max": 15 },
-      "dy": { "type": "int", "min": 1, "max": 15 }
+      "x1": { "type": "int", "min": -5, "max": 5 },
+      "y1": { "type": "int", "min": -5, "max": 5 },
+      "dx": { "type": "int", "min": 1, "max": 12 },
+      "dy": { "type": "int", "min": 1, "max": 12 }
     },
     "validate": "Math.abs(Math.sqrt(dx*dx + dy*dy) - Math.round(Math.sqrt(dx*dx + dy*dy))) < 0.001",
+    "derived": {
+      "x2": "x1 + dx",
+      "y2": "y1 + dy"
+    },
     "answerExpr": "Math.round(Math.sqrt(dx * dx + dy * dy))",
     "answerFormat": "integer",
     "distractorExprs": [
@@ -387,20 +469,36 @@
     "id": "y-intercept",
     "topic": "Coordinate Geometry",
     "difficulty": 2,
-    "template": "A line has slope \\({m}\\) and passes through the point \\(({x1}, {y1})\\). What is the y-intercept?",
-    "params": {
-      "m":  { "type": "int", "min": -4, "max": 4 },
-      "x1": { "type": "int", "min": -5, "max": 5 },
-      "y1": { "type": "int", "min": -8, "max": 8 }
-    },
-    "validate": "m !== 0",
-    "answerExpr": "y1 - m * x1",
-    "answerFormat": "integer",
-    "distractorExprs": [
-      "y1 + m * x1",
-      "y1 - x1",
-      "m + y1",
-      "y1 / m + x1"
+    "scenarios": [
+      {
+        "template": "A line has slope \\({m}\\) and passes through the point \\(({x1}, {y1})\\). What is the y-intercept?",
+        "params": {
+          "m":  { "type": "int", "min": -4, "max": 4 },
+          "x1": { "type": "int", "min": -5, "max": 5 },
+          "y1": { "type": "int", "min": -8, "max": 8 }
+        },
+        "validate": "m !== 0",
+        "answerExpr": "y1 - m * x1",
+        "answerFormat": "integer",
+        "distractorExprs": ["y1 + m * x1", "y1 - x1", "m + y1", "y1 / m + x1"]
+      },
+      {
+        "template": "A line has slope \\({m}\\) and passes through the point \\(({x1}, {y1})\\). What is the x-intercept?",
+        "params": {
+          "m":  { "type": "int", "min": -4, "max": 4 },
+          "x1": { "type": "int", "min": -5, "max": 5 },
+          "y1": { "type": "int", "min": -8, "max": 8 }
+        },
+        "validate": "m !== 0 && y1 % m === 0",
+        "answerExpr": "x1 - y1 / m",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "y1 - m * x1",
+          "x1 + y1 / m",
+          "-y1 / m",
+          "x1 - m * y1"
+        ]
+      }
     ]
   },
   {
@@ -675,16 +773,14 @@
     "id": "complementary-trig-cofunction",
     "topic": "Trigonometry",
     "difficulty": 2,
-    "template": "In right triangle \\(\\triangle EFG\\), \\(\\angle F\\) is a right angle, so \\(\\angle E\\) and \\(\\angle G\\) are complementary. If \\(\\cos E = \\frac{p}{q}\\), what is the value of \\(\\sin G\\)?",
+    "template": "In right triangle \\(\\triangle EFG\\), \\(\\angle F\\) is a right angle and \\(\\angle E\\) and \\(\\angle G\\) are complementary. The leg adjacent to \\(\\angle E\\) has length {a} and the hypotenuse has length {hyp}. What is \\(\\sin G\\)?",
     "params": {
       "a": { "type": "int", "min": 1, "max": 12 },
       "b": { "type": "int", "min": 1, "max": 12 }
     },
     "validate": "Math.abs(Math.sqrt(a*a + b*b) - Math.round(Math.sqrt(a*a + b*b))) < 0.001",
     "derived": {
-      "hyp": "Math.round(Math.sqrt(a * a + b * b))",
-      "p":   "a",
-      "q":   "hyp"
+      "hyp": "Math.round(Math.sqrt(a * a + b * b))"
     },
     "answerExpr": "a / hyp",
     "answerFormat": "fraction",

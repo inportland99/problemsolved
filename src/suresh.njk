@@ -1,0 +1,230 @@
+---
+layout: suresh-base.njk
+title: Suresh Jagmohan Shah
+description: A tribute to Suresh Jagmohan Shah — a life of love, wisdom, and quiet strength.
+pageCss: /assets/css/suresh.css
+eleventyExcludeFromCollections: true
+---
+<meta name="robots" content="noindex">
+
+{# ============================================================
+   HERO
+============================================================ #}
+<section class="suresh-hero" aria-label="Hero">
+  <div class="suresh-hero-inner">
+    <div class="hero-photo-col">
+      <div class="hero-photo-frame">
+        <img src="/images/suresh/hero.jpg" alt="Suresh Jagmohan Shah" class="hero-photo">
+      </div>
+    </div>
+    <div class="hero-text-col">
+      <p class="hero-tagline">A life of love, wisdom &amp; quiet strength</p>
+      <h1>Suresh Jagmohan Shah</h1>
+      <p class="hero-dates">Born February 9, 1940</p>
+    </div>
+  </div>
+</section>
+
+{# ============================================================
+   LIFE STORY
+============================================================ #}
+<section class="suresh-section suresh-story" id="story">
+  <div class="suresh-container">
+    <h2 class="section-heading">A Life Well Lived</h2>
+
+    <p class="story-text">
+      Suresh Jagmohan Shah was born on February 9, 1940, in a time that demanded resilience and shaped character. 
+      From his earliest years he carried a gentleness that never wavered — a warmth that made every room feel 
+      a little more like home and every person feel a little more seen. This is where his story begins, 
+      though the truest chapters are the ones written in the lives he touched.
+    </p>
+
+    <div class="story-image-wrap">
+      <img src="/images/suresh/story-1.jpg" alt="Suresh Shah" loading="lazy">
+    </div>
+    <p class="story-caption">Replace with your caption here</p>
+
+    <p class="story-text">
+      [Write about his journey here — his family, his work, the places he lived, the values he held. 
+      What drove him? What made him laugh? What did he sacrifice quietly so that others could flourish? 
+      This section is yours to fill in with the real story of his life.]
+    </p>
+
+    <p class="story-text">
+      [Continue with more of his life — the moments that defined him, the relationships that sustained him, 
+      the lessons he passed down not through words alone but through the way he moved through the world. 
+      What did he love? Who did he love? What does the world look like because he was in it?]
+    </p>
+
+    <div class="story-image-wrap">
+      <img src="/images/suresh/story-2.jpg" alt="Suresh Shah" loading="lazy">
+    </div>
+    <p class="story-caption">Replace with your caption here</p>
+
+    <p class="story-text">
+      [A closing paragraph — where he is now, what surrounds him, what continues. Not an ending, 
+      but a pause. The kind of breath you take before the next beautiful thing.]
+    </p>
+  </div>
+</section>
+
+{# ============================================================
+   PHOTO ALBUM
+============================================================ #}
+<section class="suresh-section suresh-album" id="photos">
+  <div class="suresh-container">
+    <h2 class="section-heading">A Life in Photos</h2>
+    <div class="album-carousel-wrapper" id="album-carousel-wrapper">
+      <div class="album-carousel" id="album-carousel" aria-live="polite"></div>
+      <button class="carousel-btn carousel-prev" id="carousel-prev" aria-label="Previous photo">&#8249;</button>
+      <button class="carousel-btn carousel-next" id="carousel-next" aria-label="Next photo">&#8250;</button>
+      <div class="carousel-dots" id="carousel-dots"></div>
+    </div>
+  </div>
+</section>
+
+{# ============================================================
+   GUESTBOOK
+============================================================ #}
+<section class="suresh-section suresh-guestbook" id="guestbook">
+  <div class="suresh-container">
+    <h2 class="section-heading">The Book of Memories</h2>
+    <p class="section-intro">
+      These pages hold something more precious than condolences —<br>
+      the moments, lessons, and stories that show us who Suresh truly is.<br>
+      <em>We're not gathering well wishes. We're gathering him.</em>
+    </p>
+
+    {# Book Viewer #}
+    <div class="book-wrapper">
+      <p class="book-loading" id="book-loading">Opening the book of memories…</p>
+
+      <div class="book-scene" id="book-scene" style="display:none" aria-live="polite">
+        <div class="book-display">
+          <div class="book-spine"></div>
+          <div class="book-page-area">
+            <div id="book-page-content" class="book-page-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-controls" id="book-controls" style="display:none">
+        <button id="prev-page" class="book-nav-btn" aria-label="Previous page">&#8249;</button>
+        <span id="page-counter" class="page-counter" aria-live="polite">Page 1</span>
+        <button id="next-page" class="book-nav-btn" aria-label="Next page">&#8250;</button>
+      </div>
+    </div>
+
+    {# Submission Form #}
+    <div class="guestbook-form-wrapper" id="add-memory">
+      <h3 class="form-heading">Add Your Memory</h3>
+      <p class="form-intro">
+        We're not looking for well wishes — we're gathering memories.<br>
+        Share a moment he was there for you, something he taught you, or a story that captures 
+        exactly who Suresh Shah is. Your words will live in this book forever.
+      </p>
+
+      <form id="guestbook-form" novalidate>
+        {# Honeypot — invisible to real users #}
+        <div style="position:absolute;left:-9999px;height:0;overflow:hidden" aria-hidden="true">
+          <label>Leave this blank <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="gb-name">Your name</label>
+            <input type="text" id="gb-name" name="name" required autocomplete="name" placeholder="e.g. Priya Mehta">
+          </div>
+          <div class="form-group">
+            <label for="gb-relationship">Your relationship to Suresh</label>
+            <input type="text" id="gb-relationship" name="relationship" required placeholder="e.g. Son, Friend, Colleague">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="gb-story">Your memory, lesson, or story</label>
+          <textarea id="gb-story" name="story" rows="7" required
+            placeholder="Tell us about a moment that stayed with you, something he said that changed the way you see the world, or a story that shows exactly who Suresh Shah is…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="gb-media">Add a photo or short video (optional)</label>
+          <input type="file" id="gb-media" name="media" accept="image/*,video/*">
+          <p class="file-hint">Images up to 5 MB · Videos up to 50 MB · JPG, PNG, GIF, MP4, MOV</p>
+          <div id="media-preview" class="media-preview" style="display:none" aria-live="polite"></div>
+        </div>
+
+        <div id="form-error" class="form-error" style="display:none" role="alert"></div>
+        <div id="form-success" class="form-success" style="display:none" role="status">
+          Thank you. Your memory has been added to the book. ♥
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-submit">Add to the Book</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+{# ============================================================
+   LIGHTBOX
+============================================================ #}
+<div id="suresh-lightbox" class="suresh-lightbox" style="display:none" role="dialog"
+     aria-modal="true" aria-label="Image viewer">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&#10005;</button>
+    <img id="lightbox-img" src="" alt="" style="display:none">
+    <video id="lightbox-video" controls style="display:none" playsinline></video>
+  </div>
+</div>
+
+{# ============================================================
+   ADMIN BAR
+============================================================ #}
+<div class="admin-bar" id="admin-bar">
+  <button class="admin-toggle-btn" id="admin-toggle" aria-expanded="false">Admin</button>
+
+  <div id="admin-login-form" class="admin-login-form" style="display:none" role="form" aria-label="Admin login">
+    <input type="email" id="admin-email" placeholder="Email" autocomplete="email">
+    <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+    <button type="button" id="admin-login-btn">Sign In</button>
+    <span id="admin-login-error" class="admin-error" role="alert"></span>
+  </div>
+
+  <div id="admin-logout-section" class="admin-logout" style="display:none">
+    <span>Admin mode</span>
+    <button type="button" id="admin-logout-btn">Sign Out</button>
+  </div>
+</div>
+
+{# ============================================================
+   EDIT MODAL
+============================================================ #}
+<div id="edit-modal" class="modal-backdrop" style="display:none" role="dialog"
+     aria-modal="true" aria-labelledby="edit-modal-title">
+  <div class="modal-box">
+    <h3 class="modal-title" id="edit-modal-title">Edit Memory</h3>
+    <input type="hidden" id="edit-entry-id">
+
+    <div class="form-group">
+      <label for="edit-name">Name</label>
+      <input type="text" id="edit-name">
+    </div>
+    <div class="form-group">
+      <label for="edit-relationship">Relationship</label>
+      <input type="text" id="edit-relationship">
+    </div>
+    <div class="form-group">
+      <label for="edit-story">Memory</label>
+      <textarea id="edit-story" rows="8"></textarea>
+    </div>
+
+    <div id="edit-modal-error" class="form-error" style="display:none" role="alert"></div>
+
+    <div class="modal-actions">
+      <button type="button" id="edit-cancel-btn" class="btn-secondary">Cancel</button>
+      <button type="button" id="edit-save-btn" class="btn-primary">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="{{ '/assets/js/suresh.js' | url }}"></script>
