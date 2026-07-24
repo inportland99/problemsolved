@@ -50,7 +50,7 @@
    HERO
 ============================================================ */
 .suresh-hero {
-  background-image: linear-gradient(rgba(250, 246, 238, 0.58), rgba(250, 246, 238, 0.58)), url('/images/suresh/background.png');
+  background-image: linear-gradient(rgba(250, 246, 238, 0.25), rgba(250, 246, 238, 0.25)), url('/images/suresh/background.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -102,6 +102,12 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  background: rgba(250, 246, 238, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 1.75rem 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(250, 246, 238, 0.5);
 }
 
 .hero-text-col h1 {
@@ -423,7 +429,7 @@
   display: flex;
   width: 100%;
   max-width: 560px;
-  min-height: 560px;
+  height: 560px;
   border-radius: 2px 6px 6px 2px;
   box-shadow:
     -10px 4px 30px rgba(0, 0, 0, 0.5),
@@ -448,6 +454,8 @@
   background: var(--s-cream);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Inner shadow on left edge simulates page curl at binding */
@@ -463,11 +471,13 @@
 
 .book-page-content {
   padding: 2.25rem 2rem 1.75rem 2.25rem;
-  min-height: 560px;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   transition: opacity 0.22s ease, transform 0.22s ease;
+  overflow: hidden;
 }
 
 .book-page-content.fade-out {
@@ -525,33 +535,68 @@
   line-height: 1.78;
   color: var(--s-text);
   flex: 1;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 11;
-  -webkit-box-orient: vertical;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--s-parchment) transparent;
+  padding-right: 0.25rem;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
+/* Single media item */
 .entry-media {
   margin-top: 0.75rem;
   flex-shrink: 0;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
   overflow: hidden;
-  max-height: 110px;
+  background: var(--s-parchment);
 }
 
 .entry-media img {
   width: 100%;
-  height: 110px;
-  object-fit: cover;
-  cursor: pointer;
+  height: auto;
+  max-height: 220px;
+  object-fit: contain;
+  cursor: zoom-in;
   display: block;
 }
 
 .entry-media video {
   width: 100%;
-  height: 110px;
-  object-fit: cover;
+  max-height: 220px;
+  object-fit: contain;
   cursor: pointer;
+  display: block;
+}
+
+/* Multi-photo gallery strip */
+.entry-media-gallery {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  margin-top: 0.75rem;
+  flex-shrink: 0;
+  padding-bottom: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--s-parchment) transparent;
+}
+
+.gallery-thumb {
+  flex-shrink: 0;
+  width: 110px;
+  height: 85px;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  cursor: zoom-in;
+  background: var(--s-parchment);
+}
+
+.gallery-thumb img,
+.gallery-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
@@ -559,11 +604,84 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto;
+  margin-top: 0.625rem;
   padding-top: 0.625rem;
   border-top: 1px solid var(--s-parchment);
   flex-shrink: 0;
   gap: 0.5rem;
+}
+
+/* User edit button (own entry) */
+.user-edit-btn {
+  background: none;
+  border: none;
+  font-family: 'Lora', Georgia, serif;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--s-gold);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.user-edit-btn:hover {
+  color: var(--s-brown-mid);
+}
+
+.user-delete-btn {
+  background: none;
+  border: none;
+  font-family: 'Lora', Georgia, serif;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: #b91c1c;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.7;
+}
+
+.user-delete-btn:hover {
+  opacity: 1;
+}
+
+/* Quick-nav strip */
+.book-quicknav {
+  display: none;
+  gap: 0.4rem;
+  overflow-x: auto;
+  width: 100%;
+  max-width: 560px;
+  padding-bottom: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--s-parchment) transparent;
+}
+
+.quicknav-chip {
+  flex-shrink: 0;
+  padding: 0.28rem 0.7rem;
+  border-radius: 1rem;
+  border: 1px solid var(--s-parchment);
+  background: white;
+  cursor: pointer;
+  font-family: 'Lora', Georgia, serif;
+  font-size: 0.75rem;
+  color: var(--s-warm-gray);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.quicknav-chip:hover,
+.quicknav-chip.active {
+  background: var(--s-brown-dark);
+  color: var(--s-cream);
+  border-color: var(--s-brown-dark);
+}
+
+@media (max-width: 640px) {
+  .book-display { height: 460px; }
 }
 
 .entry-date {
@@ -739,11 +857,14 @@
 
 .media-preview {
   margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .media-preview img,
 .media-preview video {
-  max-height: 160px;
+  height: 80px;
   border-radius: 0.375rem;
   object-fit: cover;
 }
@@ -911,7 +1032,7 @@
 /* ============================================================
    EDIT MODAL
 ============================================================ */
-.modal-backdrop {
+.suresh-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
@@ -922,7 +1043,7 @@
   padding: 1rem;
 }
 
-.modal-box {
+.suresh-modal {
   background: white;
   border-radius: 0.75rem;
   padding: 2rem;
@@ -933,26 +1054,26 @@
   overflow-y: auto;
 }
 
-.modal-title {
+.suresh-modal-title {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: 1.25rem;
   color: var(--s-brown-dark);
   margin-bottom: 1.25rem;
 }
 
-.modal-box .form-group {
+.suresh-modal .form-group {
   margin-bottom: 1rem;
 }
 
-.modal-box .form-group label {
+.suresh-modal .form-group label {
   font-size: 0.8rem;
   color: var(--s-warm-gray);
   font-family: system-ui, sans-serif;
   font-weight: 500;
 }
 
-.modal-box input[type="text"],
-.modal-box textarea {
+.suresh-modal input[type="text"],
+.suresh-modal textarea {
   border: 1px solid #D6C8B4;
   border-radius: 0.25rem;
   padding: 0.5rem 0.75rem;
@@ -963,13 +1084,13 @@
   resize: vertical;
 }
 
-.modal-box input:focus,
-.modal-box textarea:focus {
+.suresh-modal input:focus,
+.suresh-modal textarea:focus {
   outline: none;
   border-color: var(--s-gold);
 }
 
-.modal-actions {
+.suresh-modal-actions {
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;

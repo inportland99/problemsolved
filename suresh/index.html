@@ -24,7 +24,7 @@
     </div>
     <div class="hero-text-col">
       <p class="hero-tagline">A life of love, wisdom &amp; quiet strength</p>
-      <h1>Suresh Jagmohan Shah</h1>
+      <h1>Suresh J. Shah</h1>
       <p class="hero-dates">Born February 9, 1940</p>
     </div>
   </div>
@@ -36,11 +36,12 @@
     <h2 class="section-heading">Our Wonderful Friend</h2>
 
     <p class="story-text">
-      Suresh Jagmohan Shah was born on February 9, 1940 to the late Jagmohan and Madhu Shah.
-      He immigrated to the US in 1967 to complete his education and begin his career, earning his master's
-      degree in mechanical engineering from West Virginia University. On April 11, 1969 he married Pratibha Shah
-      and they built a life together in Columbus and Newark, Ohio. He worked as an engineer for several companies
-      including RCA, Owens-Corning, and Rockwell, and retired in 2005.
+      Suresh Jagmohan Shah was born on February 9, 1940 to the late Jagmohandas and Madhuvanti Shah in Mangrol, Gujurat, India.
+      He immigrated to the US in 1967 to complete his education and begin his career. Like many immigrants at that time,
+      he arrived with nothing but his courage and will to forge a more prosperous life in America. He earned his masters
+      degree in industrial engineering from West Virginia University. On April 11, 1969 he married Pratibha Shah and they
+      built a life together in Columbus and Newark, Ohio. He worked as an engineer for several companies including RCA,
+      Owens-Corning, and Rockwell. He retired in 2005. 
     </p>
 
     <p class="story-text">
@@ -130,6 +131,7 @@
         <span id="page-counter" class="page-counter" aria-live="polite">Page 1</span>
         <button id="next-page" class="book-nav-btn" aria-label="Next page">&#8250;</button>
       </div>
+      <div class="book-quicknav" id="book-quicknav" aria-label="Jump to a memory"></div>
     </div>
 
     
@@ -165,9 +167,9 @@
         </div>
 
         <div class="form-group">
-          <label for="gb-media">Add a photo or short video (optional)</label>
-          <input type="file" id="gb-media" name="media" accept="image/*,video/*">
-          <p class="file-hint">Images up to 5 MB · Videos up to 50 MB · JPG, PNG, GIF, MP4, MOV</p>
+          <label for="gb-media">Add photos or short videos (optional)</label>
+          <input type="file" id="gb-media" name="media" accept="image/*,video/*" multiple>
+          <p class="file-hint">Up to 5 files · Images up to 5 MB each · Videos up to 50 MB each</p>
           <div id="media-preview" class="media-preview" style="display:none" aria-live="polite"></div>
         </div>
 
@@ -210,10 +212,10 @@
 </div>
 
 
-<div id="edit-modal" class="modal-backdrop" style="display:none" role="dialog"
-     aria-modal="true" aria-labelledby="edit-modal-title">
-  <div class="modal-box">
-    <h3 class="modal-title" id="edit-modal-title">Edit Memory</h3>
+<div id="edit-modal" class="suresh-overlay" style="display:none" role="dialog"
+     aria-modal="true" aria-labelledby="edit-suresh-modal-title">
+  <div class="suresh-modal">
+    <h3 class="suresh-modal-title" id="edit-suresh-modal-title">Edit Memory</h3>
     <input type="hidden" id="edit-entry-id">
 
     <div class="form-group">
@@ -231,7 +233,7 @@
 
     <div id="edit-modal-error" class="form-error" style="display:none" role="alert"></div>
 
-    <div class="modal-actions">
+    <div class="suresh-modal-actions">
       <button type="button" id="edit-cancel-btn" class="btn-secondary">Cancel</button>
       <button type="button" id="edit-save-btn" class="btn-primary">Save Changes</button>
     </div>

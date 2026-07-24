@@ -176,6 +176,7 @@ async function loadGuestbook() {
     if (bookControls) bookControls.style.display = 'flex';
 
     renderBook();
+    renderQuicknav();
   } catch (err) {
     console.error('Guestbook load error:', err);
     if (loadingEl) loadingEl.textContent = 'Unable to open the book right now. Please try again shortly.';
@@ -242,16 +243,31 @@ function emptyHTML() {
   </div>`;
 }
 
+function getMediaItems(entry) {
+  // Prefer new multi-media array; fall back to legacy single fields
+  if (Array.isArray(entry.media_items) && entry.media_items.length > 0) return entry.media_items;
+  if (entry.media_url) return [{ url: entry.media_url, path: entry.media_path || '', type: entry.media_type || 'image' }];
+  return [];
+}
+
 function entryHTML(entry, index, total) {
   const date = new Date(entry.created_at).toLocaleDateString('en-US', {
     year: 'numeric', month: 'long', day: 'numeric',
   });
 
+  const items = getMediaItems(entry);
   let mediaHtml = '';
-  if (entry.media_url && entry.media_type === 'image') {
-    mediaHtml = `<div class="entry-media"><img src="${esc(entry.media_url)}" alt="Photo shared by ${esc(entry.name)}"></div>`;
-  } else if (entry.media_url && entry.media_type === 'video') {
-    mediaHtml = `<div class="entry-media"><video src="${esc(entry.media_url)}"></video></div>`;
+  if (items.length === 1) {
+    const item = items[0];
+    mediaHtml = item.type === 'video'
+      ? `<div class="entry-media"><video src="${esc(item.url)}" data-idx="0"></video></div>`
+      : `<div class="entry-media"><img src="${esc(item.url)}" alt="Photo" data-idx="0"></div>`;
+  } else if (items.length > 1) {
+    const thumbs = items.map((item, i) => item.type === 'video'
+      ? `<div class="gallery-thumb" data-idx="${i}"><video src="${esc(item.url)}"></video></div>`
+      : `<div class="gallery-thumb" data-idx="${i}"><img src="${esc(item.url)}" alt="Photo ${i+1}"></div>`
+    ).join('');
+    mediaHtml = `<div class="entry-media-gallery">${thumbs}</div>`;
   }
 
   const adminHtml = isAdmin ? `
@@ -259,6 +275,11 @@ function entryHTML(entry, index, total) {
       <button class="admin-entry-btn btn-edit-entry">Edit</button>
       <button class="admin-entry-btn btn-delete-entry">Delete</button>
     </div>` : '';
+
+  const myToken = localStorage.getItem(`suresh_entry_${entry.id}`);
+  const userEditHtml = (!isAdmin && myToken)
+    ? `<button class="user-edit-btn">Edit my memory</button>
+       <button class="user-delete-btn">Delete my memory</button>` : '';
 
   return `
     <div class="entry-header">
@@ -269,7 +290,7 @@ function entryHTML(entry, index, total) {
     ${mediaHtml}
     <div class="entry-footer">
       <span class="entry-date">${date}</span>
-      ${adminHtml}
+      ${adminHtml}${userEditHtml}
       <span class="entry-number">${index}&thinsp;of&thinsp;${total}</span>
     </div>`;
 }
@@ -278,19 +299,56 @@ function wirePageButtons(contentEl, entry) {
   contentEl.querySelector('.btn-edit-entry')
     ?.addEventListener('click', () => editEntry(entry.id));
   contentEl.querySelector('.btn-delete-entry')
-    ?.addEventListener('click', () => deleteEntry(entry.id, entry.media_path || ''));
-  contentEl.querySelector('.entry-media img')
-    ?.addEventListener('click', () => openLightbox(entry.media_url, 'image'));
-  contentEl.querySelector('.entry-media video')
-    ?.addEventListener('click', () => openLightbox(entry.media_url, 'video'));
+    ?.addEventListener('click', () => deleteEntry(entry.id));
+  contentEl.querySelector('.user-edit-btn')
+    ?.addEventListener('click', () => {
+      const token = localStorage.getItem(`suresh_entry_${entry.id}`);
+      if (token) editMyEntry(entry.id, token);
+    });
+  contentEl.querySelector('.user-delete-btn')
+    ?.addEventListener('click', () => {
+      const token = localStorage.getItem(`suresh_entry_${entry.id}`);
+      if (token) deleteMyEntry(entry.id, token);
+    });
+
+  // Wire media lightbox (single item or gallery)
+  const items = getMediaItems(entry);
+  contentEl.querySelectorAll('[data-idx]').forEach(el => {
+    el.addEventListener('click', () => {
+      const item = items[parseInt(el.dataset.idx)];
+      if (item) openLightbox(item.url, item.type);
+    });
+  });
 }
 
 function updatePageCounter(index, total) {
   const counter = document.getElementById('page-counter');
-  if (!counter) return;
-  counter.textContent = index === 0 ? 'Cover'
-    : index === total - 1 ? 'Back cover'
-    : `Memory ${index} of ${total - 2}`;
+  if (counter) {
+    counter.textContent = index === 0 ? 'Cover'
+      : index === total - 1 ? 'Back cover'
+      : `Memory ${index} of ${total - 2}`;
+  }
+  // Sync active chip
+  document.querySelectorAll('.quicknav-chip').forEach(chip => {
+    chip.classList.toggle('active', parseInt(chip.dataset.page) === index);
+  });
+}
+
+function renderQuicknav() {
+  const navEl = document.getElementById('book-quicknav');
+  if (!navEl) return;
+  if (guestbookEntries.length === 0) { navEl.style.display = 'none'; return; }
+
+  navEl.style.display = 'flex';
+  navEl.innerHTML = guestbookEntries.map((entry, i) => {
+    const firstName = esc(entry.name.split(' ')[0]);
+    const active = currentPageIndex === i + 1 ? ' active' : '';
+    return `<button class="quicknav-chip${active}" data-page="${i + 1}">${firstName}</button>`;
+  }).join('');
+
+  navEl.querySelectorAll('.quicknav-chip').forEach(chip => {
+    chip.addEventListener('click', () => showPage(parseInt(chip.dataset.page)));
+  });
 }
 
 // ============================================================
@@ -309,28 +367,39 @@ function initGuestbookForm() {
   const mediaInput = document.getElementById('gb-media');
   const mediaPreview = document.getElementById('media-preview');
 
-  // Live file preview + size validation
+  // Live file preview + size validation (multiple files)
   mediaInput?.addEventListener('change', () => {
-    const file = mediaInput.files[0];
-    if (!file) return;
+    const files = Array.from(mediaInput.files);
+    if (!files.length) return;
 
-    const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
-    const limit = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
-
-    if (file.size > limit) {
-      showFormError(isVideo ? 'Video must be under 50 MB.' : 'Image must be under 5 MB.');
+    if (files.length > 5) {
+      showFormError('Please select up to 5 files.');
       mediaInput.value = '';
       if (mediaPreview) mediaPreview.style.display = 'none';
       return;
     }
 
+    for (const file of files) {
+      const isVideo = file.type.startsWith('video/');
+      const limit = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+      if (file.size > limit) {
+        showFormError(isVideo
+          ? `"${file.name}" must be under 50 MB.`
+          : `"${file.name}" must be under 5 MB.`);
+        mediaInput.value = '';
+        if (mediaPreview) mediaPreview.style.display = 'none';
+        return;
+      }
+    }
+
     if (mediaPreview) {
-      const url = URL.createObjectURL(file);
-      mediaPreview.style.display = 'block';
-      mediaPreview.innerHTML = isImage
-        ? `<img src="${url}" alt="Preview">`
-        : `<video src="${url}" controls></video>`;
+      mediaPreview.style.display = 'flex';
+      mediaPreview.innerHTML = files.map(file => {
+        const url = URL.createObjectURL(file);
+        return file.type.startsWith('image/')
+          ? `<img src="${url}" alt="Preview">`
+          : `<video src="${url}"></video>`;
+      }).join('');
     }
   });
 
@@ -350,21 +419,26 @@ function initGuestbookForm() {
       const name = document.getElementById('gb-name').value.trim();
       const relationship = document.getElementById('gb-relationship').value.trim();
       const story = document.getElementById('gb-story').value.trim();
-      const mediaFile = mediaInput?.files[0];
 
       if (!name || !relationship || !story) {
         throw new Error('Please fill in your name, relationship to Suresh, and your memory.');
       }
 
-      let media_url = null, media_path = null, media_type = null;
+      const selectedFiles = Array.from(mediaInput?.files || []);
+      const mediaItems = [];
 
-      if (mediaFile) {
-        const result = await uploadMedia(mediaFile);
+      for (const file of selectedFiles) {
+        const result = await uploadMedia(file);
         if (!result.success) throw new Error(result.error);
-        media_url = result.url;
-        media_path = result.path;
-        media_type = result.type;
+        mediaItems.push({ url: result.url, path: result.path, type: result.type });
       }
+
+      const firstItem = mediaItems[0] || null;
+      const media_url = firstItem?.url || null;
+      const media_path = firstItem?.path || null;
+      const media_type = firstItem?.type || null;
+
+      const editToken = crypto.randomUUID();
 
       const insertResp = await fetch(
         `${SUPABASE_URL}/rest/v1/guestbook_entries`,
@@ -374,15 +448,20 @@ function initGuestbookForm() {
             'apikey': SUPABASE_ANON_KEY,
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
             'Content-Type': 'application/json',
-            'Prefer': 'return=minimal',
+            'Prefer': 'return=representation',
           },
-          body: JSON.stringify({ name, relationship, story, media_url, media_path, media_type }),
+          body: JSON.stringify({ name, relationship, story, media_url, media_path, media_type, media_items: mediaItems, edit_token: editToken }),
         }
       );
 
       if (!insertResp.ok) {
         const errBody = await insertResp.json().catch(() => ({}));
         throw new Error(errBody.message || `HTTP ${insertResp.status}`);
+      }
+
+      const [newEntry] = await insertResp.json();
+      if (newEntry?.id) {
+        localStorage.setItem(`suresh_entry_${newEntry.id}`, editToken);
       }
 
       // Reset form
@@ -420,20 +499,31 @@ async function uploadMedia(file) {
   const ext = file.name.split('.').pop().toLowerCase();
   const path = `entries/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-  const { data, error } = await supabase.storage
-    .from('guestbook-media')
-    .upload(path, file, { cacheControl: '3600', upsert: false });
+  const uploadResp = await fetch(
+    `${SUPABASE_URL}/storage/v1/object/guestbook-media/${path}`,
+    {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': file.type,
+        'x-upsert': 'false',
+      },
+      body: file,
+    }
+  );
 
-  if (error) return { success: false, error: error.message };
+  if (!uploadResp.ok) {
+    const err = await uploadResp.json().catch(() => ({}));
+    return { success: false, error: err.message || `Upload failed (HTTP ${uploadResp.status})` };
+  }
 
-  const { data: urlData } = supabase.storage
-    .from('guestbook-media')
-    .getPublicUrl(data.path);
+  const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/guestbook-media/${path}`;
 
   return {
     success: true,
-    url: urlData.publicUrl,
-    path: data.path,
+    url: publicUrl,
+    path,
     type: isImage ? 'image' : 'video',
   };
 }
@@ -562,20 +652,18 @@ function applyAdminState(admin) {
 }
 
 // ---- Admin: Delete ----
-async function deleteEntry(id, mediaPath) {
+async function deleteEntry(id) {
   if (!confirm('Permanently delete this memory from the book?')) return;
 
-  if (mediaPath) {
-    const token = await getAuthToken();
+  const entry = guestbookEntries.find(e => e.id === id);
+  const token = await getAuthToken();
+
+  // Delete all associated media files
+  const paths = getMediaItems(entry || {}).map(i => i.path).filter(Boolean);
+  for (const path of paths) {
     await fetch(
-      `${SUPABASE_URL}/storage/v1/object/guestbook-media/${encodeURIComponent(mediaPath)}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${token}`,
-        },
-      }
+      `${SUPABASE_URL}/storage/v1/object/guestbook-media/${encodeURIComponent(path)}`,
+      { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${token}` } }
     );
   }
 
@@ -597,6 +685,98 @@ async function deleteEntry(id, mediaPath) {
 
   guestbookEntries = guestbookEntries.filter(e => e.id !== id);
   renderBook();
+}
+
+// ---- User: Delete own entry ----
+async function deleteMyEntry(id, token) {
+  if (!confirm('Are you sure you want to remove your memory from the book? This cannot be undone.')) return;
+
+  const entry = guestbookEntries.find(e => e.id === id);
+  const paths = getMediaItems(entry || {}).map(i => i.path).filter(Boolean);
+
+  // Delete media files from storage
+  for (const path of paths) {
+    await fetch(
+      `${SUPABASE_URL}/storage/v1/object/guestbook-media/${encodeURIComponent(path)}`,
+      { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+  }
+
+  const resp = await fetch(
+    `${SUPABASE_URL}/rest/v1/guestbook_entries?id=eq.${id}&edit_token=eq.${encodeURIComponent(token)}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    }
+  );
+
+  if (!resp.ok) {
+    alert('Could not remove your entry. Please try again.');
+    return;
+  }
+
+  localStorage.removeItem(`suresh_entry_${id}`);
+  guestbookEntries = guestbookEntries.filter(e => e.id !== id);
+  currentPageIndex = Math.max(0, currentPageIndex - 1);
+  renderBook();
+  renderQuicknav();
+}
+
+// ---- User: Edit own entry ----
+async function editMyEntry(id, token) {
+  const entry = guestbookEntries.find(e => e.id === id);
+  if (!entry) return;
+
+  document.getElementById('edit-entry-id').value = id;
+  document.getElementById('edit-name').value = entry.name;
+  document.getElementById('edit-relationship').value = entry.relationship;
+  document.getElementById('edit-story').value = entry.story;
+
+  const modal = document.getElementById('edit-modal');
+  const errEl = document.getElementById('edit-modal-error');
+  if (errEl) errEl.style.display = 'none';
+  if (modal) modal.style.display = 'flex';
+
+  document.getElementById('edit-save-btn').onclick = async () => {
+    const name = document.getElementById('edit-name').value.trim();
+    const relationship = document.getElementById('edit-relationship').value.trim();
+    const story = document.getElementById('edit-story').value.trim();
+
+    if (!name || !relationship || !story) {
+      if (errEl) { errEl.textContent = 'All fields are required.'; errEl.style.display = 'block'; }
+      return;
+    }
+
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/guestbook_entries?id=eq.${id}&edit_token=eq.${encodeURIComponent(token)}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({ name, relationship, story }),
+      }
+    );
+
+    if (!resp.ok) {
+      if (errEl) { errEl.textContent = 'Could not save changes.'; errEl.style.display = 'block'; }
+      return;
+    }
+
+    const idx = guestbookEntries.findIndex(e => e.id === id);
+    if (idx >= 0) guestbookEntries[idx] = { ...guestbookEntries[idx], name, relationship, story };
+    closeEditModal();
+    showPage(currentPageIndex);
+  };
+
+  document.getElementById('edit-cancel-btn').onclick = closeEditModal;
+  modal.onclick = (e) => { if (e.target === modal) closeEditModal(); };
 }
 
 // ---- Admin: Edit ----
