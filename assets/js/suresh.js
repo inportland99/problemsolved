@@ -67,9 +67,25 @@ async function loadPhotoAlbum() {
       return;
     }
 
-    const urls = photos.map(f =>
+    const rawUrls = photos.map(f =>
       `${SUPABASE_URL}/storage/v1/object/public/suresh-photos/${encodeURIComponent(f.name)}`
     );
+
+    // Preload-test each URL — filter out any the browser can't render
+    const checkedUrls = await Promise.all(rawUrls.map(url =>
+      new Promise(resolve => {
+        const t = new Image();
+        t.onload  = () => resolve(url);
+        t.onerror = () => resolve(null);
+        t.src = url;
+      })
+    ));
+    const urls = checkedUrls.filter(Boolean);
+
+    if (urls.length === 0) {
+      carousel.innerHTML = '<div class="carousel-loading">Photos coming soon…</div>';
+      return;
+    }
 
     initCarousel(urls);
   } catch (err) {
