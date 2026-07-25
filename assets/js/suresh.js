@@ -203,7 +203,28 @@ async function loadGuestbook() {
 // GUESTBOOK — RENDER BOOK
 // ============================================================
 function renderBook() {
-  showPage(currentPageIndex);
+  // Direct update with no animation (used after data reloads)
+  setPageContent(currentPageIndex);
+  updatePageCounter(currentPageIndex, getTotalPages());
+}
+
+function setPageContent(index) {
+  const total = getTotalPages();
+  const contentEl = document.getElementById('book-page-content');
+  if (!contentEl) return;
+  contentEl.classList.remove('page-flip-out-fwd','page-flip-in-fwd','page-flip-out-bwd','page-flip-in-bwd');
+
+  if (index === 0) {
+    contentEl.innerHTML = coverHTML('front');
+  } else if (index === total - 1) {
+    contentEl.innerHTML = coverHTML('back');
+  } else if (guestbookEntries.length === 0) {
+    contentEl.innerHTML = emptyHTML();
+  } else {
+    const entry = guestbookEntries[index - 1];
+    contentEl.innerHTML = entryHTML(entry, index, guestbookEntries.length);
+    wirePageButtons(contentEl, entry);
+  }
 }
 
 function getTotalPages() {
@@ -216,27 +237,25 @@ function showPage(index, fromRight = true) {
   const contentEl = document.getElementById('book-page-content');
   if (!contentEl) return;
 
-  // Fade out
-  contentEl.classList.add('fade-out');
+  const outClass = fromRight ? 'page-flip-out-fwd' : 'page-flip-out-bwd';
+  const inClass  = fromRight ? 'page-flip-in-fwd'  : 'page-flip-in-bwd';
+
+  // Clear stale classes and force reflow
+  contentEl.classList.remove('page-flip-out-fwd','page-flip-in-fwd','page-flip-out-bwd','page-flip-in-bwd');
+  void contentEl.offsetWidth;
+  contentEl.classList.add(outClass);
 
   setTimeout(() => {
     currentPageIndex = index;
+    setPageContent(index);
 
-    if (index === 0) {
-      contentEl.innerHTML = coverHTML('front');
-    } else if (index === total - 1) {
-      contentEl.innerHTML = coverHTML('back');
-    } else if (guestbookEntries.length === 0) {
-      contentEl.innerHTML = emptyHTML();
-    } else {
-      const entry = guestbookEntries[index - 1];
-      contentEl.innerHTML = entryHTML(entry, index, guestbookEntries.length);
-      wirePageButtons(contentEl, entry);
-    }
+    contentEl.classList.remove(outClass);
+    void contentEl.offsetWidth;
+    contentEl.classList.add(inClass);
 
-    contentEl.classList.remove('fade-out');
+    setTimeout(() => contentEl.classList.remove(inClass), 220);
     updatePageCounter(index, total);
-  }, 230);
+  }, 220);
 }
 
 function coverHTML(which) {
