@@ -67,25 +67,9 @@ async function loadPhotoAlbum() {
       return;
     }
 
-    const rawUrls = photos.map(f =>
+    const urls = photos.map(f =>
       `${SUPABASE_URL}/storage/v1/object/public/suresh-photos/${encodeURIComponent(f.name)}`
     );
-
-    // Preload-test each URL — filter out any the browser can't render
-    const checkedUrls = await Promise.all(rawUrls.map(url =>
-      new Promise(resolve => {
-        const t = new Image();
-        t.onload  = () => resolve(url);
-        t.onerror = () => resolve(null);
-        t.src = url;
-      })
-    ));
-    const urls = checkedUrls.filter(Boolean);
-
-    if (urls.length === 0) {
-      carousel.innerHTML = '<div class="carousel-loading">Photos coming soon…</div>';
-      return;
-    }
 
     initCarousel(urls);
   } catch (err) {
@@ -96,7 +80,6 @@ async function loadPhotoAlbum() {
 
 function initCarousel(urls) {
   const carousel = document.getElementById('album-carousel');
-  const dotsEl   = document.getElementById('carousel-dots');
   const prevBtn  = document.getElementById('carousel-prev');
   const nextBtn  = document.getElementById('carousel-next');
 
@@ -104,9 +87,18 @@ function initCarousel(urls) {
   let timer   = null;
 
   carousel.innerHTML = '';
-  dotsEl.innerHTML   = '';
 
-  // Build slides and dots
+  function updateProgress() {
+    const visible = [...carousel.querySelectorAll('.carousel-slide')].filter(s => s.style.display !== 'none');
+    const pos = visible.findIndex(s => s.classList.contains('active'));
+    const total = visible.length;
+    const counter = document.getElementById('carousel-counter');
+    const fill    = document.getElementById('carousel-progress-fill');
+    if (counter) counter.textContent = `${pos + 1} of ${total}`;
+    if (fill)    fill.style.width = total > 1 ? `${((pos + 1) / total) * 100}%` : '100%';
+  }
+
+  // Build slides
   urls.forEach((url, i) => {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide' + (i === 0 ? ' active' : '');
@@ -121,36 +113,32 @@ function initCarousel(urls) {
     img.alt = 'A photo of Suresh';
     img.loading = i === 0 ? 'eager' : 'lazy';
     img.addEventListener('click', () => openLightbox(url, 'image'));
+    img.addEventListener('error', () => {
+      slide.style.display = 'none';
+      if (current === i) goTo(i + 1);
+      updateProgress();
+    });
 
     slide.appendChild(bg);
     slide.appendChild(img);
     carousel.appendChild(slide);
 
-    const dot = document.createElement('button');
-    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-    dot.setAttribute('aria-label', `Photo ${i + 1} of ${urls.length}`);
-    dot.addEventListener('click', () => goTo(i));
-    dotsEl.appendChild(dot);
   });
 
   function goTo(index) {
     const slides = carousel.querySelectorAll('.carousel-slide');
-    const dots   = dotsEl.querySelectorAll('.carousel-dot');
 
-    slides[current].classList.remove('active');
-    dots[current].classList.remove('active');
-
+    slides[current]?.classList.remove('active');
     current = ((index % urls.length) + urls.length) % urls.length;
+    slides[current]?.classList.add('active');
 
-    slides[current].classList.add('active');
-    dots[current].classList.add('active');
-
+    updateProgress();
     resetTimer();
   }
 
   function resetTimer() {
     clearInterval(timer);
-    timer = setInterval(() => goTo(current + 1), 5000);
+    timer = setInterval(() => goTo(current + 1), 3000);
   }
 
   prevBtn?.addEventListener('click', () => goTo(current - 1));
@@ -160,6 +148,7 @@ function initCarousel(urls) {
   carousel.addEventListener('mouseenter', () => clearInterval(timer));
   carousel.addEventListener('mouseleave', resetTimer);
 
+  updateProgress();
   resetTimer();
 }
 
