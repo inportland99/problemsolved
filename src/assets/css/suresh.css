@@ -504,6 +504,8 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  perspective: 1000px;
+  perspective-origin: 0% 50%;
 }
 
 /* Inner shadow on left edge simulates page curl at binding */
@@ -524,14 +526,33 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  transition: opacity 0.22s ease, transform 0.22s ease;
   overflow: hidden;
+  transform-origin: 0% 50%;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
-.book-page-content.fade-out {
-  opacity: 0;
-  transform: translateX(12px);
+@keyframes flip-out-fwd {
+  from { transform: rotateY(0deg);   opacity: 1; }
+  to   { transform: rotateY(-90deg); opacity: 0; }
 }
+@keyframes flip-in-fwd {
+  from { transform: rotateY(90deg);  opacity: 0; }
+  to   { transform: rotateY(0deg);   opacity: 1; }
+}
+@keyframes flip-out-bwd {
+  from { transform: rotateY(0deg);  opacity: 1; }
+  to   { transform: rotateY(90deg); opacity: 0; }
+}
+@keyframes flip-in-bwd {
+  from { transform: rotateY(-90deg); opacity: 0; }
+  to   { transform: rotateY(0deg);   opacity: 1; }
+}
+
+.page-flip-out-fwd { animation: flip-out-fwd 0.22s ease-in  forwards; }
+.page-flip-in-fwd  { animation: flip-in-fwd  0.22s ease-out forwards; }
+.page-flip-out-bwd { animation: flip-out-bwd 0.22s ease-in  forwards; }
+.page-flip-in-bwd  { animation: flip-in-bwd  0.22s ease-out forwards; }
 
 /* Cover content (rendered inside .book-page-content) */
 .cover-ornament {
