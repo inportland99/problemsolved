@@ -481,6 +481,41 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ---- Side page-turn arrows ---- */
+.book-side-nav {
+  flex-shrink: 0;
+  background: transparent;
+  border: 2px solid var(--s-gold);
+  color: var(--s-gold);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  font-size: 1.75rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.book-side-nav:hover:not(:disabled) {
+  background: var(--s-gold);
+  color: white;
+}
+
+.book-side-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .book-scene { gap: 0.375rem; }
+  .book-side-nav { width: 2.25rem; height: 2.25rem; font-size: 1.25rem; }
 }
 
 /* ---- Custom book display ---- */
@@ -488,7 +523,7 @@
   display: flex;
   width: 100%;
   max-width: 560px;
-  height: 560px;
+  height: 840px;
   border-radius: 2px 6px 6px 2px;
   box-shadow:
     -10px 4px 30px rgba(0, 0, 0, 0.5),
@@ -761,7 +796,7 @@
 }
 
 @media (max-width: 640px) {
-  .book-display { height: 460px; }
+  .book-display { height: 690px; }
 }
 
 .entry-date {
