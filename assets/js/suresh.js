@@ -162,7 +162,7 @@ async function loadGuestbook() {
 
   try {
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/guestbook_entries?select=*&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/guestbook_entries?select=*&order=created_at.asc`,
       {
         headers: {
           'apikey': SUPABASE_ANON_KEY,
@@ -381,6 +381,8 @@ function renderQuicknav() {
 function initBookNav() {
   document.getElementById('prev-page')?.addEventListener('click', () => showPage(currentPageIndex - 1, false));
   document.getElementById('next-page')?.addEventListener('click', () => showPage(currentPageIndex + 1, true));
+  document.getElementById('book-side-prev')?.addEventListener('click', () => showPage(currentPageIndex - 1, false));
+  document.getElementById('book-side-next')?.addEventListener('click', () => showPage(currentPageIndex + 1, true));
 }
 
 // ============================================================
@@ -493,9 +495,10 @@ function initGuestbookForm() {
       if (mediaPreview) { mediaPreview.style.display = 'none'; mediaPreview.innerHTML = ''; }
       document.getElementById('form-success').style.display = 'block';
 
-      // Reload and jump to the new entry (newest = page 1)
-      currentPageIndex = 1;
+      // Reload and jump to the new entry (now the last memory page, since oldest = page 1)
       await loadGuestbook();
+      currentPageIndex = guestbookEntries.length;
+      renderBook();
       document.getElementById('book-scene')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     } catch (err) {
