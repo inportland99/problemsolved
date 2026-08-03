@@ -80,9 +80,12 @@ permalink: /personal/act-practice/
       <div class="card-body text-center">
         <div class="text-5xl mb-3">📐</div>
         <h1 class="text-2xl font-bold">ACT Math Practice</h1>
-        <p class="text-base-content/60 text-sm mt-1 mb-6">Daily practice · Spaced repetition</p>
-        <button id="start-btn" class="btn btn-primary w-full">Start Today's Practice</button>
-        <button id="home-history-btn" class="btn btn-outline w-full mt-3">📅 View History</button>
+        <p class="text-base-content/60 text-sm mt-1 mb-6">Practice anytime · Spaced repetition</p>
+        <button id="start-btn" class="btn btn-primary w-full">Start Review</button>
+        <p class="text-xs text-base-content/40 mt-1">Problems due today, weakest first</p>
+        <button id="practice-btn" class="btn btn-secondary w-full mt-4">🎲 Practice Mode</button>
+        <p class="text-xs text-base-content/40 mt-1">Any problem, any time — review schedule untouched</p>
+        <button id="home-history-btn" class="btn btn-outline w-full mt-5">📅 View History</button>
         <button id="home-logout-btn" class="btn btn-ghost btn-sm mt-5 text-base-content/40">Logout</button>
       </div>
     </div>
@@ -98,8 +101,9 @@ permalink: /personal/act-practice/
 
   <!-- Session Screen -->
   <div id="screen-session" class="hidden max-w-2xl mx-auto px-4 py-8">
-    <div class="mb-3">
+    <div class="mb-3 flex items-center gap-2 flex-wrap">
       <span id="session-counter" class="text-sm font-medium text-base-content/60">0 / 20 correct</span>
+      <span id="session-mode-badge" class="hidden badge badge-secondary badge-sm">🎲 Practice mode</span>
     </div>
     <progress id="session-progress" class="progress progress-primary w-full mb-6" value="0" max="20"></progress>
     <div class="card bg-base-100 shadow mb-5">
@@ -149,6 +153,7 @@ permalink: /personal/act-practice/
       <div class="card-body text-center">
         <div class="text-5xl mb-2">🎉</div>
         <h2 class="text-2xl font-bold mb-1">Session Complete!</h2>
+        <div id="summary-mode-badge" class="hidden badge badge-secondary badge-sm mx-auto mb-2">🎲 Practice mode · review schedule unchanged</div>
         <div id="summary-encouragement" class="text-base-content/60 text-sm mb-6"></div>
         <div class="stats stats-vertical sm:stats-horizontal shadow w-full">
           <div class="stat">
@@ -164,7 +169,7 @@ permalink: /personal/act-practice/
             <div id="summary-time" class="stat-value">—</div>
           </div>
           <div class="stat">
-            <div class="stat-title">Problems due tomorrow</div>
+            <div id="summary-tomorrow-title" class="stat-title">Problems due tomorrow</div>
             <div id="summary-tomorrow" class="stat-value text-warning">0</div>
           </div>
         </div>
@@ -182,9 +187,10 @@ permalink: /personal/act-practice/
       <div class="card-body">
         <div class="text-5xl mb-3">✅</div>
         <h2 class="text-2xl font-bold">All caught up for today!</h2>
-        <p class="text-base-content/60 mt-2 text-sm">Great work. Come back tomorrow for your next set of problems.</p>
+        <p class="text-base-content/60 mt-2 text-sm">Great work. Come back tomorrow for your next set of problems — or keep going in practice mode.</p>
         <div id="done-next-count" class="badge badge-outline mt-4 mx-auto"></div>
-        <div class="flex gap-3 mt-5 justify-center">
+        <div class="flex gap-2 mt-5 justify-center flex-wrap">
+          <button id="done-practice-btn" class="btn btn-secondary btn-sm">🎲 Practice Anyway</button>
           <button id="done-history-btn" class="btn btn-outline btn-sm">📅 View History</button>
           <button id="done-home-btn" class="btn btn-ghost btn-sm">← Home</button>
         </div>

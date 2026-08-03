@@ -33,6 +33,7 @@ let sessionStartTime = null;
 let sessionEndTime = null;
 let currentHint1Used = false;
 let currentHint2Used = false;
+let isPracticeMode = false;  // true = free practice over the whole problem set
 
 // =============================================================================
 // Boot — wait for KaTeX + Supabase before starting
@@ -79,6 +80,7 @@ function wireEvents() {
   });
   // Home
   document.getElementById('start-btn').addEventListener('click', () => launchSession());
+  document.getElementById('practice-btn').addEventListener('click', () => launchSession({ practice: true }));
   document.getElementById('home-history-btn').addEventListener('click', () => loadAndShowHistory());
   document.getElementById('home-logout-btn').addEventListener('click', () => {
     localStorage.removeItem('act_user_id');
@@ -93,6 +95,7 @@ function wireEvents() {
   document.getElementById('print-btn').addEventListener('click', () => window.print());
   document.getElementById('done-btn').addEventListener('click', () => showScreen('home'));
   // All-done
+  document.getElementById('done-practice-btn').addEventListener('click', () => launchSession({ practice: true }));
   document.getElementById('done-history-btn').addEventListener('click', () => loadAndShowHistory());
   document.getElementById('done-home-btn').addEventListener('click', () => showScreen('home'));
   // History
@@ -137,7 +140,7 @@ function setBtnLoading(on) {
 // =============================================================================
 // Session launch
 // =============================================================================
-async function launchSession() {
+async function launchSession({ practice = false } = {}) {
   showScreen('loading');
 
   try {
@@ -146,22 +149,41 @@ async function launchSession() {
     const today = todayStr();
     const allProblems = window.ACT_PROBLEMS || [];
 
-    // Separate into due (review due today or overdue) and new (never seen)
-    const due = [];
-    const fresh = [];
-    for (const p of allProblems) {
-      const prog = progressMap[p.id];
-      if (!prog) {
-        fresh.push(p);
-      } else if (prog.next_review_date <= today) {
-        due.push(p);
+    // Resume an interrupted session of the same mode (refresh recovery)
+    if (tryRestoreSession(practice)) return;
+
+    let selected;
+
+    if (practice) {
+      // Practice mode — the entire problem set, review dates ignored entirely
+      selected = shuffle([...allProblems]).slice(0, PROBLEMS_PER_SESSION);
+    } else {
+      // Review mode — problems due today or overdue, then ones never seen
+      const due = [];
+      const fresh = [];
+      for (const p of allProblems) {
+        const prog = progressMap[p.id];
+        if (!prog) {
+          fresh.push(p);
+        } else if (prog.next_review_date <= today) {
+          due.push(p);
+        }
+      }
+
+      shuffle(due);
+      shuffle(fresh);
+
+      selected = [...due, ...fresh].slice(0, PROBLEMS_PER_SESSION);
+
+      // Nothing scheduled left — top up with her weakest skills first
+      if (selected.length < PROBLEMS_PER_SESSION) {
+        const already = new Set(selected.map(p => p.id));
+        const extra = allProblems
+          .filter(p => !already.has(p.id))
+          .sort((a, b) => accuracyOf(a.id) - accuracyOf(b.id));
+        selected = [...selected, ...extra].slice(0, PROBLEMS_PER_SESSION);
       }
     }
-
-    shuffle(due);
-    shuffle(fresh);
-
-    const selected = [...due, ...fresh].slice(0, PROBLEMS_PER_SESSION);
 
     if (selected.length === 0) {
       const nextDue = nextReviewDate();
@@ -171,18 +193,7 @@ async function launchSession() {
       return;
     }
 
-    // Restore an interrupted session from today (refresh recovery)
-    if (tryRestoreSession()) return;
-
-    // One session per day — if already completed today, show done screen
-    const lastDone = localStorage.getItem('act_last_session_date');
-    if (lastDone === today) {
-      const nextDue = nextReviewDate();
-      document.getElementById('done-next-count').textContent =
-        nextDue ? `Next problems due: ${nextDue}` : '';
-      showScreen('done');
-      return;
-    }
+    isPracticeMode = practice;
 
     // Initialize session queue; wrong answers will be recycled back in
     sessionQueue = selected.map(tmpl => ({
@@ -193,6 +204,7 @@ async function launchSession() {
     correctCount = 0;
     sessionResults = [];
 
+    applyModeIndicator();
     showScreen('session');
     renderQuestion();
   } catch (err) {
@@ -230,7 +242,9 @@ async function saveProgress() {
     const base = progressState.get(problemId)
       || progressMap[problemId]
       || { interval_days: 1, ease_factor: 2.0, times_correct: 0, times_wrong: 0 };
-    progressState.set(problemId, smUpdate(base, correct, today));
+    progressState.set(problemId, isPracticeMode
+      ? tallyOnly(base, correct, today)
+      : smUpdate(base, correct, today));
   });
 
   const rows = [...progressState.entries()].map(([problemId, state]) => ({
@@ -274,6 +288,18 @@ function smUpdate(rec, correct, today) {
       times_wrong: (rec.times_wrong || 0) + 1
     };
   }
+}
+
+function tallyOnly(rec, correct, today) {
+  // Practice mode: record accuracy but leave the review schedule untouched, so
+  // extra drilling can't inflate intervals or push a due problem out of rotation
+  return {
+    interval_days:    rec.interval_days    || 1,
+    ease_factor:      rec.ease_factor      || 2.0,
+    next_review_date: rec.next_review_date || addDays(today, 1),
+    times_correct: (rec.times_correct || 0) + (correct ? 1 : 0),
+    times_wrong:   (rec.times_wrong   || 0) + (correct ? 0 : 1)
+  };
 }
 
 // =============================================================================
@@ -602,12 +628,17 @@ async function finishSession() {
   document.getElementById('summary-encouragement').textContent =
     encouragement(correctCount, totalAttempts);
 
+  // Practice mode doesn't reschedule anything, so that stat needs a different name
+  document.getElementById('summary-tomorrow-title').textContent =
+    isPracticeMode ? 'Problems missed' : 'Problems due tomorrow';
+  document.getElementById('summary-mode-badge')
+    .classList.toggle('hidden', !isPracticeMode);
+
   buildPrintReport(sessionResults, elapsed, correctCount, totalAttempts);
   await saveSession(sessionResults, elapsed, correctCount, totalAttempts);
 
-  // Clear in-progress state and mark today as done
+  // Clear in-progress state so the next session starts fresh
   localStorage.removeItem('act_session_state');
-  localStorage.setItem('act_last_session_date', todayStr());
 
   showScreen('summary');
 }
@@ -621,6 +652,7 @@ function saveSessionState() {
     localStorage.setItem('act_session_state', JSON.stringify({
       date:             todayStr(),
       userId,
+      practiceMode:     isPracticeMode,
       queueIndex,
       correctCount,
       sessionStartTime: sessionStartTime || Date.now(),
@@ -633,17 +665,18 @@ function saveSessionState() {
   } catch { /* localStorage full — ignore */ }
 }
 
-function tryRestoreSession() {
+function tryRestoreSession(practice = false) {
   const raw = localStorage.getItem('act_session_state');
   if (!raw) return false;
   try {
     const state = JSON.parse(raw);
 
-    // Stale if different user, different day, or already finished today
+    // Stale if different user, different day, or a different mode was requested
+    // (so choosing a mode always starts that mode rather than resuming the other)
     if (
       state.userId !== userId ||
       state.date !== todayStr() ||
-      localStorage.getItem('act_last_session_date') === todayStr()
+      !!state.practiceMode !== !!practice
     ) {
       localStorage.removeItem('act_session_state');
       return false;
@@ -667,7 +700,9 @@ function tryRestoreSession() {
     correctCount     = state.correctCount  || 0;
     sessionStartTime = state.sessionStartTime || Date.now();
     sessionResults   = state.sessionResults  || [];
+    isPracticeMode   = !!state.practiceMode;
 
+    applyModeIndicator();
     showScreen('session');
     renderQuestion();
     return true;
@@ -693,7 +728,8 @@ async function saveSession(results, elapsed, correct, total) {
     selectedIndex: r.selectedIndex,
     correctIndex:  r.correctIndex,
     hint1Used:     r.hint1Used || false,
-    hint2Used:     r.hint2Used || false
+    hint2Used:     r.hint2Used || false,
+    practice:      isPracticeMode
   }));
 
   const { error } = await db
@@ -743,6 +779,9 @@ function renderHistoryList(sessions) {
     const pct      = session.score_total > 0
       ? Math.round((session.score_correct / session.score_total) * 100) : 0;
     const badgeCls = pct >= 80 ? 'badge-success' : pct >= 60 ? 'badge-warning' : 'badge-error';
+    const wasPractice = Array.isArray(session.problems) && session.problems[0]?.practice === true;
+    const modeBadge = wasPractice
+      ? '<span class="badge badge-ghost badge-sm shrink-0">🎲 Practice</span>' : '';
 
     const div = document.createElement('div');
     div.className = 'card bg-base-100 shadow';
@@ -756,6 +795,7 @@ function renderHistoryList(sessions) {
               &nbsp;&middot;&nbsp; ${formatTime(session.duration_seconds || 0)}
             </div>
           </div>
+          ${modeBadge}
           <span class="badge ${badgeCls} shrink-0">${pct}%</span>
           <button class="btn btn-outline btn-sm shrink-0 hist-print-btn" data-idx="${idx}">
             &#128424; Print
@@ -921,6 +961,11 @@ function showScreen(name) {
   });
 }
 
+function applyModeIndicator() {
+  document.getElementById('session-mode-badge')
+    .classList.toggle('hidden', !isPracticeMode);
+}
+
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -938,6 +983,14 @@ function addDays(dateStr, n) {
   const d = new Date(dateStr + 'T12:00:00');
   d.setDate(d.getDate() + n);
   return d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+}
+
+function accuracyOf(problemId) {
+  // Lifetime accuracy for a problem; never-seen problems sort as weakest
+  const p = progressMap[problemId];
+  if (!p) return 0;
+  const total = (p.times_correct || 0) + (p.times_wrong || 0);
+  return total === 0 ? 0 : p.times_correct / total;
 }
 
 function nextReviewDate() {
