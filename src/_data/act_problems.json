@@ -752,24 +752,6 @@
     ]
   },
   {
-    "id": "normal-distribution-upper",
-    "topic": "Statistics",
-    "difficulty": 2,
-    "template": "In a normal distribution, approximately 68% of data falls within 1 standard deviation of the mean. A data set has mean {m} and standard deviation {s}. What is the upper bound of the interval containing the middle 68% of the data?",
-    "params": {
-      "m": { "type": "int", "min": 50, "max": 200 },
-      "s": { "type": "int", "min": 5,  "max": 30 }
-    },
-    "answerExpr": "m + s",
-    "answerFormat": "integer",
-    "distractorExprs": [
-      "m - s",
-      "m + 2*s",
-      "m + s/2",
-      "m*s"
-    ]
-  },
-  {
     "id": "complementary-trig-cofunction",
     "topic": "Trigonometry",
     "difficulty": 2,
