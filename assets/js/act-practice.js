@@ -58,6 +58,7 @@ window.addEventListener('load', () => {
 function startApp() {
   db = window._supabaseClient;
   wireEvents();
+  preloadKatexFonts();
 
   // Auto-login from localStorage — go straight to home screen
   const saved = localStorage.getItem('act_user_id');
@@ -67,6 +68,28 @@ function startApp() {
   } else {
     showScreen('login');
   }
+}
+
+// KaTeX's math glyphs live in web fonts (KaTeX_Main, KaTeX_Math, etc.) that
+// browsers otherwise fetch lazily, only once something visible actually needs
+// to paint with them. The print report lives in a `display:none` container
+// until the moment printing starts, so simply building its HTML doesn't
+// reliably trigger those font downloads. Explicitly requesting them as soon
+// as the app boots gives them the whole session to finish loading, so a
+// report printed early (e.g. straight from History with no question shown
+// on screen yet) doesn't silently fall back to a font missing every math
+// symbol.
+function preloadKatexFonts() {
+  if (!document.fonts || !document.fonts.load) return;
+  [
+    'KaTeX_Main', 'KaTeX_Math', 'KaTeX_AMS', 'KaTeX_Caligraphic',
+    'KaTeX_Fraktur', 'KaTeX_SansSerif', 'KaTeX_Script', 'KaTeX_Typewriter',
+    'KaTeX_Size1', 'KaTeX_Size2', 'KaTeX_Size3', 'KaTeX_Size4'
+  ].forEach(family => {
+    ['normal', 'italic', 'bold'].forEach(style => {
+      document.fonts.load(`1em ${style === 'normal' ? '' : style + ' '}"${family}"`).catch(() => {});
+    });
+  });
 }
 
 // =============================================================================
@@ -92,7 +115,7 @@ function wireEvents() {
   document.getElementById('hint1-btn').addEventListener('click', handleHint1);
   document.getElementById('hint2-btn').addEventListener('click', handleHint2);
   // Summary
-  document.getElementById('print-btn').addEventListener('click', () => window.print());
+  document.getElementById('print-btn').addEventListener('click', () => printWhenReady());
   document.getElementById('done-btn').addEventListener('click', () => showScreen('home'));
   // All-done
   document.getElementById('done-practice-btn').addEventListener('click', () => launchSession({ practice: true }));
@@ -411,6 +434,7 @@ function formatValue(val, format) {
     case 'decimal2':        return Number(val).toFixed(2);
     case 'decimal1':        return Number(val).toFixed(1);
     case 'percent':         return `${Math.round(val)}\\%`;
+    case 'text':             return String(val);
     default:                return String(Math.round(val));
   }
 }
@@ -421,18 +445,31 @@ function formatFraction(x) {
   x = Math.abs(x);
   if (Math.abs(x - Math.round(x)) < eps) return String(sign * Math.round(x));
 
-  let bestN = 1, bestD = 2, bestErr = 1;
-  for (let d = 2; d <= 200; d++) {
-    const n = Math.round(x * d);
-    const err = Math.abs(n / d - x);
-    if (err < bestErr) { bestErr = err; bestN = n; bestD = d; }
-    if (err < eps) break;
+  // Continued-fraction convergents converge to the exact rational for any
+  // rational input, regardless of how large its denominator is. (A previous
+  // version brute-force searched denominators up to 200, which silently
+  // returned the closest WRONG fraction — e.g. 114/197 instead of the exact
+  // 125/216 — whenever the true denominator exceeded that cap, such as for
+  // sphere-volume-ratio's r³ denominators up to 1000.)
+  let h0 = 1, h1 = Math.floor(x);
+  let k0 = 0, k1 = 1;
+  let rem = x - Math.floor(x);
+  for (let i = 0; i < 40 && rem > eps; i++) {
+    rem = 1 / rem;
+    const a = Math.floor(rem);
+    const h2 = a * h1 + h0;
+    const k2 = a * k1 + k0;
+    h0 = h1; h1 = h2;
+    k0 = k1; k1 = k2;
+    if (Math.abs(x - h1 / k1) < eps) break;
+    rem = rem - a;
   }
-  const g = gcd(bestN, bestD);
-  const n = (sign * bestN) / g;
-  const d = bestD / g;
-  if (d === 1) return String(n);
-  if (n < 0) return `-\\frac{${Math.abs(n)}}{${d}}`;
+
+  const g = gcd(h1, k1);
+  const n = h1 / g;
+  const d = k1 / g;
+  if (d === 1) return String(sign * n);
+  if (sign < 0) return `-\\frac{${n}}{${d}}`;
   return `\\frac{${n}}{${d}}`;
 }
 
@@ -511,7 +548,12 @@ function renderQuestion() {
 
 function renderMathString(str) {
   if (!str) return '';
-  if (str.includes('\\') && window.katex) {
+  // Always typeset choices through KaTeX, even when the string has no explicit
+  // LaTeX commands (e.g. plain "x(x - 6)(x + 4) = 0" or "m1 = m2"). This keeps
+  // every answer choice visually consistent with the KaTeX-rendered question
+  // stem — variables come out italicized and identifiers like "m1" are no
+  // longer ambiguous with "ml" in the app's default sans-serif font.
+  if (window.katex) {
     try {
       return katex.renderToString(str, { throwOnError: false, displayMode: false });
     } catch { /* fall through */ }
@@ -812,7 +854,7 @@ function renderHistoryList(sessions) {
         s.problems || [], s.duration_seconds || 0,
         s.score_correct, s.score_total, s.session_date
       );
-      window.print();
+      printWhenReady();
     });
   });
 
@@ -872,6 +914,27 @@ function formatTime(seconds) {
 // =============================================================================
 // Print Report
 // =============================================================================
+// KaTeX's math glyphs live in web fonts (KaTeX_Main, KaTeX_Math, etc.) that are
+// only fetched lazily, the first time something using them actually needs to
+// paint. If a user prints a report before those fonts finish downloading (e.g.
+// jumping straight from login to History and printing an old session, with no
+// KaTeX render having happened yet on screen), the browser's print snapshot is
+// taken with a fallback font — and every math symbol silently disappears from
+// the resulting PDF. Waiting for `document.fonts.ready` (plus a couple of
+// paint frames for the freshly-inserted report markup) before calling
+// window.print() avoids that race.
+async function printWhenReady() {
+  try {
+    if (document.fonts && document.fonts.ready) {
+      await Promise.race([
+        document.fonts.ready,
+        new Promise(resolve => setTimeout(resolve, 2000)) // safety timeout
+      ]);
+    }
+  } catch { /* ignore font-loading errors — print with whatever is available */ }
+  requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+}
+
 function renderMathInString(str) {
   if (!str || !window.katex) return escapeHtml(str || '');
   // Replace \( ... \) inline math
