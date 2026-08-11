@@ -58,6 +58,7 @@ window.addEventListener('load', () => {
 function startApp() {
   db = window._supabaseClient;
   wireEvents();
+  preloadKatexFonts();
 
   // Auto-login from localStorage — go straight to home screen
   const saved = localStorage.getItem('act_user_id');
@@ -67,6 +68,28 @@ function startApp() {
   } else {
     showScreen('login');
   }
+}
+
+// KaTeX's math glyphs live in web fonts (KaTeX_Main, KaTeX_Math, etc.) that
+// browsers otherwise fetch lazily, only once something visible actually needs
+// to paint with them. The print report lives in a `display:none` container
+// until the moment printing starts, so simply building its HTML doesn't
+// reliably trigger those font downloads. Explicitly requesting them as soon
+// as the app boots gives them the whole session to finish loading, so a
+// report printed early (e.g. straight from History with no question shown
+// on screen yet) doesn't silently fall back to a font missing every math
+// symbol.
+function preloadKatexFonts() {
+  if (!document.fonts || !document.fonts.load) return;
+  [
+    'KaTeX_Main', 'KaTeX_Math', 'KaTeX_AMS', 'KaTeX_Caligraphic',
+    'KaTeX_Fraktur', 'KaTeX_SansSerif', 'KaTeX_Script', 'KaTeX_Typewriter',
+    'KaTeX_Size1', 'KaTeX_Size2', 'KaTeX_Size3', 'KaTeX_Size4'
+  ].forEach(family => {
+    ['normal', 'italic', 'bold'].forEach(style => {
+      document.fonts.load(`1em ${style === 'normal' ? '' : style + ' '}"${family}"`).catch(() => {});
+    });
+  });
 }
 
 // =============================================================================
@@ -92,7 +115,7 @@ function wireEvents() {
   document.getElementById('hint1-btn').addEventListener('click', handleHint1);
   document.getElementById('hint2-btn').addEventListener('click', handleHint2);
   // Summary
-  document.getElementById('print-btn').addEventListener('click', () => window.print());
+  document.getElementById('print-btn').addEventListener('click', () => printWhenReady());
   document.getElementById('done-btn').addEventListener('click', () => showScreen('home'));
   // All-done
   document.getElementById('done-practice-btn').addEventListener('click', () => launchSession({ practice: true }));
@@ -411,6 +434,7 @@ function formatValue(val, format) {
     case 'decimal2':        return Number(val).toFixed(2);
     case 'decimal1':        return Number(val).toFixed(1);
     case 'percent':         return `${Math.round(val)}\\%`;
+    case 'text':             return String(val);
     default:                return String(Math.round(val));
   }
 }
@@ -812,7 +836,7 @@ function renderHistoryList(sessions) {
         s.problems || [], s.duration_seconds || 0,
         s.score_correct, s.score_total, s.session_date
       );
-      window.print();
+      printWhenReady();
     });
   });
 
@@ -872,6 +896,27 @@ function formatTime(seconds) {
 // =============================================================================
 // Print Report
 // =============================================================================
+// KaTeX's math glyphs live in web fonts (KaTeX_Main, KaTeX_Math, etc.) that are
+// only fetched lazily, the first time something using them actually needs to
+// paint. If a user prints a report before those fonts finish downloading (e.g.
+// jumping straight from login to History and printing an old session, with no
+// KaTeX render having happened yet on screen), the browser's print snapshot is
+// taken with a fallback font — and every math symbol silently disappears from
+// the resulting PDF. Waiting for `document.fonts.ready` (plus a couple of
+// paint frames for the freshly-inserted report markup) before calling
+// window.print() avoids that race.
+async function printWhenReady() {
+  try {
+    if (document.fonts && document.fonts.ready) {
+      await Promise.race([
+        document.fonts.ready,
+        new Promise(resolve => setTimeout(resolve, 2000)) // safety timeout
+      ]);
+    }
+  } catch { /* ignore font-loading errors — print with whatever is available */ }
+  requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+}
+
 function renderMathInString(str) {
   if (!str || !window.katex) return escapeHtml(str || '');
   // Replace \( ... \) inline math

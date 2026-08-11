@@ -733,25 +733,6 @@
     ]
   },
   {
-    "id": "pythagorean-identity-cos",
-    "topic": "Trigonometry",
-    "difficulty": 2,
-    "template": "Given that \\(\\sin^2 x = \\frac{p}{q}\\), what is the value of \\(\\cos^2 x\\)?",
-    "params": {
-      "q": { "values": [4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20] },
-      "p": { "type": "int", "min": 1, "max": 15 }
-    },
-    "validate": "p < q",
-    "answerExpr": "(q - p) / q",
-    "answerFormat": "fraction",
-    "distractorExprs": [
-      "p / (q - p)",
-      "(q + p) / q",
-      "p / q",
-      "(q - p) / p"
-    ]
-  },
-  {
     "id": "complementary-trig-cofunction",
     "topic": "Trigonometry",
     "difficulty": 2,
@@ -1109,6 +1090,263 @@
       "r / b",
       "(r + 1) / (r + b)",
       "r / (r + b + 1)"
+    ]
+  },
+  {
+    "id": "factor-quadratic-equivalent",
+    "topic": "Quadratic Equations",
+    "difficulty": 3,
+    "template": "Given the function \\(f(x) = {a}x^2 - {babs}x + {c}\\), which of the following expressions is equivalent to \\(f(x)\\)?",
+    "params": {
+      "m1": { "values": [1, 2, 3, 4] },
+      "m2": { "values": [1, 2, 3, 4] },
+      "b1": { "type": "int", "min": -9, "max": -1 },
+      "b2": { "type": "int", "min": -9, "max": -1 }
+    },
+    "validate": "b1 !== b2",
+    "derived": {
+      "a": "m1 * m2",
+      "babs": "-(m1 * b2 + m2 * b1)",
+      "c": "b1 * b2"
+    },
+    "answerExpr": "'(' + m1 + 'x - ' + Math.abs(b1) + ')(' + m2 + 'x - ' + Math.abs(b2) + ')'",
+    "answerFormat": "text",
+    "distractorExprs": [
+      "'(-' + m1 + 'x + ' + Math.abs(b1) + ')(' + m2 + 'x + ' + Math.abs(b2) + ')'",
+      "'(' + m1 + 'x - ' + Math.abs(b1) + ')(' + m2 + 'x + ' + Math.abs(b2) + ')'",
+      "'(' + m1 + 'x - ' + Math.abs(b2) + ')(' + m2 + 'x + ' + Math.abs(b1) + ')'",
+      "'(' + m1 + 'x + ' + Math.abs(b1) + ')(' + m2 + 'x - ' + Math.abs(b2) + ')'"
+    ]
+  },
+  {
+    "id": "two-price-item-mixture",
+    "topic": "Algebraic Word Problems",
+    "difficulty": 3,
+    "template": "A landlord owns an apartment building. She charges ${p1} per month for each 1-bedroom apartment and ${p2} per month for each 2-bedroom apartment. She charged a total of ${total} in rent for {n} apartments this month. How many 1-bedroom apartments did she charge for this month?",
+    "params": {
+      "p1": { "values": [250, 275, 300, 325, 350] },
+      "p2": { "values": [375, 400, 425, 450, 475, 500] },
+      "n": { "values": [10, 12, 13, 14, 15, 16, 18, 20] },
+      "n1_sol": { "type": "int", "min": 1, "max": 19 }
+    },
+    "validate": "p2 > p1 && n1_sol >= 1 && n1_sol < n",
+    "derived": {
+      "n2": "n - n1_sol",
+      "total": "p1 * n1_sol + p2 * n2"
+    },
+    "answerExpr": "n1_sol",
+    "answerFormat": "integer",
+    "distractorExprs": [
+      "n2",
+      "n1_sol + 1",
+      "Math.round(total / p1)",
+      "Math.round(n / 2)"
+    ]
+  },
+  {
+    "id": "quadratic-n-from-roots-mixed-signs",
+    "topic": "Quadratic Equations",
+    "difficulty": 2,
+    "template": "For what value of \\(n\\) does the quadratic equation \\(x^2 {b_str} + n = 0\\) have solutions \\(x = {r1}\\) and \\(x = {r2}\\)?",
+    "params": {
+      "r1": { "type": "int", "min": -9, "max": 9 },
+      "r2": { "type": "int", "min": -9, "max": 9 }
+    },
+    "validate": "r1 !== 0 && r2 !== 0 && r1 !== r2 && (r1 + r2) !== 0",
+    "derived": {
+      "b_str": "(-(r1 + r2) >= 0 ? '+ ' + (-(r1 + r2)) : '- ' + Math.abs(r1 + r2)) + 'x'"
+    },
+    "answerExpr": "r1 * r2",
+    "answerFormat": "integer",
+    "distractorExprs": [
+      "r1 + r2",
+      "-(r1 * r2)",
+      "-(r1 + r2)",
+      "r1 * r2 + (r1 + r2)"
+    ]
+  },
+  {
+    "id": "ratio-three-parts",
+    "topic": "Ratios & Proportions",
+    "difficulty": 2,
+    "scenarios": [
+      {
+        "template": "The sum of 3 positive integers is {total}, and the ratio of the integers is {p}:{q}:{r}. What is the value of the smallest of the integers?",
+        "params": {
+          "p": { "type": "int", "min": 3, "max": 9 },
+          "q": { "type": "int", "min": 2, "max": 8 },
+          "r": { "type": "int", "min": 1, "max": 7 },
+          "u": { "type": "int", "min": 5, "max": 40 }
+        },
+        "validate": "p > q && q > r && r >= 1",
+        "derived": {
+          "total": "(p + q + r) * u",
+          "smallest": "r * u",
+          "middle": "q * u",
+          "largest": "p * u"
+        },
+        "answerExpr": "smallest",
+        "answerFormat": "integer",
+        "distractorExprs": ["u", "middle", "largest", "Math.round(total / 3)"]
+      },
+      {
+        "template": "The sum of 3 positive integers is {total}, and the ratio of the integers is {p}:{q}:{r}. What is the value of the largest of the integers?",
+        "params": {
+          "p": { "type": "int", "min": 3, "max": 9 },
+          "q": { "type": "int", "min": 2, "max": 8 },
+          "r": { "type": "int", "min": 1, "max": 7 },
+          "u": { "type": "int", "min": 5, "max": 40 }
+        },
+        "validate": "p > q && q > r && r >= 1",
+        "derived": {
+          "total": "(p + q + r) * u",
+          "smallest": "r * u",
+          "middle": "q * u",
+          "largest": "p * u"
+        },
+        "answerExpr": "largest",
+        "answerFormat": "integer",
+        "distractorExprs": ["u", "middle", "smallest", "Math.round(total / 3)"]
+      },
+      {
+        "template": "The sum of 3 positive integers is {total}, and the ratio of the integers is {p}:{q}:{r}. What is the value of the middle of the three integers?",
+        "params": {
+          "p": { "type": "int", "min": 3, "max": 9 },
+          "q": { "type": "int", "min": 2, "max": 8 },
+          "r": { "type": "int", "min": 1, "max": 7 },
+          "u": { "type": "int", "min": 5, "max": 40 }
+        },
+        "validate": "p > q && q > r && r >= 1",
+        "derived": {
+          "total": "(p + q + r) * u",
+          "smallest": "r * u",
+          "middle": "q * u",
+          "largest": "p * u"
+        },
+        "answerExpr": "middle",
+        "answerFormat": "integer",
+        "distractorExprs": ["u", "smallest", "largest", "Math.round(total / 3)"]
+      }
+    ]
+  },
+  {
+    "id": "isosceles-base-angle",
+    "topic": "Plane Geometry",
+    "difficulty": 2,
+    "template": "The vertex angle of an isosceles triangle is {vertex}°. What is the measure of a base angle?",
+    "params": {
+      "vertex": { "values": [20, 30, 40, 50, 70, 80, 90, 100, 110, 120, 130, 140] }
+    },
+    "validate": "vertex !== 60",
+    "answerExpr": "(180 - vertex) / 2",
+    "answerFormat": "integer",
+    "distractorExprs": [
+      "vertex",
+      "180 - 2 * vertex",
+      "180 - vertex",
+      "90 - vertex"
+    ]
+  },
+  {
+    "id": "factored-cubic-from-roots",
+    "topic": "Polynomial Equations",
+    "difficulty": 3,
+    "template": "The roots of a polynomial equation are 0, {a}, and {b}. Which of the following is a factored form of the equation?",
+    "params": {
+      "a": { "type": "int", "min": 2, "max": 9 },
+      "b": { "type": "int", "min": -9, "max": -1 }
+    },
+    "answerExpr": "'x(x - ' + a + ')(x + ' + Math.abs(b) + ') = 0'",
+    "answerFormat": "text",
+    "distractorExprs": [
+      "'(x - ' + a + ')(x + ' + Math.abs(b) + ') = 0'",
+      "'x(x + ' + a + ')(x - ' + Math.abs(b) + ') = 0'",
+      "'(x - ' + a + ')(x + ' + Math.abs(b) + ') = x'",
+      "'x(x - ' + a + ')(x - ' + Math.abs(b) + ') = 0'"
+    ]
+  },
+  {
+    "id": "parallel-lines-slope-relation",
+    "topic": "Coordinate Geometry",
+    "difficulty": 3,
+    "template": "Let the slope of \\({A1}x + {B1}y = {C1}\\) be \\(m_1\\), and the slope of \\({A2}x + {B2}y = {C2}\\) be \\(m_2\\). Which of the following is true?",
+    "params": {
+      "A1": { "type": "int", "min": 1, "max": 9 },
+      "B1": { "type": "int", "min": 1, "max": 9 },
+      "C1": { "type": "int", "min": 2, "max": 12 },
+      "C2": { "type": "int", "min": 2, "max": 12 },
+      "k": { "values": [2, 3, 4, 5] }
+    },
+    "validate": "C1 !== C2 && C2 !== k * C1",
+    "derived": {
+      "A2": "A1 * k",
+      "B2": "B1 * k"
+    },
+    "answerExpr": "'m1 = m2'",
+    "answerFormat": "text",
+    "distractorExprs": [
+      "'m1 = ' + k + 'm2'",
+      "'' + k + 'm1 = m2'",
+      "'' + C2 + 'm1 = ' + C1 + 'm2'",
+      "'' + C1 + 'm1 = ' + C2 + 'm2'"
+    ]
+  },
+  {
+    "id": "linear-quadratic-intersection-point",
+    "topic": "Functions",
+    "difficulty": 3,
+    "template": "Let \\(f\\) be defined by \\(f(x) = {a_str}x {b_str}\\). Let \\(g\\) be defined by \\(g(x) = {gA_str}x^2 {gB_str} {gC_str}\\). The graphs of \\(y = f(x)\\) and \\(y = g(x)\\) intersect at one of the following \\((x, y)\\) points. Which one?",
+    "params": {
+      "a": { "values": [-4, -3, -2, 2, 3, 4] },
+      "b": { "type": "int", "min": -8, "max": 8 },
+      "c": { "values": [-3, -2, -1, 1, 2, 3] },
+      "x1": { "type": "int", "min": -6, "max": 6 },
+      "x2": { "type": "int", "min": -6, "max": 6 }
+    },
+    "validate": "x1 !== x2 && x1 !== (a * x1 + b) && (x1 + 1) !== x2",
+    "derived": {
+      "y1": "a * x1 + b",
+      "y2": "a * x2 + b",
+      "gA": "c",
+      "gB": "a - c * (x1 + x2)",
+      "gC": "b + c * x1 * x2",
+      "a_str": "(a === 1 ? '' : a === -1 ? '-' : String(a))",
+      "b_str": "(b === 0 ? '' : b > 0 ? '+ ' + b : '- ' + Math.abs(b))",
+      "gA_str": "(c === 1 ? '' : c === -1 ? '-' : String(c))",
+      "gB_str": "((a - c * (x1 + x2)) === 0 ? '' : (a - c * (x1 + x2)) > 0 ? '+ ' + ((a - c * (x1 + x2)) === 1 ? '' : (a - c * (x1 + x2))) + 'x' : '- ' + ((a - c * (x1 + x2)) === -1 ? '' : Math.abs(a - c * (x1 + x2))) + 'x')",
+      "gC_str": "((b + c * x1 * x2) === 0 ? '' : (b + c * x1 * x2) > 0 ? '+ ' + (b + c * x1 * x2) : '- ' + Math.abs(b + c * x1 * x2))"
+    },
+    "answerExpr": "'(' + x1 + ', ' + y1 + ')'",
+    "answerFormat": "text",
+    "distractorExprs": [
+      "'(' + x2 + ', ' + y1 + ')'",
+      "'(' + x1 + ', ' + y2 + ')'",
+      "'(' + y1 + ', ' + x1 + ')'",
+      "'(' + (x1 + 1) + ', ' + (a * (x1 + 1) + b) + ')'"
+    ]
+  },
+  {
+    "id": "complex-number-square",
+    "topic": "Complex Numbers",
+    "difficulty": 3,
+    "template": "Given that \\(i\\) is the imaginary unit, which of the following numbers is equal to \\(({a} {b_str}i)^2\\)?",
+    "params": {
+      "a": { "type": "int", "min": 2, "max": 9 },
+      "b": { "type": "int", "min": -9, "max": 9 }
+    },
+    "validate": "b !== 0 && a !== b && a !== -b",
+    "derived": {
+      "real": "a * a - b * b",
+      "imag": "2 * a * b",
+      "b_str": "(b === 1 ? '+ ' : b === -1 ? '- ' : b > 0 ? '+ ' + b : '- ' + Math.abs(b))"
+    },
+    "answerExpr": "'' + real + (imag >= 0 ? ' + ' + imag + 'i' : ' - ' + Math.abs(imag) + 'i')",
+    "answerFormat": "text",
+    "distractorExprs": [
+      "'' + real",
+      "'' + (a * a + b * b)",
+      "'' + (2 * a) + ((2 * b) >= 0 ? ' + ' + (2 * b) + 'i' : ' - ' + Math.abs(2 * b) + 'i')",
+      "'' + real + (-(2 * a * b) >= 0 ? ' + ' + (-(2 * a * b)) + 'i' : ' - ' + Math.abs(2 * a * b) + 'i')"
     ]
   }
 ]
