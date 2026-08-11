@@ -445,18 +445,31 @@ function formatFraction(x) {
   x = Math.abs(x);
   if (Math.abs(x - Math.round(x)) < eps) return String(sign * Math.round(x));
 
-  let bestN = 1, bestD = 2, bestErr = 1;
-  for (let d = 2; d <= 200; d++) {
-    const n = Math.round(x * d);
-    const err = Math.abs(n / d - x);
-    if (err < bestErr) { bestErr = err; bestN = n; bestD = d; }
-    if (err < eps) break;
+  // Continued-fraction convergents converge to the exact rational for any
+  // rational input, regardless of how large its denominator is. (A previous
+  // version brute-force searched denominators up to 200, which silently
+  // returned the closest WRONG fraction — e.g. 114/197 instead of the exact
+  // 125/216 — whenever the true denominator exceeded that cap, such as for
+  // sphere-volume-ratio's r³ denominators up to 1000.)
+  let h0 = 1, h1 = Math.floor(x);
+  let k0 = 0, k1 = 1;
+  let rem = x - Math.floor(x);
+  for (let i = 0; i < 40 && rem > eps; i++) {
+    rem = 1 / rem;
+    const a = Math.floor(rem);
+    const h2 = a * h1 + h0;
+    const k2 = a * k1 + k0;
+    h0 = h1; h1 = h2;
+    k0 = k1; k1 = k2;
+    if (Math.abs(x - h1 / k1) < eps) break;
+    rem = rem - a;
   }
-  const g = gcd(bestN, bestD);
-  const n = (sign * bestN) / g;
-  const d = bestD / g;
-  if (d === 1) return String(n);
-  if (n < 0) return `-\\frac{${Math.abs(n)}}{${d}}`;
+
+  const g = gcd(h1, k1);
+  const n = h1 / g;
+  const d = k1 / g;
+  if (d === 1) return String(sign * n);
+  if (sign < 0) return `-\\frac{${n}}{${d}}`;
   return `\\frac{${n}}{${d}}`;
 }
 
@@ -535,7 +548,12 @@ function renderQuestion() {
 
 function renderMathString(str) {
   if (!str) return '';
-  if (str.includes('\\') && window.katex) {
+  // Always typeset choices through KaTeX, even when the string has no explicit
+  // LaTeX commands (e.g. plain "x(x - 6)(x + 4) = 0" or "m1 = m2"). This keeps
+  // every answer choice visually consistent with the KaTeX-rendered question
+  // stem — variables come out italicized and identifiers like "m1" are no
+  // longer ambiguous with "ml" in the app's default sans-serif font.
+  if (window.katex) {
     try {
       return katex.renderToString(str, { throwOnError: false, displayMode: false });
     } catch { /* fall through */ }

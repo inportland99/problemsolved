@@ -1282,13 +1282,13 @@
       "A2": "A1 * k",
       "B2": "B1 * k"
     },
-    "answerExpr": "'m1 = m2'",
+    "answerExpr": "'m_1 = m_2'",
     "answerFormat": "text",
     "distractorExprs": [
-      "'m1 = ' + k + 'm2'",
-      "'' + k + 'm1 = m2'",
-      "'' + C2 + 'm1 = ' + C1 + 'm2'",
-      "'' + C1 + 'm1 = ' + C2 + 'm2'"
+      "'m_1 = ' + k + 'm_2'",
+      "'' + k + 'm_1 = m_2'",
+      "'' + C2 + 'm_1 = ' + C1 + 'm_2'",
+      "'' + C1 + 'm_1 = ' + C2 + 'm_2'"
     ]
   },
   {
@@ -1347,6 +1347,125 @@
       "'' + (a * a + b * b)",
       "'' + (2 * a) + ((2 * b) >= 0 ? ' + ' + (2 * b) + 'i' : ' - ' + Math.abs(2 * b) + 'i')",
       "'' + real + (-(2 * a * b) >= 0 ? ' + ' + (-(2 * a * b)) + 'i' : ' - ' + Math.abs(2 * a * b) + 'i')"
+    ]
+  },
+  {
+    "id": "venn-diagram-three-sets",
+    "topic": "Sets & Venn Diagrams",
+    "difficulty": 3,
+    "params": {
+      "s_only": { "type": "int", "min": 1, "max": 15 },
+      "c_only": { "type": "int", "min": 1, "max": 15 },
+      "p_only": { "type": "int", "min": 1, "max": 15 },
+      "sc_only": { "type": "int", "min": 1, "max": 15 },
+      "sp_only": { "type": "int", "min": 1, "max": 15 },
+      "cp_only": { "type": "int", "min": 1, "max": 15 },
+      "triple": { "type": "int", "min": 1, "max": 8 }
+    },
+    "derived": {
+      "total": "s_only + c_only + p_only + sc_only + sp_only + cp_only + triple",
+      "diagram": "`<svg viewBox='0 0 400 400' width='300' height='300' style='display:block;margin:0.5rem auto;'><circle cx='150' cy='150' r='110' fill='none' stroke='black' stroke-width='2'/><circle cx='250' cy='150' r='110' fill='none' stroke='black' stroke-width='2'/><circle cx='200' cy='240' r='110' fill='none' stroke='black' stroke-width='2'/><text x='90' y='90' font-size='22' font-style='italic' font-family='serif' text-anchor='middle'>S</text><text x='310' y='90' font-size='22' font-style='italic' font-family='serif' text-anchor='middle'>C</text><text x='200' y='352' font-size='22' font-style='italic' font-family='serif' text-anchor='middle'>P</text><text x='95' y='140' font-size='20' text-anchor='middle'>${s_only}</text><text x='305' y='140' font-size='20' text-anchor='middle'>${c_only}</text><text x='200' y='320' font-size='20' text-anchor='middle'>${p_only}</text><text x='200' y='110' font-size='20' text-anchor='middle'>${sc_only}</text><text x='150' y='235' font-size='20' text-anchor='middle'>${sp_only}</text><text x='250' y='235' font-size='20' text-anchor='middle'>${cp_only}</text><text x='200' y='175' font-size='20' text-anchor='middle'>${triple}</text></svg>`"
+    },
+    "scenarios": [
+      {
+        "template": "In the Venn diagram below, circles \\(S\\), \\(C\\), and \\(P\\) represent farms raising sheep, cows, and pigs, respectively. How many of the {total} farms represented in the diagram do <b>not</b> raise cows? {diagram}",
+        "answerExpr": "total - (c_only + sc_only + cp_only + triple)",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "s_only + p_only + triple",
+          "s_only + p_only",
+          "c_only + p_only",
+          "c_only + sc_only + cp_only + triple"
+        ]
+      },
+      {
+        "template": "In the Venn diagram below, circles \\(S\\), \\(C\\), and \\(P\\) represent farms raising sheep, cows, and pigs, respectively. How many of the {total} farms represented in the diagram do <b>not</b> raise sheep? {diagram}",
+        "answerExpr": "total - (s_only + sc_only + sp_only + triple)",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "s_only + sc_only + sp_only + triple",
+          "total - s_only",
+          "c_only + p_only",
+          "total - triple"
+        ]
+      },
+      {
+        "template": "In the Venn diagram below, circles \\(S\\), \\(C\\), and \\(P\\) represent farms raising sheep, cows, and pigs, respectively. How many of the {total} farms represented in the diagram do <b>not</b> raise pigs? {diagram}",
+        "answerExpr": "total - (p_only + sp_only + cp_only + triple)",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "p_only + sp_only + cp_only + triple",
+          "total - p_only",
+          "s_only + c_only",
+          "total - triple"
+        ]
+      },
+      {
+        "template": "In the Venn diagram below, circles \\(S\\), \\(C\\), and \\(P\\) represent farms raising sheep, cows, and pigs, respectively. How many of the {total} farms represented in the diagram raise sheep? {diagram}",
+        "answerExpr": "s_only + sc_only + sp_only + triple",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "s_only",
+          "total - (s_only + sc_only + sp_only + triple)",
+          "sc_only + sp_only + triple",
+          "s_only + sc_only + sp_only"
+        ]
+      },
+      {
+        "template": "In the Venn diagram below, circles \\(S\\), \\(C\\), and \\(P\\) represent farms raising sheep, cows, and pigs, respectively. How many of the {total} farms represented in the diagram raise cows? {diagram}",
+        "answerExpr": "c_only + sc_only + cp_only + triple",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "c_only",
+          "total - (c_only + sc_only + cp_only + triple)",
+          "sc_only + cp_only + triple",
+          "c_only + sc_only + cp_only"
+        ]
+      },
+      {
+        "template": "In the Venn diagram below, circles \\(S\\), \\(C\\), and \\(P\\) represent farms raising sheep, cows, and pigs, respectively. How many of the {total} farms represented in the diagram raise pigs? {diagram}",
+        "answerExpr": "p_only + sp_only + cp_only + triple",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "p_only",
+          "total - (p_only + sp_only + cp_only + triple)",
+          "sp_only + cp_only + triple",
+          "p_only + sp_only + cp_only"
+        ]
+      },
+      {
+        "template": "In the Venn diagram below, circles \\(S\\), \\(C\\), and \\(P\\) represent farms raising sheep, cows, and pigs, respectively. How many of the {total} farms represented in the diagram raise animals from exactly two of the three categories? {diagram}",
+        "answerExpr": "sc_only + sp_only + cp_only",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "triple",
+          "sc_only + sp_only + cp_only + triple",
+          "s_only + c_only + p_only",
+          "total - triple"
+        ]
+      },
+      {
+        "template": "In the Venn diagram below, circles \\(S\\), \\(C\\), and \\(P\\) represent farms raising sheep, cows, and pigs, respectively. How many of the {total} farms represented in the diagram raise all three: sheep, cows, and pigs? {diagram}",
+        "answerExpr": "triple",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "sc_only + sp_only + cp_only",
+          "s_only",
+          "total",
+          "sc_only"
+        ]
+      },
+      {
+        "template": "In the Venn diagram below, circles \\(S\\), \\(C\\), and \\(P\\) represent farms raising sheep, cows, and pigs, respectively. How many of the {total} farms represented in the diagram raise animals from at least two of the three categories? {diagram}",
+        "answerExpr": "sc_only + sp_only + cp_only + triple",
+        "answerFormat": "integer",
+        "distractorExprs": [
+          "triple",
+          "sc_only + sp_only + cp_only",
+          "s_only + c_only + p_only",
+          "total - triple"
+        ]
+      }
     ]
   }
 ]
