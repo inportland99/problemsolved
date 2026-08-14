@@ -5,17 +5,18 @@ description: Calculate ingredients for pizza dough using the biga method
 ---
 
 <div class="container mx-auto px-4 py-8 max-w-2xl">
-  <!-- User info bar -->
+  <!-- User info bar (only shows account controls once auth state is known) -->
   <div id="user-info" class="mb-4 flex justify-between items-center gap-2">
-    <a href="/personal/pizza-dashboard/" class="btn btn-sm btn-ghost">
+    <a href="/personal/pizza-dashboard/" id="my-recipes-link" class="btn btn-sm btn-ghost hidden">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
       My Recipes
     </a>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 ml-auto">
       <span id="user-email" class="text-sm text-gray-600"></span>
-      <button id="logout-btn" class="btn btn-sm btn-outline">Logout</button>
+      <button id="logout-btn" class="btn btn-sm btn-outline hidden">Logout</button>
+      <a href="/personal/pizza-login/" id="login-link" class="btn btn-sm btn-outline hidden">Log in</a>
     </div>
   </div>
   
@@ -87,12 +88,15 @@ description: Calculate ingredients for pizza dough using the biga method
             
             <div class="divider"></div>
             
-            <button type="button" id="save-recipe-btn" class="btn btn-secondary w-full">
+            <button type="button" id="save-recipe-btn" class="btn btn-secondary w-full hidden">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
               </svg>
               <span>Save Recipe</span>
             </button>
+            <a href="/personal/pizza-login/" id="save-login-link" class="btn btn-outline w-full hidden">
+              Log in to save this recipe
+            </a>
           </div>
         </div>
       </div>
@@ -211,19 +215,24 @@ description: Calculate ingredients for pizza dough using the biga method
 import { getCurrentUser, signOut } from '/assets/js/supabase-client.js';
 import { savePizzaLog } from '/assets/js/pizza-db.js';
 
-// Check authentication on page load
+// The calculator itself is open to everyone. Signing in is only required to
+// save recipes to the dashboard, so we adjust the UI instead of redirecting.
 const user = await getCurrentUser();
-if (!user) {
-  window.location.href = '/personal/pizza-login/';
-} else {
-  // Display user email
+
+if (user) {
   document.getElementById('user-email').textContent = user.email;
+  document.getElementById('my-recipes-link').classList.remove('hidden');
+  document.getElementById('logout-btn').classList.remove('hidden');
+  document.getElementById('save-recipe-btn').classList.remove('hidden');
+} else {
+  document.getElementById('login-link').classList.remove('hidden');
+  document.getElementById('save-login-link').classList.remove('hidden');
 }
 
 // Logout functionality
 document.getElementById('logout-btn').addEventListener('click', async () => {
   await signOut();
-  window.location.href = '/personal/pizza-login/';
+  window.location.href = '/personal/pizza/';
 });
 
 // Alert functions

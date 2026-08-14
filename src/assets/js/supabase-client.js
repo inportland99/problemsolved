@@ -11,6 +11,13 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Auth helper functions
 export async function getCurrentUser() {
+  // Skip the network call (and its "Auth session missing" error) for visitors
+  // who are not signed in, e.g. on pages that work without an account.
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    return null;
+  }
+
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error) {
     console.error('Error getting user:', error);
