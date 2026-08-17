@@ -92,7 +92,12 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 });
 
 // Forgot password
-document.getElementById('forgot-password-link').addEventListener('click', async () => {
+const forgotPasswordLink = document.getElementById('forgot-password-link');
+let forgotPasswordInFlight = false;
+
+forgotPasswordLink.addEventListener('click', async () => {
+  if (forgotPasswordInFlight) return;
+
   const email = document.getElementById('login-email').value.trim();
 
   if (!email) {
@@ -100,13 +105,24 @@ document.getElementById('forgot-password-link').addEventListener('click', async 
     return;
   }
 
-  const redirectTo = `${window.location.origin}/teacherportal/reset-password/`;
-  const { error } = await resetPasswordForEmail(email, redirectTo);
+  forgotPasswordInFlight = true;
+  forgotPasswordLink.disabled = true;
+  const originalText = forgotPasswordLink.textContent;
+  forgotPasswordLink.textContent = 'Sending…';
 
-  if (error) {
-    showAlert(error.message || 'Failed to send reset email', 'error');
-  } else {
-    showAlert('Password reset email sent! Check your inbox.', 'success');
+  try {
+    const redirectTo = `${window.location.origin}/teacherportal/reset-password/`;
+    const { error } = await resetPasswordForEmail(email, redirectTo);
+
+    if (error) {
+      showAlert(error.message || 'Failed to send reset email', 'error');
+    } else {
+      showAlert('Password reset email sent! Check your inbox. Only the most recent email link is valid -- ignore any earlier ones.', 'success');
+    }
+  } finally {
+    forgotPasswordInFlight = false;
+    forgotPasswordLink.disabled = false;
+    forgotPasswordLink.textContent = originalText;
   }
 });
 </script>
