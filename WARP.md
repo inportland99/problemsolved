@@ -191,13 +191,14 @@ A private, authenticated teacher portal at `/teacherportal/` for managing math l
 
 ### Pages
 - `index.njk` (`/teacherportal/`) — dashboard with links to Lessons and Observations
-- `login.njk` (`/teacherportal/login/`) — email/password login form
+- `login.njk` (`/teacherportal/login/`) — email/password login form, with a "Forgot password?" link that triggers `resetPasswordForEmail`
+- `reset-password.njk` (`/teacherportal/reset-password/`) — lets a user set a password after clicking either a password-recovery link or an invite link (Supabase's invite flow signs the user in directly without asking for a password, so invites also redirect here instead of straight to `/teacherportal/`)
 - `lesson-index.njk` / `lesson-edit.njk` — browse, create, edit, delete math lessons (with diagram image upload)
 - `observation-index.njk` / `observation-edit.njk` / `observation-show.njk` — create, edit, list, and view classroom lesson observations (scored 0–5 across Planning/Launch/Problem Solving/Closing)
 
 ### Authentication
 - Backed by **Supabase Auth** (email/password), client-side only — no server/serverless functions involved. Public sign-up is disabled at the project level; teachers are provisioned manually (see Authorization Model below).
-- `src/assets/js/lessons-supabase-client.js` creates the Supabase client (project URL + publishable anon key hardcoded in the file) and exposes `getCurrentUser`, `signIn`, `signOut`.
+- `src/assets/js/lessons-supabase-client.js` creates the Supabase client (project URL + publishable anon key hardcoded in the file) and exposes `getCurrentUser`, `signIn`, `signOut`, `resetPasswordForEmail`.
 - `src/assets/js/teacher-portal-auth-guard.js` provides the guard used by every protected page:
   - `requireAuth()` — calls `getCurrentUser()`; if no session, redirects to `/teacherportal/login/` and throws to halt page script execution.
   - `logout()` — signs out via Supabase then redirects to `/teacherportal/login/`.

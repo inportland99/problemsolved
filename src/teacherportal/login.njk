@@ -38,13 +38,17 @@ description: Login to the teacher portal
             <span id="login-spinner" class="loading loading-spinner loading-sm hidden"></span>
           </button>
         </form>
+
+        <div class="text-center mt-4">
+          <button type="button" id="forgot-password-link" class="link link-hover text-sm">Forgot password?</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script type="module">
-import { signIn, getCurrentUser } from '/assets/js/lessons-supabase-client.js';
+import { signIn, getCurrentUser, resetPasswordForEmail } from '/assets/js/lessons-supabase-client.js';
 
 // If already logged in, redirect to lessons
 const user = await getCurrentUser();
@@ -84,6 +88,25 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     setTimeout(() => {
       window.location.href = '/teacherportal/';
     }, 1000);
+  }
+});
+
+// Forgot password
+document.getElementById('forgot-password-link').addEventListener('click', async () => {
+  const email = document.getElementById('login-email').value.trim();
+
+  if (!email) {
+    showAlert('Enter your email above first, then click "Forgot password?"', 'error');
+    return;
+  }
+
+  const redirectTo = `${window.location.origin}/teacherportal/reset-password/`;
+  const { error } = await resetPasswordForEmail(email, redirectTo);
+
+  if (error) {
+    showAlert(error.message || 'Failed to send reset email', 'error');
+  } else {
+    showAlert('Password reset email sent! Check your inbox.', 'success');
   }
 });
 </script>

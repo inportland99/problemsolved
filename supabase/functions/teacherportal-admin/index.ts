@@ -83,7 +83,74 @@ serve(async (req: Request) => {
       return jsonResponse({ success: true, authId: data.user.id });
     }
 
-    // ── ACTION: remove ───────────────────────────────────────────────────
+    // ── ACTION: resend ────────────────────────────────────────────────────
+    // inviteUserByEmail refuses to resend to an already-existing (even
+    // unconfirmed) user, so a resend has to go through generateLink instead.
+    // generateLink never sends an email itself, so we send it via the
+    // Resend API directly using the same domain configured for Supabase's
+    // SMTP integration.
+    if (action === "resend") {
+      if (!email) {
+        return jsonResponse({ error: "email is required" }, 400);
+      }
+
+      const resendApiKey = Deno.env.get("RESEND_API_KEY");
+      if (!resendApiKey) {
+        return jsonResponse(
+          { error: "RESEND_API_KEY is not configured for this function" },
+          500
+        );
+      }
+
+      const { data: linkData, error: linkError } =
+        await adminClient.auth.admin.generateLink({
+          type: "invite",
+          email,
+          options: redirectTo ? { redirectTo } : undefined,
+        });
+
+      if (linkError) {
+        return jsonResponse({ error: linkError.message }, 400);
+      }
+
+      const actionLink = linkData?.properties?.action_link;
+      if (!actionLink) {
+        return jsonResponse(
+          { error: "Failed to generate a new invite link" },
+          500
+        );
+      }
+
+      const emailRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${resendApiKey}`,
+        },
+        body: JSON.stringify({
+          from: "Teacher Portal <noreply@drrajshah.com>",
+          to: email,
+          subject: "You've been invited to the Teacher Portal",
+          html: `
+            <p>You have been invited to create a Teacher Portal account.</p>
+            <p><a href="${actionLink}">Accept the invite</a></p>
+            <p>If you weren't expecting this, you can ignore this email.</p>
+          `,
+        }),
+      });
+
+      if (!emailRes.ok) {
+        const errText = await emailRes.text();
+        return jsonResponse(
+          { error: `Failed to send invite email: ${errText}` },
+          500
+        );
+      }
+
+      return jsonResponse({ success: true });
+    }
+
+    // ── ACTION: remove ──────────────────────────────────────────────────────
     if (action === "remove") {
       if (!authId) {
         return jsonResponse({ error: "authId is required" }, 400);
@@ -106,7 +173,7 @@ serve(async (req: Request) => {
     }
 
     return jsonResponse(
-      { error: "Invalid action. Use 'invite' or 'remove'." },
+      { error: "Invalid action. Use 'invite', 'resend', or 'remove'." },
       400
     );
   } catch (err) {
