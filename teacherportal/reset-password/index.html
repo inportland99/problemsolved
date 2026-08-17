@@ -71,35 +71,57 @@ function showForm() {
   document.getElementById('reset-form').classList.remove('hidden');
 }
 
-// Clicking an invite or password-recovery email link lands here with a
-// token in the URL. supabase-js automatically parses it and establishes a
-// temporary session, firing PASSWORD_RECOVERY (for recovery links) or
-// SIGNED_IN (for invite links) -- either way, once a session exists we can
-// let the user set a password via updateUser().
+// If the link's token was already consumed (e.g. an email provider's link
+// scanner pre-visited it before you clicked), Supabase redirects here with
+// an explicit error in the query string and/or hash instead of a session.
+// Surface that directly rather than showing a generic timeout message.
+function paramsFrom(str) {
+  const clean = str.startsWith('#') || str.startsWith('?') ? str.slice(1) : str;
+  return new URLSearchParams(clean);
+}
+
+const searchParams = paramsFrom(window.location.search);
+const hashParams = paramsFrom(window.location.hash);
+const errorDescription = searchParams.get('error_description') || hashParams.get('error_description');
+const errorCode = searchParams.get('error_code') || hashParams.get('error_code');
+
 let sessionReady = false;
 
-supabase.auth.onAuthStateChange((_event, session) => {
+if (errorDescription) {
+  document.getElementById('loading').classList.add('hidden');
+  showAlert(
+    `${decodeURIComponent(errorDescription.replace(/\+/g, ' '))}${errorCode ? ` (${errorCode})` : ''} Please request a new link.`,
+    'error'
+  );
+} else {
+  // Clicking an invite or password-recovery email link lands here with a
+  // token in the URL. supabase-js automatically parses it and establishes a
+  // temporary session, firing PASSWORD_RECOVERY (for recovery links) or
+  // SIGNED_IN (for invite links) -- either way, once a session exists we can
+  // let the user set a password via updateUser().
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session && !sessionReady) {
+      sessionReady = true;
+      showForm();
+    }
+  });
+
+  // Fallback in case the session was already established before the
+  // listener above attached.
+  const { data: { session } } = await supabase.auth.getSession();
   if (session && !sessionReady) {
     sessionReady = true;
     showForm();
   }
-});
 
-// Fallback in case the session was already established before the listener
-// above attached.
-const { data: { session } } = await supabase.auth.getSession();
-if (session && !sessionReady) {
-  sessionReady = true;
-  showForm();
+  // If nothing happens after a few seconds, the link was likely invalid/expired.
+  setTimeout(() => {
+    if (!sessionReady) {
+      document.getElementById('loading').classList.add('hidden');
+      showAlert('This link is invalid or has expired. Please request a new one from the login page.', 'error');
+    }
+  }, 4000);
 }
-
-// If nothing happens after a few seconds, the link was likely invalid/expired.
-setTimeout(() => {
-  if (!sessionReady) {
-    document.getElementById('loading').classList.add('hidden');
-    showAlert('This link is invalid or has expired. Please request a new one from the login page.', 'error');
-  }
-}, 4000);
 
 document.getElementById('reset-form').addEventListener('submit', async (e) => {
   e.preventDefault();
