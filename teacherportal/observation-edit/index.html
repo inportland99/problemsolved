@@ -14,7 +14,7 @@
   <!-- Navbar -->
   <div class="navbar bg-base-100 shadow-lg">
     <div class="flex-1">
-      <a href="/reyn/observation-index/" class="btn btn-ghost normal-case text-xl">
+      <a href="/teacherportal/observation-index/" class="btn btn-ghost normal-case text-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -36,8 +36,10 @@
       <!-- Meta fields -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="form-control">
-          <label class="label"><span class="label-text font-semibold">Teacher Name</span></label>
-          <input type="text" id="teacherName" class="input input-bordered" placeholder="Enter teacher name">
+          <label class="label"><span class="label-text font-semibold">Teacher</span></label>
+          <select id="teacherId" class="select select-bordered w-full">
+            <option value="">Select teacher</option>
+          </select>
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text font-semibold">Grade / Course</span></label>
@@ -174,14 +176,27 @@
 </div>
 
 <script type="module">
-import { requireAuth, logout } from '/assets/js/reyn-auth-guard.js';
+import { requireAuth, logout } from '/assets/js/teacher-portal-auth-guard.js';
 import { createObservation, updateObservation, getObservationById } from '/assets/js/observations-db.js';
+import { getTeacherRoster } from '/assets/js/teachers-db.js';
 
 // Auth guard
 await requireAuth();
 
 // Logout
 document.getElementById('logout-btn').addEventListener('click', logout);
+
+// Populate the teacher picker
+const rosterResult = await getTeacherRoster();
+if (rosterResult.success) {
+  const teacherSelect = document.getElementById('teacherId');
+  rosterResult.data.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.name;
+    teacherSelect.appendChild(opt);
+  });
+}
 
 // Check if viewing existing observation
 const urlParams = new URLSearchParams(window.location.search);
@@ -210,7 +225,7 @@ if (obsId) {
   const result = await getObservationById(obsId);
   if (result.success) {
     const obs = result.data;
-    document.getElementById('teacherName').value = obs.teacher_name || '';
+    document.getElementById('teacherId').value = obs.observed_teacher_id || '';
     const gradeOptions = ["KG","1st Grade","2nd Grade","3rd Grade","4th Grade","5th Grade","6th Grade","7th Grade","8th Grade","Algebra","Algebra 2","Geometry","PreCalculus","Calculus"];
     const gradeVal = obs.grade_course || '';
     if (gradeOptions.includes(gradeVal)) {
@@ -249,8 +264,12 @@ document.getElementById('observation-form').addEventListener('submit', async (e)
   saveText.classList.add('hidden');
   saveSpinner.classList.remove('hidden');
 
+  const teacherSelect = document.getElementById('teacherId');
+  const selectedOption = teacherSelect.options[teacherSelect.selectedIndex];
+
   const data = {
-    teacherName: document.getElementById('teacherName').value.trim(),
+    observedTeacherId: teacherSelect.value || null,
+    teacherName: selectedOption && selectedOption.value ? selectedOption.textContent.trim() : '',
     gradeCourse: (() => { const s = document.getElementById('gradeCourse'); return (s.value === 'other' ? document.getElementById('gradeCourseOther').value : s.value).trim(); })(),
     lesson: document.getElementById('lesson').value.trim(),
     observationDate: document.getElementById('obsDate').value,
@@ -275,7 +294,7 @@ document.getElementById('observation-form').addEventListener('submit', async (e)
   if (result.success) {
     showAlert(obsId ? 'Observation updated!' : 'Observation saved!', 'success');
     setTimeout(() => {
-      window.location.href = '/reyn/observation-index/';
+      window.location.href = '/teacherportal/observation-index/';
     }, 1000);
   } else {
     showAlert(result.error?.message || 'Failed to save observation', 'error');

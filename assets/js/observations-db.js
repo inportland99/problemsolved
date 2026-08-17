@@ -13,6 +13,7 @@ export async function createObservation(obs) {
       .from('observations')
       .insert([{
         teacher_name: obs.teacherName,
+        observed_teacher_id: obs.observedTeacherId || null,
         grade_course: obs.gradeCourse,
         lesson: obs.lesson,
         observation_date: obs.observationDate,
@@ -77,6 +78,7 @@ export async function updateObservation(id, obs) {
       .from('observations')
       .update({
         teacher_name: obs.teacherName,
+        observed_teacher_id: obs.observedTeacherId || null,
         grade_course: obs.gradeCourse,
         lesson: obs.lesson,
         observation_date: obs.observationDate,

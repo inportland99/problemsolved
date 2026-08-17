@@ -1,4 +1,4 @@
-import { supabase } from './lessons-supabase-client.js';
+import { supabase, getCurrentUser } from './lessons-supabase-client.js';
 
 /**
  * Get all math lessons (public, no auth required for now)
@@ -55,6 +55,8 @@ export async function getLessonById(lessonId) {
  */
 export async function createLesson(lesson) {
   try {
+    const user = await getCurrentUser();
+
     const { data, error } = await supabase
       .from('math_lessons')
       .insert([{
@@ -64,7 +66,9 @@ export async function createLesson(lesson) {
         launch_details: lesson.launchDetails || null,
         anticipated_strategies: lesson.anticipatedStrategies || [],
         connecting_questions: lesson.connectingQuestions || [],
-        author: lesson.author
+        author: lesson.author,
+        district_id: lesson.districtId || null,
+        created_by: user?.id || null
       }])
       .select();
 
@@ -97,6 +101,7 @@ export async function updateLesson(lessonId, updates) {
     if (updates.anticipatedStrategies !== undefined) updateData.anticipated_strategies = updates.anticipatedStrategies;
     if (updates.connectingQuestions !== undefined) updateData.connecting_questions = updates.connectingQuestions;
     if (updates.author !== undefined) updateData.author = updates.author;
+    if (updates.districtId !== undefined) updateData.district_id = updates.districtId;
 
     const { data, error } = await supabase
       .from('math_lessons')

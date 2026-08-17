@@ -14,7 +14,7 @@
   <!-- Navbar -->
   <div class="navbar bg-base-100 shadow-lg">
     <div class="flex-1">
-      <a href="/reyn/observation-index/" class="btn btn-ghost normal-case text-xl">
+      <a href="/teacherportal/observation-index/" class="btn btn-ghost normal-case text-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -117,7 +117,7 @@
 </div>
 
 <script type="module">
-import { requireAuth, logout } from '/assets/js/reyn-auth-guard.js';
+import { requireAuth, logout } from '/assets/js/teacher-portal-auth-guard.js';
 import { getObservationById } from '/assets/js/observations-db.js';
 
 await requireAuth();
@@ -127,7 +127,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const obsId = urlParams.get('id');
 
 if (!obsId) {
-  window.location.href = '/reyn/observation-index/';
+  window.location.href = '/teacherportal/observation-index/';
 }
 
 function showAlert(message, type = 'info') {
@@ -159,7 +159,7 @@ function setScore(elementId, score) {
   else                 el.classList.add('badge-error');
 }
 
-document.getElementById('edit-link').href = `/reyn/observation-edit/?id=${obsId}`;
+document.getElementById('edit-link').href = `/teacherportal/observation-edit/?id=${obsId}`;
 document.getElementById('edit-link').classList.remove('hidden');
 
 const result = await getObservationById(obsId);
