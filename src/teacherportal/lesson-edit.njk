@@ -8,7 +8,7 @@ description: Create or edit a math lesson
   <!-- Header -->
   <div class="navbar bg-base-100 shadow-lg">
     <div class="flex-1">
-      <a href="/reyn/lesson-index/" class="btn btn-ghost normal-case text-xl">
+      <a href="/teacherportal/lesson-index/" class="btn btn-ghost normal-case text-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -125,21 +125,31 @@ description: Create or edit a math lesson
         <input type="text" id="author" class="input input-bordered" placeholder="Your name" required>
       </div>
 
+      <!-- District (populated by script based on role) -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">District</span>
+        </label>
+        <div id="district-field-container"></div>
+      </div>
+
       <!-- Submit Button -->
       <div class="flex gap-4 pt-4">
         <button type="submit" id="submit-btn" class="btn btn-primary flex-1">
           <span id="submit-text">Create Lesson</span>
           <span id="submit-loading" class="loading loading-spinner hidden"></span>
         </button>
-        <a href="/reyn/lesson-index/" class="btn btn-outline">Cancel</a>
+        <a href="/teacherportal/lesson-index/" class="btn btn-outline">Cancel</a>
       </div>
     </form>
   </div>
 </div>
 
 <script type="module">
-import { requireAuth, logout } from '/assets/js/reyn-auth-guard.js';
+import { requireAuth, logout, isAdmin } from '/assets/js/teacher-portal-auth-guard.js';
 import { getLessonById, createLesson, updateLesson, uploadLessonImage } from '/assets/js/lessons-db.js';
+import { getAllDistricts } from '/assets/js/districts-db.js';
+import { getCurrentTeacher } from '/assets/js/teachers-db.js';
 
 // Auth guard — redirects to login if not authenticated
 await requireAuth();
@@ -154,6 +164,40 @@ let pendingImageFile = null;
 // Get lesson ID from URL if editing
 const urlParams = new URLSearchParams(window.location.search);
 const lessonId = urlParams.get('id');
+
+// Set up the District field based on role
+const adminUser = await isAdmin();
+const districtsResult = await getAllDistricts();
+const districts = districtsResult.success ? districtsResult.data : [];
+
+function renderAdminDistrictSelect(selectedId = '') {
+  const container = document.getElementById('district-field-container');
+  container.innerHTML = `
+    <select id="district-id" class="select select-bordered w-full">
+      <option value="">All Districts</option>
+      ${districts.map(d => `<option value="${d.id}">${d.name}</option>`).join('')}
+    </select>
+  `;
+  document.getElementById('district-id').value = selectedId || '';
+}
+
+function renderLockedDistrictField(districtId) {
+  const container = document.getElementById('district-field-container');
+  const district = districts.find(d => d.id === districtId);
+  container.innerHTML = `
+    <input type="text" class="input input-bordered w-full" value="${district ? district.name : 'Unassigned'}" disabled>
+    <input type="hidden" id="district-id" value="${districtId || ''}">
+  `;
+}
+
+let ownDistrictId = null;
+if (adminUser) {
+  renderAdminDistrictSelect();
+} else {
+  const teacherResult = await getCurrentTeacher();
+  ownDistrictId = teacherResult.success ? teacherResult.data.district_id : null;
+  renderLockedDistrictField(ownDistrictId);
+}
 
 // Alert helper
 function showAlert(message, type = 'info') {
@@ -233,6 +277,11 @@ async function loadLesson(id) {
   document.getElementById('task').value = lesson.task;
   document.getElementById('launch-details').value = lesson.launch_details || '';
   document.getElementById('author').value = lesson.author;
+
+  // District (only the admin's select is meaningfully editable)
+  if (adminUser) {
+    renderAdminDistrictSelect(lesson.district_id || '');
+  }
   
   // Diagram
   if (lesson.diagram_url) {
@@ -323,6 +372,7 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
     const task = document.getElementById('task').value.trim();
     const launchDetails = document.getElementById('launch-details').value.trim();
     const author = document.getElementById('author').value.trim();
+    const districtId = document.getElementById('district-id').value || null;
     const anticipatedStrategies = getItemValues('strategies-container');
     const connectingQuestions = getItemValues('questions-container');
     
@@ -356,7 +406,8 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
       launchDetails,
       anticipatedStrategies,
       connectingQuestions,
-      author
+      author,
+      districtId
     };
     
     let result;
@@ -370,7 +421,7 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
       showAlert(isEditMode ? 'Lesson updated!' : 'Lesson created!', 'success');
       // Redirect after short delay
       setTimeout(() => {
-        window.location.href = '/reyn/lesson-index/';
+        window.location.href = '/teacherportal/lesson-index/';
       }, 1000);
     } else {
       showAlert(result.error?.message || 'Failed to save lesson', 'error');

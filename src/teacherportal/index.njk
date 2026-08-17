@@ -19,7 +19,7 @@ description: Teacher portal dashboard
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <a href="/reyn/lesson-index/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+        <a href="/teacherportal/lesson-index/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
           <div class="card-body">
             <div class="text-4xl mb-2">📚</div>
             <h2 class="card-title text-lg">Lessons</h2>
@@ -27,11 +27,19 @@ description: Teacher portal dashboard
           </div>
         </a>
 
-        <a href="/reyn/observation-index/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+        <a href="/teacherportal/observation-index/" class="card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
           <div class="card-body">
             <div class="text-4xl mb-2">📋</div>
             <h2 class="card-title text-lg">Observations</h2>
             <p class="text-sm text-base-content/70">Record and review classroom lesson observations.</p>
+          </div>
+        </a>
+
+        <a id="teachers-card" href="/teacherportal/teacher-index/" class="hidden card bg-base-100 shadow hover:shadow-lg transition-shadow duration-200 no-underline">
+          <div class="card-body">
+            <div class="text-4xl mb-2">🧑‍🏫</div>
+            <h2 class="card-title text-lg">Teachers</h2>
+            <p class="text-sm text-base-content/70">Add, edit, and remove teacher accounts.</p>
           </div>
         </a>
       </div>
@@ -41,12 +49,15 @@ description: Teacher portal dashboard
 
 <script type="module">
 import { getCurrentUser } from '/assets/js/lessons-supabase-client.js';
-import { logout } from '/assets/js/reyn-auth-guard.js';
+import { logout, isAdmin } from '/assets/js/teacher-portal-auth-guard.js';
 
 const user = await getCurrentUser();
 if (!user) {
-  window.location.href = '/reyn/login/';
+  window.location.href = '/teacherportal/login/';
 } else {
+  if (await isAdmin()) {
+    document.getElementById('teachers-card').classList.remove('hidden');
+  }
   document.getElementById('auth-loading').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
 }

@@ -1,5 +1,5 @@
 -- =============================================================
--- Reyn Portal: Supabase Setup SQL
+-- Teacher Portal: Supabase Setup SQL
 -- Run this in the Supabase SQL Editor for the math-lessons project
 -- =============================================================
 
