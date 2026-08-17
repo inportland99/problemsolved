@@ -170,6 +170,10 @@ async function loadTeachers() {
         <td>${escapeHtml(districtName)}</td>
         <td>${roleBadge(teacher.role)}</td>
         <td class="text-right">
+          <button
+            class="btn btn-sm btn-outline resend-btn"
+            data-email="${teacher.email}"
+          >Resend Invite</button>
           <a href="/teacherportal/teacher-edit/?id=${teacher.id}" class="btn btn-sm btn-outline btn-primary">Edit</a>
           <button
             class="btn btn-sm btn-outline btn-error delete-btn"
@@ -191,6 +195,36 @@ async function loadTeachers() {
       document.getElementById('delete-modal').showModal();
     });
   });
+
+  document.querySelectorAll('.resend-btn').forEach(btn => {
+    btn.addEventListener('click', () => resendInvite(btn));
+  });
+}
+
+// Resend an invite email to an existing (likely still-pending) teacher
+async function resendInvite(btn) {
+  const email = btn.dataset.email;
+  const originalText = btn.textContent;
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const redirectTo = `${window.location.origin}/teacherportal/reset-password/`;
+    const { data, error } = await supabase.functions.invoke('teacherportal-admin', {
+      body: { action: 'resend', email, redirectTo },
+    });
+
+    if (error) throw new Error(await extractFunctionErrorMessage(error));
+    if (data?.error) throw new Error(data.error);
+
+    showAlert(`Invite resent to ${email}`, 'success');
+  } catch (err) {
+    showAlert(err.message || 'Failed to resend invite', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
 }
 
 // Confirm delete

@@ -236,7 +236,7 @@ document.getElementById('teacher-form').addEventListener('submit', async (e) => 
       // Invite the login via the Edge Function (privileged operation).
       // redirectTo must also be added to the project's Auth "Redirect URLs"
       // allow-list in Supabase, or it's silently ignored.
-      const redirectTo = `${window.location.origin}/teacherportal/login/`;
+      const redirectTo = `${window.location.origin}/teacherportal/reset-password/`;
       const { data, error } = await supabase.functions.invoke('teacherportal-admin', {
         body: { action: 'invite', email, redirectTo },
       });

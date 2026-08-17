@@ -29,3 +29,10 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut();
   return { error };
 }
+
+export async function resetPasswordForEmail(email, redirectTo) {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo
+  });
+  return { data, error };
+}
