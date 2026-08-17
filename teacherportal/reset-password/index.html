@@ -21,18 +21,18 @@
           <span id="alert-text"></span>
         </div>
 
-        <!-- Loading (waiting for the recovery/invite link's session) -->
+        <!-- Loading (briefly waiting for the link's auto-login to kick in) -->
         <div id="loading" class="flex justify-center items-center py-6">
           <span class="loading loading-spinner loading-lg"></span>
         </div>
 
-        <!-- Set password form -->
-        <form id="reset-form" class="hidden">
+        <!-- Shown when the emailed link already established a session -->
+        <form id="password-only-form" class="hidden">
           <div class="form-control mb-4">
             <label class="label">
               <span class="label-text">New Password</span>
             </label>
-            <input type="password" id="new-password" placeholder="••••••••"
+            <input type="password" id="po-new-password" placeholder="••••••••"
                    class="input input-bordered" required minlength="6" />
           </div>
 
@@ -40,15 +40,60 @@
             <label class="label">
               <span class="label-text">Confirm Password</span>
             </label>
-            <input type="password" id="confirm-password" placeholder="••••••••"
+            <input type="password" id="po-confirm-password" placeholder="••••••••"
                    class="input input-bordered" required minlength="6" />
           </div>
 
           <button type="submit" class="btn btn-primary w-full">
-            <span id="submit-text">Set Password</span>
-            <span id="submit-spinner" class="loading loading-spinner loading-sm hidden"></span>
+            <span id="po-submit-text">Set Password</span>
+            <span id="po-submit-spinner" class="loading loading-spinner loading-sm hidden"></span>
           </button>
         </form>
+
+        <!-- Fallback: manually enter the code from the email -->
+        <div id="code-form-container" class="hidden">
+          <p class="text-sm text-base-content/70 mb-4">
+            Enter the code from your email along with a new password.
+          </p>
+          <form id="code-form">
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">Email</span>
+              </label>
+              <input type="email" id="cf-email" placeholder="your@email.com"
+                     class="input input-bordered" required />
+            </div>
+
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">6-Digit Code</span>
+              </label>
+              <input type="text" id="cf-code" placeholder="123456" inputmode="numeric"
+                     pattern="[0-9]*" maxlength="6" class="input input-bordered" required />
+            </div>
+
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">New Password</span>
+              </label>
+              <input type="password" id="cf-new-password" placeholder="••••••••"
+                     class="input input-bordered" required minlength="6" />
+            </div>
+
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">Confirm Password</span>
+              </label>
+              <input type="password" id="cf-confirm-password" placeholder="••••••••"
+                     class="input input-bordered" required minlength="6" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full">
+              <span id="cf-submit-text">Set Password</span>
+              <span id="cf-submit-spinner" class="loading loading-spinner loading-sm hidden"></span>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -66,15 +111,6 @@ function showAlert(message, type = 'error') {
   alert.classList.remove('hidden');
 }
 
-function showForm() {
-  document.getElementById('loading').classList.add('hidden');
-  document.getElementById('reset-form').classList.remove('hidden');
-}
-
-// If the link's token was already consumed (e.g. an email provider's link
-// scanner pre-visited it before you clicked), Supabase redirects here with
-// an explicit error in the query string and/or hash instead of a session.
-// Surface that directly rather than showing a generic timeout message.
 function paramsFrom(str) {
   const clean = str.startsWith('#') || str.startsWith('?') ? str.slice(1) : str;
   return new URLSearchParams(clean);
@@ -82,52 +118,69 @@ function paramsFrom(str) {
 
 const searchParams = paramsFrom(window.location.search);
 const hashParams = paramsFrom(window.location.hash);
+
+const prefillEmail = searchParams.get('email') || '';
+const otpType = searchParams.get('type') || 'recovery';
+
 const errorDescription = searchParams.get('error_description') || hashParams.get('error_description');
 const errorCode = searchParams.get('error_code') || hashParams.get('error_code');
+
+function showCodeForm(message) {
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('code-form-container').classList.remove('hidden');
+  if (prefillEmail) {
+    document.getElementById('cf-email').value = prefillEmail;
+  }
+  if (message) {
+    showAlert(message, 'error');
+  }
+}
+
+function showPasswordOnlyForm() {
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('password-only-form').classList.remove('hidden');
+}
 
 let sessionReady = false;
 
 if (errorDescription) {
-  document.getElementById('loading').classList.add('hidden');
-  showAlert(
-    `${decodeURIComponent(errorDescription.replace(/\+/g, ' '))}${errorCode ? ` (${errorCode})` : ''} Please request a new link.`,
-    'error'
+  // The link failed (commonly a security scanner consuming the single-use
+  // token before the real click) -- fall straight back to manual code entry.
+  showCodeForm(
+    `${decodeURIComponent(errorDescription.replace(/\+/g, ' '))}${errorCode ? ` (${errorCode})` : ''} Enter your email and the code from that same email instead.`
   );
 } else {
-  // Clicking an invite or password-recovery email link lands here with a
-  // token in the URL. supabase-js automatically parses it and establishes a
-  // temporary session, firing PASSWORD_RECOVERY (for recovery links) or
-  // SIGNED_IN (for invite links) -- either way, once a session exists we can
-  // let the user set a password via updateUser().
+  // Clicking a link lands here with a token in the URL. supabase-js
+  // automatically parses it and establishes a session if the link is still
+  // valid, firing PASSWORD_RECOVERY (recovery) or SIGNED_IN (invite).
   supabase.auth.onAuthStateChange((_event, session) => {
     if (session && !sessionReady) {
       sessionReady = true;
-      showForm();
+      showPasswordOnlyForm();
     }
   });
 
-  // Fallback in case the session was already established before the
-  // listener above attached.
   const { data: { session } } = await supabase.auth.getSession();
   if (session && !sessionReady) {
     sessionReady = true;
-    showForm();
+    showPasswordOnlyForm();
   }
 
-  // If nothing happens after a few seconds, the link was likely invalid/expired.
+  // Give the link a brief window to auto-establish a session; otherwise
+  // fall back to manual code entry rather than a dead-end error message.
   setTimeout(() => {
     if (!sessionReady) {
-      document.getElementById('loading').classList.add('hidden');
-      showAlert('This link is invalid or has expired. Please request a new one from the login page.', 'error');
+      showCodeForm();
     }
-  }, 4000);
+  }, 2000);
 }
 
-document.getElementById('reset-form').addEventListener('submit', async (e) => {
+// Password-only form (the link worked)
+document.getElementById('password-only-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const newPassword = document.getElementById('new-password').value;
-  const confirmPassword = document.getElementById('confirm-password').value;
+  const newPassword = document.getElementById('po-new-password').value;
+  const confirmPassword = document.getElementById('po-confirm-password').value;
 
   if (newPassword.length < 6) {
     showAlert('Password must be at least 6 characters.', 'error');
@@ -138,9 +191,9 @@ document.getElementById('reset-form').addEventListener('submit', async (e) => {
     return;
   }
 
-  const submitBtn = document.querySelector('#reset-form button[type="submit"]');
-  const submitText = document.getElementById('submit-text');
-  const submitSpinner = document.getElementById('submit-spinner');
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const submitText = document.getElementById('po-submit-text');
+  const submitSpinner = document.getElementById('po-submit-spinner');
 
   submitBtn.disabled = true;
   submitText.classList.add('hidden');
@@ -159,6 +212,66 @@ document.getElementById('reset-form').addEventListener('submit', async (e) => {
     setTimeout(() => {
       window.location.href = '/teacherportal/';
     }, 1500);
+  }
+});
+
+// Code-entry fallback form
+document.getElementById('code-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById('cf-email').value.trim();
+  const code = document.getElementById('cf-code').value.trim();
+  const newPassword = document.getElementById('cf-new-password').value;
+  const confirmPassword = document.getElementById('cf-confirm-password').value;
+
+  if (!email || !code) {
+    showAlert('Enter your email and the code from your email.', 'error');
+    return;
+  }
+  if (newPassword.length < 6) {
+    showAlert('Password must be at least 6 characters.', 'error');
+    return;
+  }
+  if (newPassword !== confirmPassword) {
+    showAlert('Passwords do not match.', 'error');
+    return;
+  }
+
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const submitText = document.getElementById('cf-submit-text');
+  const submitSpinner = document.getElementById('cf-submit-spinner');
+
+  submitBtn.disabled = true;
+  submitText.classList.add('hidden');
+  submitSpinner.classList.remove('hidden');
+
+  try {
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: otpType
+    });
+
+    if (verifyError) {
+      showAlert(verifyError.message || 'Invalid or expired code.', 'error');
+      return;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+
+    if (updateError) {
+      showAlert(updateError.message || 'Failed to set password', 'error');
+      return;
+    }
+
+    showAlert('Password set! Redirecting…', 'success');
+    setTimeout(() => {
+      window.location.href = '/teacherportal/';
+    }, 1500);
+  } finally {
+    submitBtn.disabled = false;
+    submitText.classList.remove('hidden');
+    submitSpinner.classList.add('hidden');
   }
 });
 </script>

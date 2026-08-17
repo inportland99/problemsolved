@@ -117,13 +117,17 @@ forgotPasswordLink.addEventListener('click', async () => {
   forgotPasswordLink.textContent = 'Sending…';
 
   try {
-    const redirectTo = `${window.location.origin}/teacherportal/reset-password/`;
+    const resetPasswordUrl = `/teacherportal/reset-password/?email=${encodeURIComponent(email)}&type=recovery`;
+    const redirectTo = `${window.location.origin}${resetPasswordUrl}`;
     const { error } = await resetPasswordForEmail(email, redirectTo);
 
     if (error) {
       showAlert(error.message || 'Failed to send reset email', 'error');
     } else {
-      showAlert('Password reset email sent! Check your inbox. Only the most recent email link is valid -- ignore any earlier ones.', 'success');
+      showAlert('Password reset email sent! Redirecting… you can enter the code from that email directly here.', 'success');
+      setTimeout(() => {
+        window.location.href = resetPasswordUrl;
+      }, 1500);
     }
   } finally {
     forgotPasswordInFlight = false;
