@@ -14,6 +14,52 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
+// Sends a custom invite email containing both the clickable link and the
+// 6-digit OTP code, via the Resend API directly. Used for both the initial
+// invite and any resends, so both flows always include a code fallback
+// regardless of whether the link survives email security scanning.
+async function sendInviteEmail(
+  email: string,
+  linkData: { properties?: { action_link?: string; email_otp?: string } } | null
+): Promise<{ error?: string }> {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  if (!resendApiKey) {
+    return { error: "RESEND_API_KEY is not configured for this function" };
+  }
+
+  const actionLink = linkData?.properties?.action_link;
+  const emailOtp = linkData?.properties?.email_otp;
+  if (!actionLink && !emailOtp) {
+    return { error: "Failed to generate a new invite link" };
+  }
+
+  const emailRes = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${resendApiKey}`,
+    },
+    body: JSON.stringify({
+      from: "Teacher Portal <noreply@drrajshah.com>",
+      to: email,
+      subject: "You've been invited to the Teacher Portal",
+      html: `
+        <p>You have been invited to create a Teacher Portal account.</p>
+        ${actionLink ? `<p><a href="${actionLink}">Accept the invite</a></p>` : ""}
+        ${emailOtp ? `<p>If the link above doesn't work, go to the portal's set-password page and enter this code instead: <strong style="font-size:1.4em; letter-spacing:0.1em;">${emailOtp}</strong></p>` : ""}
+        <p>If you weren't expecting this, you can ignore this email.</p>
+      `,
+    }),
+  });
+
+  if (!emailRes.ok) {
+    const errText = await emailRes.text();
+    return { error: `Failed to send invite email: ${errText}` };
+  }
+
+  return {};
+}
+
 // ─── Main Handler ──────────────────────────────────────────────────────────────
 
 serve(async (req: Request) => {
@@ -64,44 +110,18 @@ serve(async (req: Request) => {
     const { action, email, authId, redirectTo } = await req.json();
 
     // ── ACTION: invite ──────────────────────────────────────────────────────
-    if (action === "invite") {
+    // ── ACTION: resend ──────────────────────────────────────────────
+    // Both share the same underlying mechanism: generateLink creates (or
+    // re-tokenizes, for an existing unconfirmed user) the invite and returns
+    // a link plus a 6-digit OTP code, which we email ourselves via the
+    // Resend API so both a link click and manual code entry are supported.
+    if (action === "invite" || action === "resend") {
       if (!email) {
         return jsonResponse({ error: "email is required" }, 400);
       }
 
       // redirectTo must be present in the project's Auth "Redirect URLs"
       // allow-list, or Supabase silently falls back to the Site URL.
-      const { data, error } = await adminClient.auth.admin.inviteUserByEmail(
-        email,
-        redirectTo ? { redirectTo } : undefined
-      );
-
-      if (error) {
-        return jsonResponse({ error: error.message }, 400);
-      }
-
-      return jsonResponse({ success: true, authId: data.user.id });
-    }
-
-    // ── ACTION: resend ────────────────────────────────────────────────────
-    // inviteUserByEmail refuses to resend to an already-existing (even
-    // unconfirmed) user, so a resend has to go through generateLink instead.
-    // generateLink never sends an email itself, so we send it via the
-    // Resend API directly using the same domain configured for Supabase's
-    // SMTP integration.
-    if (action === "resend") {
-      if (!email) {
-        return jsonResponse({ error: "email is required" }, 400);
-      }
-
-      const resendApiKey = Deno.env.get("RESEND_API_KEY");
-      if (!resendApiKey) {
-        return jsonResponse(
-          { error: "RESEND_API_KEY is not configured for this function" },
-          500
-        );
-      }
-
       const { data: linkData, error: linkError } =
         await adminClient.auth.admin.generateLink({
           type: "invite",
@@ -113,38 +133,20 @@ serve(async (req: Request) => {
         return jsonResponse({ error: linkError.message }, 400);
       }
 
-      const actionLink = linkData?.properties?.action_link;
-      if (!actionLink) {
-        return jsonResponse(
-          { error: "Failed to generate a new invite link" },
-          500
-        );
+      const sendResult = await sendInviteEmail(email, linkData);
+      if (sendResult.error) {
+        return jsonResponse({ error: sendResult.error }, 500);
       }
 
-      const emailRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${resendApiKey}`,
-        },
-        body: JSON.stringify({
-          from: "Teacher Portal <noreply@drrajshah.com>",
-          to: email,
-          subject: "You've been invited to the Teacher Portal",
-          html: `
-            <p>You have been invited to create a Teacher Portal account.</p>
-            <p><a href="${actionLink}">Accept the invite</a></p>
-            <p>If you weren't expecting this, you can ignore this email.</p>
-          `,
-        }),
-      });
-
-      if (!emailRes.ok) {
-        const errText = await emailRes.text();
-        return jsonResponse(
-          { error: `Failed to send invite email: ${errText}` },
-          500
-        );
+      if (action === "invite") {
+        const newAuthId = linkData?.user?.id;
+        if (!newAuthId) {
+          return jsonResponse(
+            { error: "Invite email sent, but no user id was returned" },
+            500
+          );
+        }
+        return jsonResponse({ success: true, authId: newAuthId });
       }
 
       return jsonResponse({ success: true });

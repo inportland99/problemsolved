@@ -204,7 +204,7 @@ async function resendInvite(btn) {
   btn.textContent = 'Sending…';
 
   try {
-    const redirectTo = `${window.location.origin}/teacherportal/reset-password/`;
+    const redirectTo = `${window.location.origin}/teacherportal/reset-password/?email=${encodeURIComponent(email)}&type=invite`;
     const { data, error } = await supabase.functions.invoke('teacherportal-admin', {
       body: { action: 'resend', email, redirectTo },
     });
