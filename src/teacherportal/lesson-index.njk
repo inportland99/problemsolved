@@ -48,62 +48,6 @@ description: Browse and manage math lessons for problem-based learning
   </div>
 </div>
 
-<!-- View Modal -->
-<dialog id="view-modal" class="modal">
-  <div class="modal-box max-w-4xl">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-    </form>
-    <h3 class="font-bold text-2xl mb-4" id="view-learning-goal">Learning Goal</h3>
-    
-    <!-- Diagram -->
-    <div id="view-diagram-container" class="mb-6 hidden">
-      <img id="view-diagram" src="" alt="Lesson diagram" class="max-w-full h-auto rounded-lg shadow" />
-    </div>
-
-    <!-- Task -->
-    <div class="mb-6">
-      <p class="text-sm font-semibold text-gray-600 mb-2">Task</p>
-      <div class="p-4 bg-base-200 rounded-lg">
-        <p id="view-task" class="whitespace-pre-wrap"></p>
-      </div>
-    </div>
-
-    <!-- Launch Details -->
-    <div id="view-launch-container" class="mb-6 hidden">
-      <p class="text-sm font-semibold text-gray-600 mb-2">Launch Details</p>
-      <div class="p-4 bg-base-200 rounded-lg">
-        <p id="view-launch" class="whitespace-pre-wrap"></p>
-      </div>
-    </div>
-
-    <!-- Anticipated Strategies -->
-    <div id="view-strategies-container" class="mb-6 hidden">
-      <p class="text-sm font-semibold text-gray-600 mb-2">Anticipated Strategies</p>
-      <ul id="view-strategies" class="list-disc list-inside space-y-1 p-4 bg-base-200 rounded-lg">
-      </ul>
-    </div>
-
-    <!-- Connecting Questions -->
-    <div id="view-questions-container" class="mb-6 hidden">
-      <p class="text-sm font-semibold text-gray-600 mb-2">Connecting Questions</p>
-      <ul id="view-questions" class="list-disc list-inside space-y-1 p-4 bg-base-200 rounded-lg">
-      </ul>
-    </div>
-
-    <!-- Author & Date -->
-    <div class="text-sm text-gray-500 border-t pt-4">
-      <span id="view-author"></span> · <span id="view-date"></span>
-    </div>
-
-    <div class="modal-action">
-      <form method="dialog">
-        <button class="btn">Close</button>
-      </form>
-    </div>
-  </div>
-</dialog>
-
 <!-- Delete Confirmation Modal -->
 <dialog id="delete-modal" class="modal">
   <div class="modal-box">
@@ -183,7 +127,6 @@ async function loadLessons() {
   
   // Attach event listeners
   result.data.forEach(lesson => {
-    document.getElementById(`view-${lesson.id}`).addEventListener('click', () => openViewModal(lesson));
     document.getElementById(`edit-${lesson.id}`).addEventListener('click', () => {
       window.location.href = `/teacherportal/lesson-edit/?id=${lesson.id}`;
     });
@@ -209,7 +152,7 @@ function createLessonCard(lesson) {
         </figure>
       ` : ''}
       <div class="card-body">
-        <h2 class="card-title text-lg line-clamp-2">${lesson.learning_goal}</h2>
+        <h2 class="card-title text-lg line-clamp-2">${lesson.title || lesson.learning_goal}</h2>
         
         <p class="text-sm text-gray-600 line-clamp-3">${lesson.task}</p>
         
@@ -223,13 +166,13 @@ function createLessonCard(lesson) {
         </div>
         
         <div class="card-actions justify-end mt-4">
-          <button id="view-${lesson.id}" class="btn btn-sm btn-outline">
+          <a href="/teacherportal/lesson-show/?id=${lesson.id}" class="btn btn-sm btn-outline">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
             View
-          </button>
+          </a>
           <button id="edit-${lesson.id}" class="btn btn-sm btn-outline btn-primary">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -247,56 +190,6 @@ function createLessonCard(lesson) {
       </div>
     </div>
   `;
-}
-
-// Open view modal
-function openViewModal(lesson) {
-  document.getElementById('view-learning-goal').textContent = lesson.learning_goal;
-  document.getElementById('view-task').textContent = lesson.task;
-  
-  // Diagram
-  const diagramContainer = document.getElementById('view-diagram-container');
-  if (lesson.diagram_url) {
-    document.getElementById('view-diagram').src = lesson.diagram_url;
-    diagramContainer.classList.remove('hidden');
-  } else {
-    diagramContainer.classList.add('hidden');
-  }
-  
-  // Launch details
-  const launchContainer = document.getElementById('view-launch-container');
-  if (lesson.launch_details) {
-    document.getElementById('view-launch').textContent = lesson.launch_details;
-    launchContainer.classList.remove('hidden');
-  } else {
-    launchContainer.classList.add('hidden');
-  }
-  
-  // Strategies
-  const strategiesContainer = document.getElementById('view-strategies-container');
-  if (lesson.anticipated_strategies?.length > 0) {
-    document.getElementById('view-strategies').innerHTML = 
-      lesson.anticipated_strategies.map(s => `<li>${s}</li>`).join('');
-    strategiesContainer.classList.remove('hidden');
-  } else {
-    strategiesContainer.classList.add('hidden');
-  }
-  
-  // Questions
-  const questionsContainer = document.getElementById('view-questions-container');
-  if (lesson.connecting_questions?.length > 0) {
-    document.getElementById('view-questions').innerHTML = 
-      lesson.connecting_questions.map(q => `<li>${q}</li>`).join('');
-    questionsContainer.classList.remove('hidden');
-  } else {
-    questionsContainer.classList.add('hidden');
-  }
-  
-  // Author and date
-  document.getElementById('view-author').textContent = lesson.author;
-  document.getElementById('view-date').textContent = formatDate(lesson.created_at);
-  
-  document.getElementById('view-modal').showModal();
 }
 
 // Open delete modal

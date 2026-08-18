@@ -1,0 +1,163 @@
+---
+layout: minimal.njk
+title: Lesson
+description: View math lesson details
+---
+
+<div class="min-h-screen bg-base-200">
+  <!-- Navbar -->
+  <div class="navbar bg-base-100 shadow-lg">
+    <div class="flex-1">
+      <a href="/teacherportal/lesson-index/" class="btn btn-ghost normal-case text-xl">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Lessons
+      </a>
+    </div>
+    <div class="flex-none gap-2">
+      <span id="user-badge" class="text-sm text-base-content/70 hidden sm:inline"></span>
+      <a id="edit-link" href="#" class="btn btn-primary btn-sm hidden">Edit</a>
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading" class="flex justify-center items-center py-12">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+
+  <!-- Content -->
+  <div id="content" class="hidden container mx-auto px-4 py-8 max-w-3xl">
+    <div id="alert-container" class="mb-4"></div>
+
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h1 id="lesson-title" class="text-3xl font-bold"></h1>
+        <p id="lesson-content-name" class="hidden text-sm text-base-content/70 mb-2"></p>
+
+        <!-- Diagram -->
+        <div id="diagram-container" class="my-4 hidden">
+          <img id="lesson-diagram" src="" alt="Lesson diagram" class="max-w-full h-auto rounded-lg shadow" />
+        </div>
+
+        <!-- Task -->
+        <div class="mb-6 mt-4">
+          <p class="text-sm font-semibold text-gray-600 mb-2">Task</p>
+          <div class="p-4 bg-base-200 rounded-lg">
+            <p id="lesson-task" class="whitespace-pre-wrap"></p>
+          </div>
+        </div>
+
+        <!-- Launch Details -->
+        <div id="launch-container" class="mb-6 hidden">
+          <p class="text-sm font-semibold text-gray-600 mb-2">Launch Details</p>
+          <div class="p-4 bg-base-200 rounded-lg">
+            <p id="lesson-launch" class="whitespace-pre-wrap"></p>
+          </div>
+        </div>
+
+        <!-- Anticipated Strategies -->
+        <div id="strategies-container" class="mb-6 hidden">
+          <p class="text-sm font-semibold text-gray-600 mb-2">Anticipated Strategies</p>
+          <ul id="lesson-strategies" class="list-disc list-inside space-y-1 p-4 bg-base-200 rounded-lg"></ul>
+        </div>
+
+        <!-- Connecting Questions -->
+        <div id="questions-container" class="mb-6 hidden">
+          <p class="text-sm font-semibold text-gray-600 mb-2">Connecting Questions</p>
+          <ul id="lesson-questions" class="list-disc list-inside space-y-1 p-4 bg-base-200 rounded-lg"></ul>
+        </div>
+
+        <!-- Author & Date -->
+        <div class="text-sm text-gray-500 border-t pt-4">
+          <span id="lesson-author"></span> · <span id="lesson-date"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { requireAuth, logout, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
+import { getLessonById } from '/assets/js/lessons-db.js';
+
+await requireAuth();
+renderUserBadge('user-badge');
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+const urlParams = new URLSearchParams(window.location.search);
+const lessonId = urlParams.get('id');
+
+if (!lessonId) {
+  window.location.href = '/teacherportal/lesson-index/';
+}
+
+function showAlert(message, type = 'info') {
+  const container = document.getElementById('alert-container');
+  const el = document.createElement('div');
+  el.className = `alert alert-${type} shadow-lg`;
+  el.innerHTML = `<span>${message}</span>`;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+document.getElementById('edit-link').href = `/teacherportal/lesson-edit/?id=${lessonId}`;
+document.getElementById('edit-link').classList.remove('hidden');
+
+const result = await getLessonById(lessonId);
+document.getElementById('loading').classList.add('hidden');
+
+if (!result.success) {
+  showAlert(result.error?.message || 'Failed to load lesson', 'error');
+} else {
+  const lesson = result.data;
+
+  document.getElementById('lesson-title').textContent = lesson.title || lesson.learning_goal;
+
+  if (lesson.lesson_content_name) {
+    document.getElementById('lesson-content-name').textContent = lesson.lesson_content_name;
+    document.getElementById('lesson-content-name').classList.remove('hidden');
+  }
+
+  document.getElementById('lesson-task').textContent = lesson.task;
+
+  if (lesson.diagram_url) {
+    document.getElementById('lesson-diagram').src = lesson.diagram_url;
+    document.getElementById('diagram-container').classList.remove('hidden');
+  }
+
+  if (lesson.launch_details) {
+    document.getElementById('lesson-launch').textContent = lesson.launch_details;
+    document.getElementById('launch-container').classList.remove('hidden');
+  }
+
+  if (lesson.anticipated_strategies?.length > 0) {
+    document.getElementById('lesson-strategies').innerHTML =
+      lesson.anticipated_strategies.map(s => `<li>${escapeHtml(s)}</li>`).join('');
+    document.getElementById('strategies-container').classList.remove('hidden');
+  }
+
+  if (lesson.connecting_questions?.length > 0) {
+    document.getElementById('lesson-questions').innerHTML =
+      lesson.connecting_questions.map(q => `<li>${escapeHtml(q)}</li>`).join('');
+    document.getElementById('questions-container').classList.remove('hidden');
+  }
+
+  document.getElementById('lesson-author').textContent = lesson.author;
+  document.getElementById('lesson-date').textContent = formatDate(lesson.created_at);
+
+  document.getElementById('content').classList.remove('hidden');
+}
+</script>
