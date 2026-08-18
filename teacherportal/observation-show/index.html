@@ -22,6 +22,7 @@
       </a>
     </div>
     <div class="flex-none gap-2">
+      <span id="user-badge" class="text-sm text-base-content/70 hidden sm:inline"></span>
       <a id="edit-link" href="#" class="btn btn-primary btn-sm hidden">Edit</a>
       <button class="btn btn-outline btn-sm" onclick="window.print()">Print / PDF</button>
       <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
@@ -117,10 +118,11 @@
 </div>
 
 <script type="module">
-import { requireAuth, logout } from '/assets/js/teacher-portal-auth-guard.js';
+import { requireAuth, logout, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 import { getObservationById } from '/assets/js/observations-db.js';
 
 await requireAuth();
+renderUserBadge('user-badge');
 document.getElementById('logout-btn').addEventListener('click', logout);
 
 const urlParams = new URLSearchParams(window.location.search);

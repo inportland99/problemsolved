@@ -14,9 +14,10 @@
   <!-- Header -->
   <div class="navbar bg-base-100 shadow-lg">
     <div class="flex-1">
-      <a href="/teacherportal/lesson-index/" class="btn btn-ghost normal-case text-xl">📐 Teacher Portal</a>
+      <a href="/teacherportal/" class="btn btn-ghost normal-case text-xl">📐 Teacher Portal</a>
     </div>
     <div class="flex-none gap-2">
+      <span id="user-badge" class="text-sm text-base-content/70 hidden sm:inline"></span>
       <a href="/teacherportal/lesson-index/" class="btn btn-ghost btn-sm">Lessons</a>
       <a href="/teacherportal/observation-edit/" class="btn btn-primary btn-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -70,12 +71,13 @@
 </dialog>
 
 <script type="module">
-import { requireAuth, logout, isAdmin } from '/assets/js/teacher-portal-auth-guard.js';
+import { requireAuth, logout, isAdmin, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 import { getAllObservations, deleteObservation } from '/assets/js/observations-db.js';
 
 // Auth guard
 const user = await requireAuth();
 const adminUser = await isAdmin();
+renderUserBadge('user-badge');
 
 // Logout
 document.getElementById('logout-btn').addEventListener('click', logout);

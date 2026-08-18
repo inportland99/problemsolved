@@ -21,7 +21,8 @@
         Back to Observations
       </a>
     </div>
-    <div class="flex-none">
+    <div class="flex-none gap-2">
+      <span id="user-badge" class="text-sm text-base-content/70 hidden sm:inline"></span>
       <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
     </div>
   </div>
@@ -176,12 +177,13 @@
 </div>
 
 <script type="module">
-import { requireAuth, logout } from '/assets/js/teacher-portal-auth-guard.js';
+import { requireAuth, logout, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 import { createObservation, updateObservation, getObservationById } from '/assets/js/observations-db.js';
 import { getTeacherRoster } from '/assets/js/teachers-db.js';
 
 // Auth guard
 await requireAuth();
+renderUserBadge('user-badge');
 
 // Logout
 document.getElementById('logout-btn').addEventListener('click', logout);

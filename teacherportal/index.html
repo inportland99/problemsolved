@@ -21,7 +21,10 @@
     <div class="container mx-auto px-4 py-10 max-w-4xl">
       <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold">📐 Teacher Portal</h1>
-        <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+        <div class="flex items-center gap-3">
+          <span id="user-badge" class="text-sm text-base-content/70"></span>
+          <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -55,12 +58,13 @@
 
 <script type="module">
 import { getCurrentUser } from '/assets/js/lessons-supabase-client.js';
-import { logout, isAdmin } from '/assets/js/teacher-portal-auth-guard.js';
+import { logout, isAdmin, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 
 const user = await getCurrentUser();
 if (!user) {
   window.location.href = '/teacherportal/login/';
 } else {
+  renderUserBadge('user-badge');
   if (await isAdmin()) {
     document.getElementById('teachers-card').classList.remove('hidden');
   }
