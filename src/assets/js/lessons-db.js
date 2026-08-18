@@ -118,6 +118,16 @@ export async function updateLesson(lessonId, updates) {
       return { success: false, error };
     }
 
+    // RLS silently matches zero rows (rather than erroring) when the
+    // current user isn't allowed to update this row -- e.g. a non-admin
+    // editing a lesson outside their own district. Treat that as a failure
+    // instead of reporting false success.
+    if (!data || data.length === 0) {
+      const message = 'No lesson was updated. You may not have permission to edit this lesson (e.g. it belongs to a different district).';
+      console.error('Error updating lesson:', message);
+      return { success: false, error: { message } };
+    }
+
     return { success: true, data: data[0] };
   } catch (err) {
     console.error('Unexpected error updating lesson:', err);
