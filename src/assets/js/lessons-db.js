@@ -8,7 +8,7 @@ export async function getAllLessons() {
   try {
     const { data, error } = await supabase
       .from('math_lessons')
-      .select('*')
+      .select('*, districts(name)')
       .order('created_at', { ascending: false });
 
     if (error) {
