@@ -1,4 +1,27 @@
 import { getCurrentUser, signOut, supabase } from './lessons-supabase-client.js';
+import { getCurrentTeacher } from './teachers-db.js';
+
+function formatRole(role) {
+  if (role === 'district_admin') return 'District Admin';
+  if (role === 'admin') return 'Admin';
+  return 'Teacher';
+}
+
+/**
+ * Render the current teacher's name and role into a page element, e.g. a
+ * navbar badge next to the Logout button. Silently does nothing if the
+ * element isn't found or the teacher record can't be loaded.
+ * @param {string} elementId
+ */
+export async function renderUserBadge(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  const result = await getCurrentTeacher();
+  if (result.success) {
+    el.textContent = `${result.data.name} \u00b7 ${formatRole(result.data.role)}`;
+  }
+}
 
 /**
  * Check whether the current user is an admin, per the `teachers.role`

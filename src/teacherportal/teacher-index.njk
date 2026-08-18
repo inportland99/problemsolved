@@ -11,6 +11,7 @@ description: Admin dashboard for managing teacher accounts
       <a href="/teacherportal/" class="btn btn-ghost normal-case text-xl">📐 Teacher Portal</a>
     </div>
     <div class="flex-none gap-2">
+      <span id="user-badge" class="text-sm text-base-content/70 hidden sm:inline"></span>
       <a href="/teacherportal/teacher-edit/" class="btn btn-primary btn-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -78,7 +79,7 @@ description: Admin dashboard for managing teacher accounts
 </dialog>
 
 <script type="module">
-import { requireAuth, logout, isAdmin } from '/assets/js/teacher-portal-auth-guard.js';
+import { requireAuth, logout, isAdmin, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 import { getAllTeachers, deleteTeacherRow } from '/assets/js/teachers-db.js';
 import { supabase } from '/assets/js/lessons-supabase-client.js';
 
@@ -89,6 +90,7 @@ if (!adminUser) {
   window.location.href = '/teacherportal/';
   throw new Error('Admin access required');
 }
+renderUserBadge('user-badge');
 
 // Logout button
 document.getElementById('logout-btn').addEventListener('click', logout);

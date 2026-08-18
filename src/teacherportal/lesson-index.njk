@@ -8,9 +8,10 @@ description: Browse and manage math lessons for problem-based learning
   <!-- Header -->
   <div class="navbar bg-base-100 shadow-lg">
     <div class="flex-1">
-      <a href="/" class="btn btn-ghost normal-case text-xl">📐 Math Lessons</a>
+      <a href="/teacherportal/" class="btn btn-ghost normal-case text-xl">📐 Math Lessons</a>
     </div>
     <div class="flex-none gap-2">
+      <span id="user-badge" class="text-sm text-base-content/70 hidden sm:inline"></span>
       <a href="/teacherportal/observation-index/" class="btn btn-ghost btn-sm">Observations</a>
       <a href="/teacherportal/lesson-edit/" class="btn btn-primary btn-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -119,12 +120,13 @@ description: Browse and manage math lessons for problem-based learning
 </dialog>
 
 <script type="module">
-import { requireAuth, logout, isAdmin } from '/assets/js/teacher-portal-auth-guard.js';
+import { requireAuth, logout, isAdmin, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 import { getAllLessons, deleteLesson } from '/assets/js/lessons-db.js';
 
 // Auth guard — redirects to login if not authenticated
 const user = await requireAuth();
 const adminUser = await isAdmin();
+renderUserBadge('user-badge');
 
 // Logout button
 document.getElementById('logout-btn').addEventListener('click', logout);

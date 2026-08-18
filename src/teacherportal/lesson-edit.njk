@@ -15,7 +15,8 @@ description: Create or edit a math lesson
         Back to Lessons
       </a>
     </div>
-    <div class="flex-none">
+    <div class="flex-none gap-2">
+      <span id="user-badge" class="text-sm text-base-content/70 hidden sm:inline"></span>
       <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
     </div>
   </div>
@@ -146,13 +147,14 @@ description: Create or edit a math lesson
 </div>
 
 <script type="module">
-import { requireAuth, logout, isAdmin } from '/assets/js/teacher-portal-auth-guard.js';
+import { requireAuth, logout, isAdmin, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 import { getLessonById, createLesson, updateLesson, uploadLessonImage } from '/assets/js/lessons-db.js';
 import { getAllDistricts } from '/assets/js/districts-db.js';
 import { getCurrentTeacher } from '/assets/js/teachers-db.js';
 
 // Auth guard — redirects to login if not authenticated
 await requireAuth();
+renderUserBadge('user-badge');
 
 // Logout button
 document.getElementById('logout-btn').addEventListener('click', logout);
