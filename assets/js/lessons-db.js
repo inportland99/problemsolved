@@ -60,6 +60,8 @@ export async function createLesson(lesson) {
     const { data, error } = await supabase
       .from('math_lessons')
       .insert([{
+        title: lesson.title,
+        lesson_content_name: lesson.lessonContentName || null,
         learning_goal: lesson.learningGoal,
         task: lesson.task,
         diagram_url: lesson.diagramUrl || null,
@@ -94,6 +96,8 @@ export async function updateLesson(lessonId, updates) {
   try {
     const updateData = {};
     
+    if (updates.title !== undefined) updateData.title = updates.title;
+    if (updates.lessonContentName !== undefined) updateData.lesson_content_name = updates.lessonContentName;
     if (updates.learningGoal !== undefined) updateData.learning_goal = updates.learningGoal;
     if (updates.task !== undefined) updateData.task = updates.task;
     if (updates.diagramUrl !== undefined) updateData.diagram_url = updates.diagramUrl;
