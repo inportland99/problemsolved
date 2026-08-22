@@ -221,6 +221,37 @@ A private, authenticated teacher portal at `/teacherportal/` for managing math l
 - `src/assets/js/districts-db.js` — `getAllDistricts()`, used by the lesson form's District control.
 - `src/_data/grades.json` — grade/course options (KG through Calculus) populated into the observation form's dropdown via 11ty global data.
 
+## Vestaboard Tool (/personal/vestaboard)
+
+A private, authenticated tool at `/personal/vestaboard/` for creating, scheduling, and sending quotes/designs to a physical Vestaboard. Uses the `minimal.njk` layout with the same Supabase auth-guard pattern as the other `/personal/` tools (see `src/personal/pizza-dashboard.njk`).
+
+### Pages and modules
+- `src/personal/vestaboard.njk` — the page itself: item card grid, a text/grid item editor modal, and a per-item schedule manager modal.
+- `src/assets/js/vestaboard-db.js` — CRUD for `vestaboard_items` and `vestaboard_schedules`, plus `sendItemNow(itemId)` which invokes the `vestaboard-send` Edge Function.
+- `src/assets/js/vestaboard-encode.js` — Vestaboard character-code table (letters, digits, punctuation, colors), a best-effort local preview of text centering/wrapping, and the grid-tile HTML renderer used by both the card previews and the grid editor.
+- `supabase/functions/vestaboard-send/index.ts` — Edge Function that actually talks to the Vestaboard API (see Sending below).
+- `supabase-vestaboard-setup.sql` — schema, RLS, and cron registration (see Deployment below).
+
+### Data model
+- `vestaboard_items`: `id`, `user_id`, `name`, `mode` (`text` or `grid`), `text_content`, `grid_content` (6x22 int array), timestamps. RLS restricts all access to `auth.uid() = user_id`.
+- `vestaboard_schedules`: `id`, `user_id`, `item_id` (FK to `vestaboard_items`, cascades on delete), `days_of_week` (int array, 0=Sun..6=Sat), `time_of_day`, `timezone` (IANA name, default `America/New_York`), `enabled`, `last_sent_at` (internal guard against double-sends within the same minute — not surfaced in the UI).
+
+### Sending
+- **Manual ("Send Now")**: the browser calls `supabase.functions.invoke('vestaboard-send', { body: { action: 'send-now', itemId } })`. The function verifies the caller's Supabase JWT, loads the item, and posts it to the Vestaboard Read/Write API using the `VESTABOARD_API_KEY` secret.
+- **Scheduled**: a `pg_cron` job (`vestaboard-schedule-check`, runs every minute) calls the same function with `{ action: 'run-schedule' }` via `pg_net`, authenticated with a shared `X-Cron-Secret` header (checked against the `VESTABOARD_CRON_SECRET` secret) since there is no user session in that context. The function then uses the Supabase **service role** key to find schedules matching the current day/time in their timezone and sends the associated item.
+
+### Deployment steps
+The static site build does not deploy any of this — it must be set up once (and again after any changes to the Edge Function or SQL file) directly against the Supabase project:
+1. In the Supabase Dashboard, go to **Database → Extensions** and enable `pg_cron` and `pg_net`.
+2. Get a Read/Write (Cloud) API key from the Vestaboard web app's Developer section.
+3. Generate a random string to use as the cron shared secret (e.g. `openssl rand -hex 32`).
+4. Deploy the Edge Function: `supabase functions deploy vestaboard-send` (requires the Supabase CLI logged in and linked to the project).
+5. Set the function's secrets: `supabase secrets set VESTABOARD_API_KEY=... VESTABOARD_CRON_SECRET=...` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are provided automatically to Edge Functions).
+6. Open `supabase-vestaboard-setup.sql`, replace the `YOUR_PROJECT_REF` and `YOUR_CRON_SECRET` placeholders in the `cron.schedule(...)` call near the bottom (project ref is the subdomain in your Supabase project URL; the secret must match step 5), and run the whole file in the Supabase SQL Editor. The file is safe to re-run — it uses `CREATE TABLE IF NOT EXISTS`, re-creates the trigger, and unschedules/reschedules the cron job.
+7. Verify: create an item on `/personal/vestaboard/` and use "Send Now"; then set a schedule ~1-2 minutes out and confirm the board updates and the schedule's `last_sent_at` gets stamped.
+
+Re-run step 4 (and redeploy) whenever `supabase/functions/vestaboard-send/index.ts` changes. Re-run step 6 whenever `supabase-vestaboard-setup.sql` changes (it's idempotent).
+
 ## Development Notes
 
 - The build process runs Tailwind CLI separately from Eleventy

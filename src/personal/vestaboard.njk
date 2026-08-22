@@ -1,0 +1,584 @@
+---
+layout: minimal.njk
+title: Vestaboard
+description: Create, schedule, and send quotes and designs to your Vestaboard
+---
+
+<div class="min-h-screen bg-base-200">
+  <!-- Auth loading -->
+  <div id="auth-loading" class="flex justify-center items-center min-h-screen">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="navbar bg-base-100 shadow-lg">
+      <div class="flex-1">
+        <a href="/personal/" class="btn btn-ghost normal-case text-xl">🟦 Vestaboard</a>
+      </div>
+      <div class="flex-none gap-2">
+        <button id="logout-btn" class="btn btn-sm btn-outline">Logout</button>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">My Vestaboard Items</h1>
+        <button id="new-item-btn" class="btn btn-primary">+ New Item</button>
+      </div>
+
+      <div id="alert-container" class="mb-4"></div>
+
+      <div id="loading" class="flex justify-center items-center py-12">
+        <span class="loading loading-spinner loading-lg"></span>
+      </div>
+
+      <div id="empty-state" class="hidden text-center py-12">
+        <div class="text-6xl mb-4">🟦</div>
+        <h2 class="text-2xl font-bold mb-2">No items yet</h2>
+        <p class="text-gray-600 mb-6">Create your first quote or design for your Vestaboard.</p>
+        <button class="btn btn-primary" onclick="document.getElementById('new-item-btn').click()">Create Item</button>
+      </div>
+
+      <div id="items-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Item Editor Modal -->
+<dialog id="item-modal" class="modal">
+  <div class="modal-box max-w-3xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg mb-4" id="item-modal-title">New Item</h3>
+
+    <input type="hidden" id="edit-item-id">
+
+    <div class="form-control mb-4">
+      <label class="label"><span class="label-text">Name</span></label>
+      <input type="text" id="edit-name" class="input input-bordered" placeholder="e.g. Monday Motivation" />
+    </div>
+
+    <div role="tablist" class="tabs tabs-boxed mb-4 w-fit">
+      <a role="tab" class="tab" id="mode-tab-text">Text</a>
+      <a role="tab" class="tab" id="mode-tab-grid">Grid / Design</a>
+    </div>
+
+    <!-- Text mode -->
+    <div id="text-mode-panel">
+      <div class="form-control mb-3">
+        <label class="label"><span class="label-text">Message</span></label>
+        <textarea id="edit-text-content" class="textarea textarea-bordered h-24" placeholder="Type your quote here. Use {red}, {blue}, etc. for inline color chips."></textarea>
+        <label class="label">
+          <span class="label-text-alt">Vestaboard centers and wraps text automatically when sent. The preview below is an approximation.</span>
+        </label>
+      </div>
+      <p class="text-sm font-semibold mb-1">Preview</p>
+      <div id="text-preview-board" class="vb-board mb-2"></div>
+    </div>
+
+    <!-- Grid mode -->
+    <div id="grid-mode-panel" class="hidden">
+      <p class="text-sm font-semibold mb-1">Palette — click a character/color, then click cells to paint</p>
+      <div id="grid-palette" class="flex flex-wrap gap-1 mb-3"></div>
+
+      <div id="grid-editor-board" class="vb-board mb-3"></div>
+
+      <div class="collapse collapse-arrow bg-base-200">
+        <input type="checkbox" />
+        <div class="collapse-title text-sm font-semibold">Raw code grid (advanced)</div>
+        <div class="collapse-content">
+          <textarea id="edit-grid-json" class="textarea textarea-bordered w-full h-24 font-mono text-xs" placeholder="[[0,0,...22 values],... 6 rows]"></textarea>
+          <button id="apply-grid-json-btn" class="btn btn-sm btn-outline mt-2">Apply JSON to grid</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-action">
+      <button id="save-item-btn" class="btn btn-primary">Save Item</button>
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Schedule Modal -->
+<dialog id="schedule-modal" class="modal">
+  <div class="modal-box max-w-2xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg mb-1">Schedules</h3>
+    <p class="text-sm text-gray-500 mb-4" id="schedule-item-name"></p>
+
+    <input type="hidden" id="schedule-item-id">
+
+    <div id="schedule-list" class="space-y-4 mb-4"></div>
+
+    <button id="add-schedule-btn" class="btn btn-sm btn-outline">+ Add schedule</button>
+
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Delete Confirmation Modal -->
+<dialog id="delete-modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">Delete Item?</h3>
+    <p class="mb-4">This will also remove any schedules for this item. This action cannot be undone.</p>
+    <input type="hidden" id="delete-item-id">
+    <div class="modal-action">
+      <button id="confirm-delete-btn" class="btn btn-error">Delete</button>
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<script type="module">
+import { getCurrentUser, signOut } from '/assets/js/supabase-client.js';
+import {
+  getItems, createItem, updateItem, deleteItem, duplicateItem,
+  getSchedules, createSchedule, updateSchedule, deleteSchedule,
+  sendItemNow,
+} from '/assets/js/vestaboard-db.js';
+import {
+  LETTER_PALETTE, DIGIT_PALETTE, PUNCTUATION_PALETTE,
+  COLOR_CODE_LIST, COLOR_HEX, COLOR_NAMES, charToCode,
+  createEmptyGrid, normalizeGrid, approximateTextToGrid, renderGridPreview,
+} from '/assets/js/vestaboard-encode.js';
+
+// --- Auth gate ---
+const user = await getCurrentUser();
+if (!user) {
+  window.location.href = '/personal/coaching/login/';
+} else {
+  document.getElementById('auth-loading').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+}
+
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await signOut();
+  window.location.href = '/personal/coaching/login/';
+});
+
+// --- Alert helper ---
+function showAlert(message, type = 'info') {
+  const container = document.getElementById('alert-container');
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type} shadow-lg`;
+  alert.innerHTML = `<span></span>`;
+  alert.querySelector('span').textContent = message;
+  container.appendChild(alert);
+  setTimeout(() => alert.remove(), 5000);
+}
+
+const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const TIMEZONES = [
+  'America/New_York', 'America/Chicago', 'America/Denver',
+  'America/Los_Angeles', 'America/Anchorage', 'Pacific/Honolulu', 'UTC',
+];
+
+let cachedItems = [];
+
+// ─── List rendering ─────────────────────────────────────────────────────────
+
+async function loadItems() {
+  const loading = document.getElementById('loading');
+  const emptyState = document.getElementById('empty-state');
+  const grid = document.getElementById('items-grid');
+
+  loading.classList.remove('hidden');
+  emptyState.classList.add('hidden');
+  grid.classList.add('hidden');
+
+  const result = await getItems();
+  loading.classList.add('hidden');
+
+  if (!result.success) {
+    showAlert(result.error?.message || 'Failed to load items', 'error');
+    return;
+  }
+
+  cachedItems = result.data;
+
+  if (cachedItems.length === 0) {
+    emptyState.classList.remove('hidden');
+    return;
+  }
+
+  grid.classList.remove('hidden');
+  grid.innerHTML = cachedItems.map((item) => itemCardHtml(item)).join('');
+
+  cachedItems.forEach((item) => {
+    document.getElementById(`preview-${item.id}`).innerHTML = renderGridPreview(previewGridForItem(item));
+    document.getElementById(`edit-${item.id}`).addEventListener('click', () => openItemModal(item));
+    document.getElementById(`duplicate-${item.id}`).addEventListener('click', () => handleDuplicate(item));
+    document.getElementById(`delete-${item.id}`).addEventListener('click', () => openDeleteModal(item));
+    document.getElementById(`send-${item.id}`).addEventListener('click', () => handleSendNow(item));
+    document.getElementById(`schedule-${item.id}`).addEventListener('click', () => openScheduleModal(item));
+  });
+}
+
+function previewGridForItem(item) {
+  if (item.mode === 'grid') return normalizeGrid(item.grid_content);
+  return approximateTextToGrid(item.text_content || '');
+}
+
+function itemCardHtml(item) {
+  return `
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <div class="flex justify-between items-start">
+          <h2 class="card-title text-lg">${escapeHtml(item.name)}</h2>
+          <span class="badge ${item.mode === 'grid' ? 'badge-secondary' : 'badge-primary'}">${item.mode}</span>
+        </div>
+        <div id="preview-${item.id}" class="vb-board vb-board-sm my-2"></div>
+        <div class="card-actions justify-end mt-2 flex-wrap">
+          <button id="send-${item.id}" class="btn btn-sm btn-success">Send Now</button>
+          <button id="schedule-${item.id}" class="btn btn-sm btn-outline">Schedule</button>
+          <button id="edit-${item.id}" class="btn btn-sm btn-outline btn-primary">Edit</button>
+          <button id="duplicate-${item.id}" class="btn btn-sm btn-outline">Duplicate</button>
+          <button id="delete-${item.id}" class="btn btn-sm btn-outline btn-error">Delete</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+// ─── Item editor modal ──────────────────────────────────────────────────────
+
+let currentGrid = createEmptyGrid();
+let currentTool = 1; // default paint tool: letter A
+
+function setMode(mode) {
+  document.getElementById('mode-tab-text').classList.toggle('tab-active', mode === 'text');
+  document.getElementById('mode-tab-grid').classList.toggle('tab-active', mode === 'grid');
+  document.getElementById('text-mode-panel').classList.toggle('hidden', mode !== 'text');
+  document.getElementById('grid-mode-panel').classList.toggle('hidden', mode !== 'grid');
+  document.getElementById('item-modal').dataset.mode = mode;
+}
+
+document.getElementById('mode-tab-text').addEventListener('click', () => setMode('text'));
+document.getElementById('mode-tab-grid').addEventListener('click', () => setMode('grid'));
+
+function renderTextPreview() {
+  const text = document.getElementById('edit-text-content').value;
+  document.getElementById('text-preview-board').innerHTML = renderGridPreview(approximateTextToGrid(text));
+}
+document.getElementById('edit-text-content').addEventListener('input', renderTextPreview);
+
+function renderGridEditor() {
+  document.getElementById('grid-editor-board').innerHTML = renderGridPreview(currentGrid, { interactive: true });
+  document.getElementById('grid-editor-board').querySelectorAll('.vb-cell-interactive').forEach((cell) => {
+    cell.addEventListener('click', () => {
+      const r = parseInt(cell.dataset.row, 10);
+      const c = parseInt(cell.dataset.col, 10);
+      currentGrid[r][c] = currentTool;
+      renderGridEditor();
+      syncJsonFromGrid();
+    });
+  });
+}
+
+function syncJsonFromGrid() {
+  document.getElementById('edit-grid-json').value = JSON.stringify(currentGrid);
+}
+
+document.getElementById('apply-grid-json-btn').addEventListener('click', () => {
+  try {
+    const parsed = JSON.parse(document.getElementById('edit-grid-json').value);
+    currentGrid = normalizeGrid(parsed);
+    renderGridEditor();
+  } catch (err) {
+    showAlert('Invalid JSON: ' + err.message, 'error');
+  }
+});
+
+function buildPalette() {
+  const container = document.getElementById('grid-palette');
+  const buttons = [];
+
+  buttons.push(paletteButtonHtml(0, 'Blank', '⌫'));
+  LETTER_PALETTE.forEach((letter) => buttons.push(paletteButtonHtml(charToCode(letter), letter, letter)));
+  DIGIT_PALETTE.forEach((digit) => buttons.push(paletteButtonHtml(charToCode(digit), digit, digit)));
+  PUNCTUATION_PALETTE.forEach((sym) => buttons.push(paletteButtonHtml(charToCode(sym), sym, sym)));
+  COLOR_CODE_LIST.forEach((code) => buttons.push(paletteButtonHtml(code, COLOR_NAMES[code], '', COLOR_HEX[code])));
+
+  container.innerHTML = buttons.join('');
+  container.querySelectorAll('[data-tool]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentTool = parseInt(btn.dataset.tool, 10);
+      container.querySelectorAll('[data-tool]').forEach((b) => b.classList.remove('ring', 'ring-primary'));
+      btn.classList.add('ring', 'ring-primary');
+    });
+  });
+}
+
+function paletteButtonHtml(code, title, label, bg) {
+  const style = bg ? `style="background-color:${bg}"` : '';
+  return `<button type="button" data-tool="${code}" title="${escapeHtml(title)}" class="btn btn-xs" ${style}>${escapeHtml(label)}</button>`;
+}
+
+buildPalette();
+
+function openItemModal(item) {
+  document.getElementById('item-modal-title').textContent = item ? 'Edit Item' : 'New Item';
+  document.getElementById('edit-item-id').value = item ? item.id : '';
+  document.getElementById('edit-name').value = item ? item.name : '';
+  document.getElementById('edit-text-content').value = item && item.mode === 'text' ? (item.text_content || '') : '';
+  currentGrid = item && item.mode === 'grid' ? normalizeGrid(item.grid_content) : createEmptyGrid();
+
+  setMode(item && item.mode === 'grid' ? 'grid' : 'text');
+  renderTextPreview();
+  renderGridEditor();
+  syncJsonFromGrid();
+
+  document.getElementById('item-modal').showModal();
+}
+
+document.getElementById('new-item-btn').addEventListener('click', () => openItemModal(null));
+
+document.getElementById('save-item-btn').addEventListener('click', async () => {
+  const id = document.getElementById('edit-item-id').value;
+  const name = document.getElementById('edit-name').value.trim();
+  const mode = document.getElementById('item-modal').dataset.mode || 'text';
+
+  if (!name) {
+    showAlert('Please enter a name for this item.', 'error');
+    return;
+  }
+
+  const payload = {
+    name,
+    mode,
+    text_content: mode === 'text' ? document.getElementById('edit-text-content').value : null,
+    grid_content: mode === 'grid' ? currentGrid : null,
+  };
+
+  const btn = document.getElementById('save-item-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Saving...';
+
+  const result = id ? await updateItem(id, payload) : await createItem(payload);
+
+  btn.disabled = false;
+  btn.textContent = 'Save Item';
+
+  if (result.success) {
+    showAlert('Item saved!', 'success');
+    document.getElementById('item-modal').close();
+    loadItems();
+  } else {
+    showAlert(result.error?.message || 'Failed to save item', 'error');
+  }
+});
+
+async function handleDuplicate(item) {
+  const result = await duplicateItem(item);
+  if (result.success) {
+    showAlert('Item duplicated.', 'success');
+    loadItems();
+  } else {
+    showAlert(result.error?.message || 'Failed to duplicate item', 'error');
+  }
+}
+
+async function handleSendNow(item) {
+  showAlert(`Sending "${item.name}" to your Vestaboard…`, 'info');
+  const result = await sendItemNow(item.id);
+  if (result.success) {
+    showAlert('Sent!', 'success');
+  } else {
+    showAlert(result.error?.message || 'Failed to send to Vestaboard', 'error');
+  }
+}
+
+function openDeleteModal(item) {
+  document.getElementById('delete-item-id').value = item.id;
+  document.getElementById('delete-modal').showModal();
+}
+
+document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+  const id = document.getElementById('delete-item-id').value;
+  const btn = document.getElementById('confirm-delete-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Deleting...';
+
+  const result = await deleteItem(id);
+
+  btn.disabled = false;
+  btn.textContent = 'Delete';
+
+  if (result.success) {
+    showAlert('Item deleted.', 'info');
+    document.getElementById('delete-modal').close();
+    loadItems();
+  } else {
+    showAlert(result.error?.message || 'Failed to delete item', 'error');
+  }
+});
+
+// ─── Schedule modal ─────────────────────────────────────────────────────────
+
+async function openScheduleModal(item) {
+  document.getElementById('schedule-item-id').value = item.id;
+  document.getElementById('schedule-item-name').textContent = item.name;
+  document.getElementById('schedule-modal').showModal();
+  await renderScheduleList(item.id);
+}
+
+async function renderScheduleList(itemId) {
+  const container = document.getElementById('schedule-list');
+  container.innerHTML = '<span class="loading loading-spinner"></span>';
+
+  const result = await getSchedules(itemId);
+  if (!result.success) {
+    container.innerHTML = `<p class="text-error">${escapeHtml(result.error?.message || 'Failed to load schedules')}</p>`;
+    return;
+  }
+
+  if (result.data.length === 0) {
+    container.innerHTML = '<p class="text-sm text-gray-500">No schedules yet. Add one below.</p>';
+    return;
+  }
+
+  container.innerHTML = result.data.map((s) => scheduleRowHtml(s)).join('');
+  result.data.forEach((s) => wireScheduleRow(s, itemId));
+}
+
+function scheduleRowHtml(schedule) {
+  const days = schedule.days_of_week || [];
+  const dayCheckboxes = DAY_LABELS.map((label, idx) => `
+    <label class="cursor-pointer flex flex-col items-center gap-1">
+      <span class="text-xs">${label}</span>
+      <input type="checkbox" class="checkbox checkbox-sm sched-day" data-day="${idx}" ${days.includes(idx) ? 'checked' : ''} />
+    </label>
+  `).join('');
+
+  const tzOptions = TIMEZONES.map((tz) => `<option value="${tz}" ${schedule.timezone === tz ? 'selected' : ''}>${tz}</option>`).join('');
+
+  return `
+    <div class="card bg-base-200" data-schedule-id="${schedule.id}">
+      <div class="card-body p-4">
+        <div class="flex justify-between items-center mb-2">
+          <div class="flex gap-3">${dayCheckboxes}</div>
+          <label class="label cursor-pointer gap-2">
+            <span class="label-text text-xs">Enabled</span>
+            <input type="checkbox" class="toggle toggle-sm sched-enabled" ${schedule.enabled ? 'checked' : ''} />
+          </label>
+        </div>
+        <div class="flex gap-2 items-end flex-wrap">
+          <div class="form-control">
+            <label class="label py-0"><span class="label-text text-xs">Time</span></label>
+            <input type="time" class="input input-sm input-bordered sched-time" value="${(schedule.time_of_day || '07:00:00').slice(0,5)}" />
+          </div>
+          <div class="form-control">
+            <label class="label py-0"><span class="label-text text-xs">Timezone</span></label>
+            <select class="select select-sm select-bordered sched-timezone">${tzOptions}</select>
+          </div>
+          <button class="btn btn-sm btn-primary sched-save">Save</button>
+          <button class="btn btn-sm btn-outline btn-error sched-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function wireScheduleRow(schedule, itemId) {
+  const row = document.querySelector(`[data-schedule-id="${schedule.id}"]`);
+  if (!row) return;
+
+  row.querySelector('.sched-save').addEventListener('click', async () => {
+    const daysOfWeek = [...row.querySelectorAll('.sched-day:checked')].map((cb) => parseInt(cb.dataset.day, 10));
+    if (daysOfWeek.length === 0) {
+      showAlert('Select at least one day.', 'error');
+      return;
+    }
+    const updates = {
+      days_of_week: daysOfWeek,
+      time_of_day: row.querySelector('.sched-time').value,
+      timezone: row.querySelector('.sched-timezone').value,
+      enabled: row.querySelector('.sched-enabled').checked,
+    };
+    const result = await updateSchedule(schedule.id, updates);
+    if (result.success) {
+      showAlert('Schedule saved.', 'success');
+    } else {
+      showAlert(result.error?.message || 'Failed to save schedule', 'error');
+    }
+  });
+
+  row.querySelector('.sched-delete').addEventListener('click', async () => {
+    const result = await deleteSchedule(schedule.id);
+    if (result.success) {
+      showAlert('Schedule deleted.', 'info');
+      renderScheduleList(itemId);
+    } else {
+      showAlert(result.error?.message || 'Failed to delete schedule', 'error');
+    }
+  });
+}
+
+document.getElementById('add-schedule-btn').addEventListener('click', async () => {
+  const itemId = document.getElementById('schedule-item-id').value;
+  const result = await createSchedule({
+    item_id: itemId,
+    days_of_week: [1, 2, 3, 4, 5], // Mon-Fri default
+    time_of_day: '07:00:00',
+    timezone: 'America/New_York',
+    enabled: true,
+  });
+  if (result.success) {
+    renderScheduleList(itemId);
+  } else {
+    showAlert(result.error?.message || 'Failed to add schedule', 'error');
+  }
+});
+
+// --- Initial load ---
+loadItems();
+</script>
+
+<style>
+.vb-board {
+  display: grid;
+  grid-template-columns: repeat(22, 1fr);
+  gap: 2px;
+  background: #111;
+  padding: 6px;
+  border-radius: 6px;
+  max-width: 100%;
+}
+.vb-cell {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 2px;
+  font-family: monospace;
+  user-select: none;
+}
+.vb-board-sm .vb-cell {
+  font-size: 6px;
+}
+.vb-cell-interactive:hover {
+  outline: 1px solid #fff;
+}
+</style>

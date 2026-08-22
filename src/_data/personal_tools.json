@@ -40,5 +40,11 @@
     "description": "Track bids and scores for Kachuful card game with automatic hand progression and scoring.",
     "link": "/personal/kachuful/",
     "icon": "🃏"
+  },
+  {
+    "name": "Vestaboard",
+    "description": "Create, schedule, and send quotes and designs to your Vestaboard.",
+    "link": "/personal/vestaboard/",
+    "icon": "🟦"
   }
 ]
