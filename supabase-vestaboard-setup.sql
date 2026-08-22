@@ -5,13 +5,20 @@
 -- Before running:
 --   1. In Supabase Dashboard -> Database -> Extensions, enable
 --      "pg_cron" and "pg_net" (both are free but must be turned on
---      per-project).
---   2. Deploy the `vestaboard-send` Edge Function
---      (supabase functions deploy vestaboard-send) and set its
---      secrets: VESTABOARD_API_KEY, VESTABOARD_CRON_SECRET.
---   3. Replace the placeholders near the bottom of this file
---      (YOUR_PROJECT_REF and YOUR_CRON_SECRET) before running the
---      cron.schedule(...) statement.
+--      per-project). If prompted for a schema: pg_cron must go in
+--      "pg_catalog" (it's non-relocatable); pg_net should go in
+--      "extensions". Both extensions create their own schemas
+--      ("cron" and "net" respectively) for their actual functions
+--      and tables regardless of this choice. This SQL file also
+--      creates both extensions itself, so you can skip this step
+--      in the dashboard and just run the whole file instead.
+--   2. Deploy the `vestaboard-send` Edge Function:
+--      supabase functions deploy vestaboard-send
+--   3. Set its VESTABOARD_API_KEY secret (your Vestaboard Cloud API
+--      token) with:
+--      supabase secrets set VESTABOARD_API_KEY=...
+--      VESTABOARD_CRON_SECRET has already been generated and set on
+--      this project, and is already filled in below.
 -- =============================================================
 
 -- 1. VESTABOARD_ITEMS TABLE
@@ -111,8 +118,17 @@ CREATE TRIGGER trg_vestaboard_items_updated_at
 -- Function itself uses the service role key (available to it by
 -- default) to bypass RLS when reading schedules/items.
 
-CREATE EXTENSION IF NOT EXISTS pg_cron;
-CREATE EXTENSION IF NOT EXISTS pg_net;
+-- pg_cron ships non-relocatable on current Supabase Postgres versions and
+-- must be installed in pg_catalog; it then creates its own "cron" schema
+-- for cron.job / cron.schedule() etc.
+CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA pg_catalog;
+GRANT USAGE ON SCHEMA cron TO postgres;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA cron TO postgres;
+
+-- pg_net is recommended to live in the "extensions" schema (avoids the
+-- Security Advisor "extension in public" warning); it creates its own
+-- "net" schema for net.http_post() etc. regardless of where it's installed.
+CREATE EXTENSION IF NOT EXISTS pg_net WITH SCHEMA extensions;
 
 -- Remove any previous registration of this job before re-creating it,
 -- so this file is safe to re-run.
@@ -126,10 +142,10 @@ SELECT cron.schedule(
   '* * * * *', -- every minute
   $$
   SELECT net.http_post(
-    url := 'https://YOUR_PROJECT_REF.supabase.co/functions/v1/vestaboard-send',
+    url := 'https://skgqvheszlquwflignze.supabase.co/functions/v1/vestaboard-send',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'X-Cron-Secret', 'YOUR_CRON_SECRET'
+      'X-Cron-Secret', 'd0542c41ad4b1513647923fac919d4a7f5dec498cd3c7200331d1e562cdccf2c'
     ),
     body := jsonb_build_object('action', 'run-schedule')
   );

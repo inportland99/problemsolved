@@ -237,13 +237,13 @@ A private, authenticated tool at `/personal/vestaboard/` for creating, schedulin
 - `vestaboard_schedules`: `id`, `user_id`, `item_id` (FK to `vestaboard_items`, cascades on delete), `days_of_week` (int array, 0=Sun..6=Sat), `time_of_day`, `timezone` (IANA name, default `America/New_York`), `enabled`, `last_sent_at` (internal guard against double-sends within the same minute — not surfaced in the UI).
 
 ### Sending
-- **Manual ("Send Now")**: the browser calls `supabase.functions.invoke('vestaboard-send', { body: { action: 'send-now', itemId } })`. The function verifies the caller's Supabase JWT, loads the item, and posts it to the Vestaboard Read/Write API using the `VESTABOARD_API_KEY` secret.
+- **Manual ("Send Now")**: the browser calls `supabase.functions.invoke('vestaboard-send', { body: { action: 'send-now', itemId } })`. The function verifies the caller's Supabase JWT, loads the item, and posts it to the Vestaboard Cloud API (`https://cloud.vestaboard.com/`, `X-Vestaboard-Token` header) using the `VESTABOARD_API_KEY` secret.
 - **Scheduled**: a `pg_cron` job (`vestaboard-schedule-check`, runs every minute) calls the same function with `{ action: 'run-schedule' }` via `pg_net`, authenticated with a shared `X-Cron-Secret` header (checked against the `VESTABOARD_CRON_SECRET` secret) since there is no user session in that context. The function then uses the Supabase **service role** key to find schedules matching the current day/time in their timezone and sends the associated item.
 
 ### Deployment steps
 The static site build does not deploy any of this — it must be set up once (and again after any changes to the Edge Function or SQL file) directly against the Supabase project:
 1. In the Supabase Dashboard, go to **Database → Extensions** and enable `pg_cron` and `pg_net`.
-2. Get a Read/Write (Cloud) API key from the Vestaboard web app's Developer section.
+2. Get a Vestaboard Cloud API token from the Vestaboard web app's Developer section.
 3. Generate a random string to use as the cron shared secret (e.g. `openssl rand -hex 32`).
 4. Deploy the Edge Function: `supabase functions deploy vestaboard-send` (requires the Supabase CLI logged in and linked to the project).
 5. Set the function's secrets: `supabase secrets set VESTABOARD_API_KEY=... VESTABOARD_CRON_SECRET=...` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are provided automatically to Edge Functions).

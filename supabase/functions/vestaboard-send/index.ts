@@ -32,11 +32,11 @@ async function sendToVestaboard(item: VestaboardItem): Promise<void> {
       ? { characters: item.grid_content }
       : { text: item.text_content ?? "" };
 
-  const res = await fetch("https://rw.vestaboard.com/", {
+  const res = await fetch("https://cloud.vestaboard.com/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Vestaboard-Read-Write-Key": apiKey,
+      "X-Vestaboard-Token": apiKey,
     },
     body: JSON.stringify(body),
   });
@@ -224,6 +224,25 @@ serve(async (req: Request) => {
       }
 
       return jsonResponse({ success: true, results });
+    }
+
+    // ── ACTION: debug-key (TEMPORARY — remove after diagnosing key issues) ─
+    if (action === "debug-key") {
+      const cronSecret = req.headers.get("X-Cron-Secret");
+      const expectedSecret = Deno.env.get("VESTABOARD_CRON_SECRET");
+
+      if (!expectedSecret || cronSecret !== expectedSecret) {
+        return jsonResponse({ error: "Unauthorized" }, 401);
+      }
+
+      const apiKey = Deno.env.get("VESTABOARD_API_KEY") ?? "";
+      return jsonResponse({
+        length: apiKey.length,
+        prefix: apiKey.slice(0, 4),
+        suffix: apiKey.slice(-4),
+        hasLeadingWhitespace: /^\s/.test(apiKey),
+        hasTrailingWhitespace: /\s$/.test(apiKey),
+      });
     }
 
     return jsonResponse(

@@ -150,7 +150,7 @@ import {
 } from '/assets/js/vestaboard-db.js';
 import {
   LETTER_PALETTE, DIGIT_PALETTE, PUNCTUATION_PALETTE,
-  COLOR_CODE_LIST, COLOR_HEX, COLOR_NAMES, charToCode,
+  COLOR_CODE_LIST, COLOR_HEX, COLOR_NAMES, charToCode, codeToChar, isColorCode,
   createEmptyGrid, normalizeGrid, approximateTextToGrid, renderGridPreview,
 } from '/assets/js/vestaboard-encode.js';
 
@@ -271,8 +271,46 @@ function setMode(mode) {
   document.getElementById('item-modal').dataset.mode = mode;
 }
 
-document.getElementById('mode-tab-text').addEventListener('click', () => setMode('text'));
-document.getElementById('mode-tab-grid').addEventListener('click', () => setMode('grid'));
+document.getElementById('mode-tab-text').addEventListener('click', () => {
+  // Seed the text box from the grid design (best-effort — colors and
+  // freeform placement can't round-trip perfectly, so colors just become
+  // blanks), but only if there's no text already — don't clobber real
+  // typed content by revisiting the tab.
+  const textEl = document.getElementById('edit-text-content');
+  if (!textEl.value.trim() && !isGridEmpty(currentGrid)) {
+    textEl.value = gridToApproximateText(currentGrid);
+    renderTextPreview();
+  }
+  setMode('text');
+});
+document.getElementById('mode-tab-grid').addEventListener('click', () => {
+  // Seed the grid from the typed text so it can be embellished with colors,
+  // but only if the grid hasn't already been drawn on — don't clobber
+  // existing design work just by revisiting the tab.
+  if (isGridEmpty(currentGrid)) {
+    const text = document.getElementById('edit-text-content').value;
+    currentGrid = approximateTextToGrid(text);
+    renderGridEditor();
+    syncJsonFromGrid();
+  }
+  setMode('grid');
+});
+
+function isGridEmpty(grid) {
+  return grid.every((row) => row.every((code) => code === 0));
+}
+
+// Best-effort reverse of approximateTextToGrid: decodes letters/digits/
+// punctuation back to characters, treats colors/unknown codes as blanks,
+// and trims fully-blank leading/trailing lines.
+function gridToApproximateText(grid) {
+  const lines = grid.map((row) =>
+    row.map((code) => (isColorCode(code) ? ' ' : (codeToChar(code) || ' '))).join('').replace(/\s+$/, '')
+  );
+  while (lines.length && lines[0] === '') lines.shift();
+  while (lines.length && lines[lines.length - 1] === '') lines.pop();
+  return lines.join('\n');
+}
 
 function renderTextPreview() {
   const text = document.getElementById('edit-text-content').value;

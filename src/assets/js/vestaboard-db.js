@@ -279,8 +279,9 @@ export async function sendItemNow(itemId) {
     });
 
     if (error) {
-      console.error('Error sending item to Vestaboard:', error);
-      return { success: false, error };
+      const message = await extractFunctionErrorMessage(error);
+      console.error('Error sending item to Vestaboard:', message, error);
+      return { success: false, error: { message } };
     }
 
     if (data?.error) {
@@ -292,4 +293,28 @@ export async function sendItemNow(itemId) {
     console.error('Unexpected error sending item to Vestaboard:', err);
     return { success: false, error: { message: err.message } };
   }
+}
+
+/**
+ * supabase-js's FunctionsHttpError only exposes a generic "Edge Function
+ * returned a non-2xx status code" message; the actual response body (e.g.
+ * our function's `{ error: '...' }` JSON) is on `error.context`, a raw
+ * Response object that must be read separately.
+ */
+async function extractFunctionErrorMessage(error) {
+  const context = error?.context;
+  if (context && typeof context.clone === 'function') {
+    try {
+      const body = await context.clone().json();
+      if (body?.error) return body.error;
+    } catch (_) {
+      try {
+        const text = await context.clone().text();
+        if (text) return text;
+      } catch (_) {
+        // fall through to generic message
+      }
+    }
+  }
+  return error?.message || 'Failed to send to Vestaboard';
 }
