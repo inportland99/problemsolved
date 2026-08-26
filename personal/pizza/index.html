@@ -65,7 +65,7 @@
               <label class="label">
                 <span class="label-text font-semibold">Dough ball size (g)</span>
               </label>
-              <input type="number" id="ballSize" min="100" max="500" value="290" step="10"
+              <input type="number" id="ballSize" min="100" max="500" value="280" step="10"
                      class="input input-bordered input-primary text-lg" />
             </div>
 
@@ -137,8 +137,7 @@
         <div class="card bg-base-100 shadow-xl">
           <div class="card-body">
             <h2 class="card-title text-2xl mb-4">Step 3: Add to Biga</h2>
-            <p class="mb-4">Add these ingredients to your biga and mix:</p>
-            
+            <p class="mb-4">Add these ingredients to your biga and mix at 120RPM:</p>
             <div class="space-y-3">
               <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
                 <span class="font-semibold">Flour</span>
@@ -162,7 +161,7 @@
         <div class="card bg-base-100 shadow-xl">
           <div class="card-body">
             <h2 class="card-title text-2xl mb-4">Step 4: Build Gluten</h2>
-            <p class="mb-4">Mix and build gluten by adding salt water one spoon a time:</p>
+            <p class="mb-4">Mix and build gluten by adding salt water slowly over ~15 minutes at 160RPM:</p>
             
             <div class="space-y-3">
               <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
@@ -378,7 +377,7 @@ function calculateRecipe() {
   
   // Salt water
   const saltWater = (totalFlour * hydration/100 - bigaWater) / 2;
-  const salt = totalFlour * 0.03;
+  const salt = totalFlour * 0.04;
   
   // Display biga (flour to nearest 10g, water to nearest 5g, yeast to nearest 0.1g)
   document.getElementById('biga-flour').textContent = `${Math.round(bigaFlour / 1) * 1}g`;
