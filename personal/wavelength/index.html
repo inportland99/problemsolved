@@ -24,11 +24,21 @@
     <div class="wl-gauge-wrap">
       <svg id="wl-gauge" class="wl-gauge" viewBox="0 0 1000 560" role="img"
            aria-label="Spectrum dial with a movable needle">
+        <defs>
+          
+          <clipPath id="wl-dial-clip">
+            <rect x="0" y="0" width="1000" height="500"></rect>
+          </clipPath>
+        </defs>
+
         <path id="wl-track" class="wl-track"></path>
         
         <g id="wl-bands" class="wl-bands">
           <g id="wl-bands-content"></g>
           <line id="wl-target-line" class="wl-target-line"></line>
+        </g>
+        <g clip-path="url(#wl-dial-clip)">
+          <path id="wl-screen" class="wl-screen"></path>
         </g>
         <g id="wl-ticks" class="wl-ticks"></g>
         <g id="wl-needle" class="wl-needle">
@@ -75,7 +85,7 @@
 
 <script type="module">
   
-  import { initBoard } from '/assets/js/wavelength/board.js?v=4';
+  import { initBoard } from '/assets/js/wavelength/board.js?v=5';
 
   try {
     initBoard(document.getElementById('wl-board'));

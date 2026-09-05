@@ -7,10 +7,10 @@
 // wavelength-clue.njk. Otherwise phones that already cached the old module
 // keep running stale code after a deploy (this bit us once: a decoder fix
 // shipped, but a phone's cached copy of round.js still ran the old logic).
-import { GAUGE, bandArcPath, bandLabelPoint, pointOnArc, positionToAngle } from './gauge.js?v=4';
-import { newRound, rerollTarget, clueUrlForRound } from './round.js?v=4';
-import { bandRanges, calculateScore, clampPosition } from './scoring.js?v=4';
-import { renderQr } from './qr.js?v=4';
+import { GAUGE, bandArcPath, bandLabelPoint, pointOnArc, positionToAngle } from './gauge.js?v=5';
+import { newRound, rerollTarget, clueUrlForRound } from './round.js?v=5';
+import { bandRanges, calculateScore, clampPosition } from './scoring.js?v=5';
+import { renderQr } from './qr.js?v=5';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -36,6 +36,7 @@ export function initBoard(root) {
     ticks: root.querySelector('#wl-ticks'),
     bands: root.querySelector('#wl-bands'),
     bandsContent: root.querySelector('#wl-bands-content'),
+    screen: root.querySelector('#wl-screen'),
     targetLine: root.querySelector('#wl-target-line'),
     needle: root.querySelector('#wl-needle'),
     score: root.querySelector('#wl-score'),
@@ -137,15 +138,18 @@ export function initBoard(root) {
     state.score = calculateScore(state.needle, state.round.target);
     state.held.direction = 0;
 
+    // The bands are drawn now, in full, but they're covered by the opaque
+    // screen sitting on top of them; nothing is visible until the screen's
+    // reveal animation (below) rotates it out of the way.
     renderBands();
     renderScore();
     root.dataset.revealed = 'true';
 
     // Restart the CSS animations from the top.
-    el.bands.classList.remove('is-revealed');
+    el.screen.classList.remove('is-revealed');
     el.score.classList.remove('is-revealed');
-    void el.bands.offsetWidth;
-    el.bands.classList.add('is-revealed');
+    void el.screen.offsetWidth;
+    el.screen.classList.add('is-revealed');
     el.score.classList.add('is-revealed');
   }
 
@@ -157,7 +161,9 @@ export function initBoard(root) {
     state.score = null;
     state.held.direction = 0;
 
-    el.bands.classList.remove('is-revealed');
+    // Snap the screen back to fully covering (no transition) for the next
+    // round's reveal.
+    el.screen.classList.remove('is-revealed');
     el.score.classList.remove('is-revealed');
     el.bandsContent.replaceChildren();
 
@@ -314,6 +320,9 @@ function bindHoldButton(button, onStart, onEnd) {
 function drawStaticGauge(el) {
   el.gauge.setAttribute('viewBox', GAUGE.viewBox);
   el.track.setAttribute('d', bandArcPath(0, 1));
+  // Same shape as the track: this is the panel that sits over the bands
+  // pre-reveal and rotates away to expose them.
+  el.screen.setAttribute('d', bandArcPath(0, 1));
 
   el.ticks.replaceChildren();
   for (let i = 0; i <= 20; i++) {
