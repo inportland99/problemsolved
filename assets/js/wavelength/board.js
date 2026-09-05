@@ -1,7 +1,16 @@
-import { GAUGE, bandArcPath, bandLabelPoint, pointOnArc, positionToAngle } from './gauge.js';
-import { newRound, rerollTarget, clueUrlForRound } from './round.js';
-import { bandRanges, calculateScore, clampPosition } from './scoring.js';
-import { renderQr } from './qr.js';
+// CACHE-BUSTING: GitHub Pages serves these files with Cache-Control:
+// max-age=600 and this project has no bundler/hashed filenames. Static
+// `import` specifiers must be string literals, so bumping a shared constant
+// isn't possible — whenever ANY file under assets/js/wavelength/ changes,
+// bump this "?v=N" suffix on EVERY import below, in clue.js, in round.js,
+// and on the <script type="module" src="..."> tags in wavelength.njk and
+// wavelength-clue.njk. Otherwise phones that already cached the old module
+// keep running stale code after a deploy (this bit us once: a decoder fix
+// shipped, but a phone's cached copy of round.js still ran the old logic).
+import { GAUGE, bandArcPath, bandLabelPoint, pointOnArc, positionToAngle } from './gauge.js?v=4';
+import { newRound, rerollTarget, clueUrlForRound } from './round.js?v=4';
+import { bandRanges, calculateScore, clampPosition } from './scoring.js?v=4';
+import { renderQr } from './qr.js?v=4';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -26,6 +35,7 @@ export function initBoard(root) {
     track: root.querySelector('#wl-track'),
     ticks: root.querySelector('#wl-ticks'),
     bands: root.querySelector('#wl-bands'),
+    bandsContent: root.querySelector('#wl-bands-content'),
     targetLine: root.querySelector('#wl-target-line'),
     needle: root.querySelector('#wl-needle'),
     score: root.querySelector('#wl-score'),
@@ -62,13 +72,13 @@ export function initBoard(root) {
   }
 
   function renderBands() {
-    el.bands.replaceChildren();
+    el.bandsContent.replaceChildren();
 
     for (const segment of bandRanges(state.round.target)) {
       const path = document.createElementNS(SVG_NS, 'path');
       path.setAttribute('d', bandArcPath(segment.from, segment.to));
       path.setAttribute('class', `wl-band wl-band--${segment.points}`);
-      el.bands.appendChild(path);
+      el.bandsContent.appendChild(path);
 
       const { x, y } = bandLabelPoint(segment.from, segment.to);
       const label = document.createElementNS(SVG_NS, 'text');
@@ -76,7 +86,7 @@ export function initBoard(root) {
       label.setAttribute('x', x.toFixed(2));
       label.setAttribute('y', y.toFixed(2));
       label.textContent = segment.points;
-      el.bands.appendChild(label);
+      el.bandsContent.appendChild(label);
     }
 
     const inner = pointOnArc(GAUGE.rInner - 14, state.round.target);
@@ -149,7 +159,7 @@ export function initBoard(root) {
 
     el.bands.classList.remove('is-revealed');
     el.score.classList.remove('is-revealed');
-    el.bands.replaceChildren();
+    el.bandsContent.replaceChildren();
 
     renderRound();
     renderScore();

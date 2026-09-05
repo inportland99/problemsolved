@@ -66,24 +66,24 @@
   opacity: 0.85;
 }
 
-/* Labels sit either side of the dial, which both fills the wasted width on a
-   16:9 screen and lets the dial itself use the full height. */
+/* Labels sit either side of the dial, top-aligned with the peak of the arc.
+   The dial itself spans nearly the full width of the viewport. */
 .wl-stage {
   flex: 1 1 auto;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
-  gap: 1.5vw;
+  gap: 1vw;
   min-height: 0;
   overflow: hidden;
 }
 
 /* Width-driven so the box matches the drawing exactly (no letterboxing),
-   with the remaining width reserved for the two spectrum labels. */
+   with a thin margin reserved on each side for the spectrum labels. */
 .wl-gauge-wrap {
   position: relative;
   flex: 0 1 auto;
-  width: 63%;
+  width: 84%;
   max-height: 100%;
   aspect-ratio: 1000 / 560;
 }
@@ -137,21 +137,26 @@
   transform-origin: 500px 500px;
 }
 
+/* Sweeps in from the far left (-90deg, i.e. the leftmost extreme of the
+   dial) around the same pivot the needle rotates on, then decelerates to
+   a slow stop at its true position — a long, suspenseful settle before
+   the score lands. Also rendered at 70% scale so the ring reads as a
+   narrower, less bulky band than the full-size track underneath it. */
 .wl-bands.is-revealed {
-  animation: wl-band-in 620ms cubic-bezier(0.16, 0.9, 0.25, 1) forwards;
+  animation: wl-band-in 2400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes wl-band-in {
   0% {
     opacity: 0;
-    transform: scale(0.55) translateY(26px);
+    transform: rotate(-90deg);
   }
-  60% {
+  55% {
     opacity: 1;
   }
   100% {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: rotate(0deg);
   }
 }
 
@@ -190,7 +195,8 @@
 
 .wl-board[data-revealed='true'] .wl-target-line {
   opacity: 0.9;
-  transition: opacity 300ms ease 380ms;
+  /* Lands right as the (much longer) band sweep above finishes settling. */
+  transition: opacity 300ms ease 2150ms;
 }
 
 /* ---- Needle ---- */
@@ -220,10 +226,12 @@
 /* ---- Spectrum labels ---- */
 
 .wl-label {
-  flex: 0 1 17%;
+  flex: 0 1 10.5%;
   min-width: 0;
-  padding-bottom: 4vh;
-  font-size: clamp(1.1rem, 4vh, 3.1rem);
+  /* Nudges the label's cap-height down to roughly meet the peak of the arc
+     (the apex sits about 7% of the dial's height below its top edge). */
+  padding-top: 1.6vh;
+  font-size: clamp(1rem, 3.1vh, 2.3rem);
   font-weight: 900;
   line-height: 1.02;
   letter-spacing: -0.01em;
@@ -248,7 +256,7 @@
 @media (max-aspect-ratio: 4 / 3) {
   .wl-label {
     flex: 1 1 40%;
-    padding-bottom: 0;
+    padding-top: 0;
   }
 }
 
@@ -263,7 +271,8 @@
 }
 
 .wl-score.is-revealed {
-  animation: wl-score-in 520ms cubic-bezier(0.2, 1.5, 0.4, 1) 260ms forwards;
+  /* Delayed until the band sweep has essentially finished settling. */
+  animation: wl-score-in 520ms cubic-bezier(0.2, 1.5, 0.4, 1) 2300ms forwards;
 }
 
 @keyframes wl-score-in {
@@ -361,11 +370,12 @@
 
 /* ---- QR panel ---- */
 
-/* Top-right, clear of the spectrum labels that sit at the bottom corners. */
+/* Bottom-right, clear of the spectrum labels which now sit at the top
+   corners (level with the peak of the arc). */
 .wl-qr-panel {
   position: absolute;
-  top: 1.5vh;
   right: 2vw;
+  bottom: 2vh;
   width: clamp(96px, 11vh, 168px);
   padding: 0.55rem;
   border-radius: 1rem;
@@ -373,18 +383,20 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
   cursor: pointer;
   transition: width 260ms cubic-bezier(0.2, 0.9, 0.3, 1),
-    top 260ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    bottom 260ms cubic-bezier(0.2, 0.9, 0.3, 1),
     right 260ms cubic-bezier(0.2, 0.9, 0.3, 1),
     transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 
 /* Pressing Q (or clicking) blows it up in the middle of the screen so the
-   clue giver can scan it from wherever they're standing. */
+   clue giver can scan it from wherever they're standing. Anchored from the
+   bottom to match the base state, so the transition interpolates cleanly
+   instead of jumping (animating to/from an unset "top" can't tween). */
 .wl-qr-panel.is-large {
-  top: 50%;
+  bottom: 50%;
   right: 50%;
   width: clamp(240px, 46vh, 520px);
-  transform: translate(50%, -50%);
+  transform: translate(50%, 50%);
   z-index: 10;
 }
 
@@ -543,6 +555,18 @@
   background: var(--wl-band-4);
 }
 
+/* A constant, dimmer reference line at the exact midpoint of the whole
+   spectrum (not the target) — gives the clue giver a sense of how far
+   left/right of center the target actually is. */
+.wl-clue-center {
+  position: absolute;
+  top: -0.4rem;
+  bottom: -0.4rem;
+  left: 50%;
+  width: 0;
+  border-left: 2px dashed rgba(244, 241, 255, 0.4);
+}
+
 /* A pointer above the bar rather than a bar straight through it, so the
    target center is unmistakable without covering the 4-point band. */
 .wl-clue-marker {
@@ -601,6 +625,7 @@
 
 /* Once the clue has been given, blank the target out entirely. */
 .wl-clue[data-hidden='true'] .wl-clue-bands,
+.wl-clue[data-hidden='true'] .wl-clue-center,
 .wl-clue[data-hidden='true'] .wl-clue-marker,
 .wl-clue[data-hidden='true'] .wl-clue-hint {
   visibility: hidden;

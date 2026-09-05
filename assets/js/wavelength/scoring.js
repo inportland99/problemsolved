@@ -9,18 +9,24 @@
  * Scoring bands, expressed as the distance from the target center at which
  * each band ends. Together they form the classic 2 | 3 | 4 | 3 | 2 strip:
  *
- *   4 points: the middle 6%  of the spectrum (0.03 either side of center)
- *   3 points: the next  6%   on each side
- *   2 points: the next  8%   on each side
+ *   4 points: the middle 4%  of the spectrum (0.02 either side of center)
+ *   3 points: the next  4%   on each side
+ *   2 points: the next  6%   on each side
  *   0 points: everywhere else
+ *
+ * Narrower than a standard Wavelength board on purpose — the whole scoring
+ * area is 24% of the spectrum instead of 34%, making the needle harder to
+ * land. Tune the three `maxDistance` values directly to make it easier or
+ * harder; everything else (rendering, target placement, scoring) derives
+ * from these three numbers automatically.
  */
 export const BANDS = [
-  { points: 4, maxDistance: 0.03 },
-  { points: 3, maxDistance: 0.09 },
-  { points: 2, maxDistance: 0.17 },
+  { points: 4, maxDistance: 0.02 },
+  { points: 3, maxDistance: 0.06 },
+  { points: 2, maxDistance: 0.12 },
 ];
 
-/** Half the total width of the scoring area (0.17 => 34% of the spectrum). */
+/** Half the total width of the scoring area (0.12 => 24% of the spectrum). */
 export const TARGET_HALF_WIDTH = BANDS[BANDS.length - 1].maxDistance;
 
 /** Clamp a value into the 0..1 playable range. */
