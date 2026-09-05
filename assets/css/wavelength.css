@@ -1,0 +1,611 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap');
+
+/* Beat Tailwind's preflight, which otherwise loses to our display rules. */
+[hidden] {
+  display: none !important;
+}
+
+:root {
+  --wl-ink: #f4f1ff;
+  --wl-dim: #9b93c4;
+  --wl-band-2: #2f6df6;
+  --wl-band-3: #8b5cf6;
+  --wl-band-4: #ffc738;
+  --wl-needle: #ff4d6d;
+  --wl-font: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* ============================================================
+   BOARD (laptop / TV)
+   ============================================================ */
+
+.wl-board {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 1.4vh 2vw;
+  gap: 0.6vh;
+  font-family: var(--wl-font);
+  color: var(--wl-ink);
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 108%, #2b1e6b 0%, transparent 60%),
+    radial-gradient(ellipse 90% 60% at 50% -10%, #1b2f6b 0%, transparent 55%),
+    #0b0a1c;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.wl-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+}
+
+.wl-round-chip,
+.wl-topbar-spacer {
+  flex: 1 1 0;
+  font-size: clamp(0.9rem, 2.2vh, 1.6rem);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--wl-dim);
+}
+
+.wl-brand {
+  font-size: clamp(1rem, 2.6vh, 1.9rem);
+  font-weight: 900;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: transparent;
+  background: linear-gradient(90deg, #00a2ff, #a78bfa, #ffc738);
+  -webkit-background-clip: text;
+  background-clip: text;
+  opacity: 0.85;
+}
+
+/* Labels sit either side of the dial, which both fills the wasted width on a
+   16:9 screen and lets the dial itself use the full height. */
+.wl-stage {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1.5vw;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Width-driven so the box matches the drawing exactly (no letterboxing),
+   with the remaining width reserved for the two spectrum labels. */
+.wl-gauge-wrap {
+  position: relative;
+  flex: 0 1 auto;
+  width: 63%;
+  max-height: 100%;
+  aspect-ratio: 1000 / 560;
+}
+
+/* Portrait / very narrow: stack the dial above the two labels. */
+@media (max-aspect-ratio: 4 / 3) {
+  .wl-stage {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .wl-gauge-wrap {
+    order: -1;
+    flex: 1 0 100%;
+    height: auto;
+    width: 100%;
+  }
+}
+
+.wl-gauge {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ---- Dial ---- */
+
+.wl-track {
+  fill: #16143a;
+  stroke: #2c2a5e;
+  stroke-width: 3;
+}
+
+.wl-tick {
+  stroke: #4b4780;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.wl-tick--major {
+  stroke: #6f6aa8;
+  stroke-width: 5;
+}
+
+/* ---- Scoring bands (hidden until reveal) ---- */
+
+.wl-bands {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 500px 500px;
+}
+
+.wl-bands.is-revealed {
+  animation: wl-band-in 620ms cubic-bezier(0.16, 0.9, 0.25, 1) forwards;
+}
+
+@keyframes wl-band-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) translateY(26px);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.wl-band {
+  stroke: #0b0a1c;
+  stroke-width: 3;
+}
+
+.wl-band--2 {
+  fill: var(--wl-band-2);
+}
+.wl-band--3 {
+  fill: var(--wl-band-3);
+}
+.wl-band--4 {
+  fill: var(--wl-band-4);
+}
+
+.wl-band-label {
+  fill: #0b0a1c;
+  font-family: var(--wl-font);
+  font-size: 58px;
+  font-weight: 900;
+  text-anchor: middle;
+  dominant-baseline: central;
+  opacity: 0.7;
+}
+
+.wl-target-line {
+  stroke: #ffffff;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 14 12;
+  opacity: 0;
+}
+
+.wl-board[data-revealed='true'] .wl-target-line {
+  opacity: 0.9;
+  transition: opacity 300ms ease 380ms;
+}
+
+/* ---- Needle ---- */
+
+.wl-needle {
+  transform-box: view-box;
+  transform-origin: 500px 500px;
+}
+
+.wl-needle-shape {
+  fill: var(--wl-needle);
+  stroke: #ffe3e9;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 18px rgba(255, 77, 109, 0.55));
+}
+
+.wl-hub {
+  fill: #211d4d;
+  stroke: #6f6aa8;
+  stroke-width: 4;
+}
+
+.wl-hub-dot {
+  fill: var(--wl-needle);
+}
+
+/* ---- Spectrum labels ---- */
+
+.wl-label {
+  flex: 0 1 17%;
+  min-width: 0;
+  padding-bottom: 4vh;
+  font-size: clamp(1.1rem, 4vh, 3.1rem);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  /* Long prompts wrap on word boundaries first, and hyphenate rather than
+     splitting a word with no visual cue, e.g. "COMPLICA / TED". */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.wl-label--left {
+  text-align: left;
+  color: #56b3ff;
+}
+
+.wl-label--right {
+  text-align: right;
+  color: #ffc738;
+}
+
+@media (max-aspect-ratio: 4 / 3) {
+  .wl-label {
+    flex: 1 1 40%;
+    padding-bottom: 0;
+  }
+}
+
+/* ---- Score readout ---- */
+
+/* Sits inside the arc, on a solid pill so it stays legible even when the
+   needle happens to be pointing straight through it. */
+.wl-score {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 500px 380px;
+}
+
+.wl-score.is-revealed {
+  animation: wl-score-in 520ms cubic-bezier(0.2, 1.5, 0.4, 1) 260ms forwards;
+}
+
+@keyframes wl-score-in {
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.wl-score-bg {
+  fill: rgba(11, 10, 28, 0.88);
+  stroke: rgba(255, 199, 56, 0.35);
+  stroke-width: 3;
+}
+
+.wl-score-text {
+  fill: #fff;
+  font-family: var(--wl-font);
+  /* Sized so the longest readout still fits inside the arc's interior. */
+  font-size: 78px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* ---- Footer controls ---- */
+
+.wl-footer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5vh;
+}
+
+.wl-controls {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.wl-btn {
+  min-width: 3rem;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid #3d3873;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--wl-dim);
+  font-family: var(--wl-font);
+  font-size: clamp(0.7rem, 1.8vh, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.wl-btn:hover {
+  background: rgba(255, 255, 255, 0.13);
+  color: #fff;
+}
+
+.wl-btn--wide {
+  min-width: 6.5rem;
+}
+
+.wl-keyhints {
+  font-size: clamp(0.6rem, 1.5vh, 0.9rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #635d95;
+}
+
+.wl-keyhints kbd {
+  display: inline-block;
+  min-width: 1.5em;
+  margin: 0 0.12em;
+  padding: 0.05em 0.35em;
+  border: 1px solid #3d3873;
+  border-radius: 0.3em;
+  background: rgba(255, 255, 255, 0.05);
+  font-family: inherit;
+  text-align: center;
+}
+
+.wl-keyhints span {
+  margin: 0 0.35em;
+  opacity: 0.45;
+}
+
+/* ---- QR panel ---- */
+
+/* Top-right, clear of the spectrum labels that sit at the bottom corners. */
+.wl-qr-panel {
+  position: absolute;
+  top: 1.5vh;
+  right: 2vw;
+  width: clamp(96px, 11vh, 168px);
+  padding: 0.55rem;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: width 260ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    top 260ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    right 260ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+/* Pressing Q (or clicking) blows it up in the middle of the screen so the
+   clue giver can scan it from wherever they're standing. */
+.wl-qr-panel.is-large {
+  top: 50%;
+  right: 50%;
+  width: clamp(240px, 46vh, 520px);
+  transform: translate(50%, -50%);
+  z-index: 10;
+}
+
+.wl-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.wl-qr--failed {
+  padding: 0.3rem;
+}
+
+.wl-qr-error-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #b91c1c;
+  text-transform: uppercase;
+}
+
+.wl-qr-error-url {
+  font-size: 0.5rem;
+  color: #333;
+  word-break: break-all;
+}
+
+.wl-qr-caption {
+  margin-top: 0.35rem;
+  color: #4b4780;
+  font-size: clamp(0.5rem, 1.3vh, 0.8rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.wl-fatal {
+  padding: 1rem;
+  background: #7f1d1d;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ============================================================
+   CLUE VIEW (phone, portrait)
+   ============================================================ */
+
+.wl-clue {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.15rem;
+  font-family: var(--wl-font);
+  color: var(--wl-ink);
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 0%, #2b1e6b 0%, transparent 60%),
+    #0b0a1c;
+}
+
+.wl-clue-empty {
+  text-align: center;
+}
+
+.wl-clue-empty h1 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.wl-clue-empty p {
+  margin-top: 0.6rem;
+  color: var(--wl-dim);
+  line-height: 1.5;
+}
+
+.wl-clue-card {
+  width: 100%;
+  max-width: 30rem;
+}
+
+.wl-clue-round {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--wl-dim);
+}
+
+.wl-clue-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.6rem;
+}
+
+.wl-clue-label {
+  flex: 1 1 0;
+  font-size: clamp(1rem, 5.5vw, 1.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #56b3ff;
+}
+
+.wl-clue-label--right {
+  text-align: right;
+  color: #ffc738;
+}
+
+/* ---- Horizontal spectrum ---- */
+
+.wl-clue-spectrum {
+  position: relative;
+  height: 5.5rem;
+  margin-top: 2.2rem;
+}
+
+.wl-clue-track {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #2c2a5e;
+  border-radius: 0.75rem;
+  background: #16143a;
+}
+
+.wl-clue-bands {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.wl-clue-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: rgba(11, 10, 28, 0.7);
+}
+
+.wl-clue-band--2 {
+  background: var(--wl-band-2);
+}
+.wl-clue-band--3 {
+  background: var(--wl-band-3);
+}
+.wl-clue-band--4 {
+  background: var(--wl-band-4);
+}
+
+/* A pointer above the bar rather than a bar straight through it, so the
+   target center is unmistakable without covering the 4-point band. */
+.wl-clue-marker {
+  position: absolute;
+  top: -1.5rem;
+  bottom: -0.6rem;
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.wl-clue-marker::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-right: 0.45rem solid transparent;
+  border-left: 0.45rem solid transparent;
+  border-top: 0.6rem solid #fff;
+}
+
+.wl-clue-hint {
+  margin-top: 1.6rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--wl-dim);
+}
+
+.wl-clue-hide {
+  display: block;
+  width: 100%;
+  margin-top: 1.8rem;
+  padding: 1rem;
+  border: 1px solid #3d3873;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--wl-ink);
+  font-family: var(--wl-font);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+}
+
+.wl-clue-hidden-note {
+  display: none;
+  margin-top: 1.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--wl-dim);
+}
+
+/* Once the clue has been given, blank the target out entirely. */
+.wl-clue[data-hidden='true'] .wl-clue-bands,
+.wl-clue[data-hidden='true'] .wl-clue-marker,
+.wl-clue[data-hidden='true'] .wl-clue-hint {
+  visibility: hidden;
+}
+
+.wl-clue[data-hidden='true'] .wl-clue-hidden-note {
+  display: block;
+}

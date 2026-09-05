@@ -42,9 +42,13 @@
         <h1 id="lesson-title" class="text-3xl font-bold"></h1>
         <p id="lesson-content-name" class="hidden text-sm text-base-content/70 mb-2"></p>
 
+        <!-- Math Content tags (Grade · Domain · Topic, primary starred) -->
+        <div id="taxonomy-container" class="hidden flex flex-wrap gap-1.5 mb-4 text-sm"></div>
+
         <!-- Diagram -->
         <div id="diagram-container" class="my-4 hidden">
-          <img id="lesson-diagram" src="" alt="Lesson diagram" class="max-w-full h-auto rounded-lg shadow" />
+          <img id="lesson-diagram" src="" alt="Lesson diagram" class="max-w-full h-auto rounded-lg shadow cursor-zoom-in hover:opacity-90 transition" />
+          <p class="text-xs text-gray-500 mt-1">Click the image to view it full screen</p>
         </div>
 
         <!-- Description -->
@@ -72,7 +76,7 @@
         <!-- Questions -->
         <div id="questions-container" class="mb-6 hidden">
           <p class="text-sm font-semibold text-gray-600 mb-2">Questions</p>
-          <ul id="lesson-questions" class="list-disc list-inside space-y-1 p-4 bg-base-200 rounded-lg"></ul>
+          <ul id="lesson-questions" class="space-y-2 p-4 bg-base-200 rounded-lg"></ul>
         </div>
 
         <!-- Author & Date -->
@@ -83,6 +87,20 @@
     </div>
   </div>
 </div>
+
+<!-- Fullscreen image lightbox -->
+<dialog id="image-lightbox" class="modal p-0">
+  <div class="modal-box max-w-none w-screen h-screen max-h-screen rounded-none bg-black/95 flex items-center justify-center p-4">
+    <div class="absolute top-4 right-4 flex gap-2 z-10">
+      <button id="fullscreen-btn" type="button" class="btn btn-sm btn-outline text-white border-white/40 hover:bg-white/10 hover:text-white">Fullscreen</button>
+      <button id="close-lightbox-btn" type="button" class="btn btn-sm btn-circle btn-outline text-white border-white/40 hover:bg-white/10 hover:text-white">✕</button>
+    </div>
+    <img id="lightbox-img" src="" alt="Lesson diagram (full screen)" class="max-w-full max-h-full object-contain" />
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
 
 <script type="module">
 import { requireAuth, logout, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
@@ -118,6 +136,70 @@ function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
+
+function renderMathContentTags(mathContent) {
+  if (!mathContent || mathContent.length === 0) return;
+  const sorted = [...mathContent].sort((a, b) => (b.isPrimary) - (a.isPrimary));
+  document.getElementById('taxonomy-container').innerHTML = sorted.map(m => {
+    const label = [m.gradeCourse, m.domain, m.topic].filter(Boolean).join(' \u00b7 ');
+    return `<span class="badge badge-outline">${m.isPrimary ? '\u2b50 ' : ''}${escapeHtml(label)}</span>`;
+  }).join(' ');
+  document.getElementById('taxonomy-container').classList.remove('hidden');
+}
+
+const QUESTION_TYPE_META = {
+  extension: {
+    label: 'Extension',
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7a3 3 0 11-3.75-3.75" /></svg>'
+  },
+  probing: {
+    label: 'Probing',
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>'
+  },
+  connecting: {
+    label: 'Connecting',
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>'
+  }
+};
+
+function renderQuestions(questions) {
+  return questions.map(q => {
+    const meta = QUESTION_TYPE_META[q.type] || QUESTION_TYPE_META.connecting;
+    return `<li class="flex items-start gap-2"><span class="mt-0.5 shrink-0" title="${meta.label}">${meta.icon}</span><span>${escapeHtml(q.text)}</span></li>`;
+  }).join('');
+}
+
+// Fullscreen image lightbox
+const lightbox = document.getElementById('image-lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+document.getElementById('lesson-diagram').addEventListener('click', () => {
+  lightboxImg.src = document.getElementById('lesson-diagram').src;
+  lightbox.showModal();
+});
+
+document.getElementById('close-lightbox-btn').addEventListener('click', () => {
+  lightbox.close();
+});
+
+fullscreenBtn.addEventListener('click', () => {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else {
+    lightboxImg.requestFullscreen?.().catch(() => {});
+  }
+});
+
+document.addEventListener('fullscreenchange', () => {
+  fullscreenBtn.textContent = document.fullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+});
+
+lightbox.addEventListener('close', () => {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  }
+});
 
 document.getElementById('edit-link').href = `/teacherportal/lesson-edit/?id=${lessonId}`;
 document.getElementById('edit-link').classList.remove('hidden');
@@ -155,11 +237,12 @@ if (!result.success) {
     document.getElementById('strategies-container').classList.remove('hidden');
   }
 
-  if (lesson.connecting_questions?.length > 0) {
-    document.getElementById('lesson-questions').innerHTML =
-      lesson.connecting_questions.map(q => `<li>${escapeHtml(q)}</li>`).join('');
+  if (lesson.questions?.length > 0) {
+    document.getElementById('lesson-questions').innerHTML = renderQuestions(lesson.questions);
     document.getElementById('questions-container').classList.remove('hidden');
   }
+
+  renderMathContentTags(lesson.mathContent);
 
   document.getElementById('lesson-author').textContent = lesson.author;
   document.getElementById('lesson-date').textContent = formatDate(lesson.created_at);

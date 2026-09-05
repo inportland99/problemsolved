@@ -47,6 +47,25 @@
       <a href="/teacherportal/lesson-edit/" class="btn btn-primary">Create First Lesson</a>
     </div>
 
+    <!-- Taxonomy Filters -->
+    <div id="taxonomy-filters" class="hidden flex flex-wrap items-center gap-3 mb-4">
+      <select id="filter-grade" class="select select-bordered select-sm">
+        <option value="">All Grades/Courses</option>
+      </select>
+      <select id="filter-domain" class="select select-bordered select-sm">
+        <option value="">All Domains</option>
+      </select>
+      <select id="filter-topic" class="select select-bordered select-sm">
+        <option value="">All Topics</option>
+      </select>
+      <button id="clear-filters" type="button" class="btn btn-ghost btn-sm">Clear Filters</button>
+    </div>
+
+    <!-- No results after filtering -->
+    <div id="no-filter-results" class="hidden text-center py-12 text-gray-500">
+      No lessons match the selected filters.
+    </div>
+
     <!-- Lessons Table -->
     <div id="lessons-table-container" class="hidden overflow-x-auto">
       <table class="table bg-base-100 shadow">
@@ -83,11 +102,68 @@
 <script type="module">
 import { requireAuth, logout, isAdmin, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 import { getAllLessons, deleteLesson } from '/assets/js/lessons-db.js';
+import { getTaxonomy } from '/assets/js/taxonomy-db.js';
 
 // Auth guard — redirects to login if not authenticated
 const user = await requireAuth();
 const adminUser = await isAdmin();
 renderUserBadge('user-badge');
+
+// Grade/Course, Domain & Topic filters, sourced from the relational
+// taxonomy (see taxonomy-db.js) rather than the old inlined JSON.
+const taxonomyResult = await getTaxonomy();
+const TAXONOMY = taxonomyResult.success ? taxonomyResult.data : [];
+if (!taxonomyResult.success) {
+  showAlert('Failed to load Math Content taxonomy options', 'error');
+}
+const filterState = { grade: '', domain: '', topic: '' };
+
+function populateFilterSelect(selectId, values) {
+  const select = document.getElementById(selectId);
+  values.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = v;
+    select.appendChild(opt);
+  });
+}
+
+function uniqueSorted(key, sortKey) {
+  const seen = new Map();
+  TAXONOMY.forEach(row => {
+    if (!seen.has(row[key])) seen.set(row[key], row[sortKey]);
+  });
+  return Array.from(seen.entries())
+    .sort((a, b) => a[1] - b[1])
+    .map(([name]) => name);
+}
+
+const allTopics = Array.from(new Set(TAXONOMY.map(t => t.topic))).sort((a, b) => a.localeCompare(b));
+populateFilterSelect('filter-grade', uniqueSorted('gradeCourse', 'gradeCourseSortOrder'));
+populateFilterSelect('filter-domain', uniqueSorted('domain', 'domainSortOrder'));
+populateFilterSelect('filter-topic', allTopics);
+
+document.getElementById('filter-grade').addEventListener('change', (e) => {
+  filterState.grade = e.target.value;
+  renderLessons();
+});
+document.getElementById('filter-domain').addEventListener('change', (e) => {
+  filterState.domain = e.target.value;
+  renderLessons();
+});
+document.getElementById('filter-topic').addEventListener('change', (e) => {
+  filterState.topic = e.target.value;
+  renderLessons();
+});
+document.getElementById('clear-filters').addEventListener('click', () => {
+  filterState.grade = '';
+  filterState.domain = '';
+  filterState.topic = '';
+  document.getElementById('filter-grade').value = '';
+  document.getElementById('filter-domain').value = '';
+  document.getElementById('filter-topic').value = '';
+  renderLessons();
+});
 
 // Logout button
 document.getElementById('logout-btn').addEventListener('click', logout);
@@ -125,6 +201,16 @@ function displayDistrict(lesson) {
 let allLessons = [];
 const sortState = { field: 'title', direction: 'asc' };
 
+function getFilteredLessons() {
+  return allLessons.filter(lesson => {
+    const mathContent = lesson.mathContent || [];
+    const gradeOk = !filterState.grade || mathContent.some(m => m.gradeCourse === filterState.grade);
+    const domainOk = !filterState.domain || mathContent.some(m => m.domain === filterState.domain);
+    const topicOk = !filterState.topic || mathContent.some(m => m.topic === filterState.topic);
+    return gradeOk && domainOk && topicOk;
+  });
+}
+
 function sortLessons() {
   const getters = {
     title: displayTitle,
@@ -132,7 +218,7 @@ function sortLessons() {
     district: displayDistrict
   };
   const getValue = getters[sortState.field];
-  const sorted = [...allLessons].sort((a, b) => {
+  const sorted = [...getFilteredLessons()].sort((a, b) => {
     const cmp = getValue(a).localeCompare(getValue(b), undefined, { sensitivity: 'base' });
     return sortState.direction === 'asc' ? cmp : -cmp;
   });
@@ -188,17 +274,28 @@ async function loadLessons() {
   }
 
   allLessons = result.data;
+  document.getElementById('taxonomy-filters').classList.remove('hidden');
   renderLessons();
 }
 
-// Render the (sorted) lessons into the table
+// Render the (sorted, filtered) lessons into the table
 function renderLessons() {
   const tableContainer = document.getElementById('lessons-table-container');
   const tbody = document.getElementById('lessons-body');
+  const noFilterResults = document.getElementById('no-filter-results');
 
   updateSortIndicators();
 
   const sorted = sortLessons();
+
+  if (sorted.length === 0) {
+    tbody.innerHTML = '';
+    tableContainer.classList.add('hidden');
+    noFilterResults.classList.remove('hidden');
+    return;
+  }
+  noFilterResults.classList.add('hidden');
+
   tbody.innerHTML = sorted.map(lesson => createLessonRow(lesson)).join('');
   tableContainer.classList.remove('hidden');
 

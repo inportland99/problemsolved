@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wavelength - Your Clue</title>
+  <meta name="description" content="The secret target for this round.">
+  <link rel="stylesheet" href="/styles/output.css">
+  <link rel="stylesheet" href="/assets/css/wavelength.css">
+</head>
+<body class="min-h-screen">
+  
+<div class="wl-clue" id="wl-clue" data-hidden="false">
+
+  <div class="wl-clue-empty" id="wl-clue-empty" hidden>
+    <h1>No round found</h1>
+    <p>Scan the QR code on the screen to see this round&rsquo;s target.</p>
+  </div>
+
+  <div class="wl-clue-card" id="wl-clue-card" hidden>
+    <p class="wl-clue-round">Round <span id="wl-clue-round">1</span></p>
+
+    <div class="wl-clue-labels">
+      <span class="wl-clue-label" id="wl-clue-left">Worthless</span>
+      <span class="wl-clue-label wl-clue-label--right" id="wl-clue-right">Priceless</span>
+    </div>
+
+    <div class="wl-clue-spectrum">
+      <div class="wl-clue-track"></div>
+      <div class="wl-clue-bands" id="wl-clue-bands"></div>
+      <div class="wl-clue-marker" id="wl-clue-marker"></div>
+    </div>
+
+    <p class="wl-clue-hint">Your target is the bullseye. Give a clue that lands there.</p>
+
+    <button type="button" class="wl-clue-hide" id="wl-clue-hide">CLUE GIVEN</button>
+
+    <p class="wl-clue-hidden-note">Target hidden. Let the room decide.</p>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initClue } from '/assets/js/wavelength/clue.js';
+
+  try {
+    initClue(document.getElementById('wl-clue'));
+  } catch (error) {
+    console.error('[wavelength] Clue view failed to start:', error);
+    document.getElementById('wl-clue-empty').hidden = false;
+  }
+</script>
+
+</body>
+</html>

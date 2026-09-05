@@ -127,8 +127,9 @@
       <!-- Questions -->
       <div class="form-control">
         <label class="label">
-          <span class="label-text font-semibold">Questions (Extension, Probing, Connecting)</span>
+          <span class="label-text font-semibold">Questions</span>
         </label>
+        <p class="text-sm text-base-content/60 mb-2">Pick a type for each question: Extension, Probing, or Connecting.</p>
         <div id="questions-container" class="space-y-2">
           <!-- Question items will be added here -->
         </div>
@@ -138,6 +139,15 @@
           </svg>
           Add Question
         </button>
+      </div>
+
+      <!-- Math Content -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Math Content</span>
+        </label>
+        <p class="text-sm text-base-content/60 mb-2">Filter by Grade/Course and Domain to browse, or search by topic name, then check each Math Topic that applies. Star one selected topic to mark it primary.</p>
+        <div id="taxonomy-picker-container"></div>
       </div>
 
       <!-- Author -->
@@ -173,6 +183,8 @@ import { requireAuth, logout, isAdmin, renderUserBadge } from '/assets/js/teache
 import { getLessonById, createLesson, updateLesson, uploadLessonImage } from '/assets/js/lessons-db.js';
 import { getAllDistricts } from '/assets/js/districts-db.js';
 import { getCurrentTeacher } from '/assets/js/teachers-db.js';
+import { getTaxonomy } from '/assets/js/taxonomy-db.js';
+import { renderTaxonomyPicker } from '/assets/js/math-taxonomy-picker.js';
 
 // Auth guard — redirects to login if not authenticated
 await requireAuth();
@@ -223,6 +235,17 @@ if (adminUser) {
   renderLockedDistrictField(ownDistrictId);
 }
 
+// Math Content tag picker
+const taxonomyResult = await getTaxonomy();
+const TAXONOMY = taxonomyResult.success ? taxonomyResult.data : [];
+if (!taxonomyResult.success) {
+  showAlert('Failed to load Math Content taxonomy options', 'error');
+}
+let taxonomyPicker = renderTaxonomyPicker(
+  document.getElementById('taxonomy-picker-container'),
+  TAXONOMY
+);
+
 // Alert helper
 function showAlert(message, type = 'info') {
   const container = document.getElementById('alert-container');
@@ -264,6 +287,45 @@ function getItemValues(containerId) {
   return Array.from(inputs)
     .map(input => input.value.trim())
     .filter(val => val !== '');
+}
+
+const QUESTION_TYPES = ['extension', 'probing', 'connecting'];
+const QUESTION_TYPE_LABELS = { extension: 'Extension', probing: 'Probing', connecting: 'Connecting' };
+
+// Create a removable typed-question row
+function createQuestionRow(type = 'extension', text = '') {
+  const container = document.getElementById('questions-container');
+  const row = document.createElement('div');
+  row.className = 'flex gap-2';
+  row.innerHTML = `
+    <select class="select select-bordered question-type">
+      ${QUESTION_TYPES.map(t => `<option value="${t}" ${t === type ? 'selected' : ''}>${QUESTION_TYPE_LABELS[t]}</option>`).join('')}
+    </select>
+    <input type="text" class="input input-bordered flex-1 question-text" placeholder="Question text" value="${escapeHtml(text)}">
+    <button type="button" class="btn btn-outline btn-error btn-sm remove-item">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  `;
+
+  row.querySelector('.remove-item').addEventListener('click', () => {
+    row.remove();
+  });
+
+  container.appendChild(row);
+  return row;
+}
+
+// Get all typed questions from the questions container
+function getQuestionValues() {
+  const rows = document.querySelectorAll('#questions-container > div');
+  return Array.from(rows)
+    .map(row => ({
+      type: row.querySelector('.question-type').value,
+      text: row.querySelector('.question-text').value.trim()
+    }))
+    .filter(q => q.text !== '');
 }
 
 // Escape HTML
@@ -325,11 +387,23 @@ async function loadLesson(id) {
   }
   
   // Questions
-  if (lesson.connecting_questions?.length > 0) {
-    lesson.connecting_questions.forEach(question => {
-      createItemRow('questions-container', question);
+  if (lesson.questions?.length > 0) {
+    lesson.questions.forEach(question => {
+      createQuestionRow(question.type, question.text);
     });
   }
+
+  // Math Content
+  const existingMathContent = lesson.mathContent || [];
+  const primaryEntry = existingMathContent.find(m => m.isPrimary);
+  taxonomyPicker = renderTaxonomyPicker(
+    document.getElementById('taxonomy-picker-container'),
+    TAXONOMY,
+    {
+      taxonomyIds: existingMathContent.map(m => m.taxonomyId),
+      primaryTaxonomyId: primaryEntry ? primaryEntry.taxonomyId : null
+    }
+  );
 }
 
 // Handle image file selection
@@ -376,7 +450,7 @@ document.querySelectorAll('.strategy-preset').forEach(btn => {
 
 // Add question button
 document.getElementById('add-question').addEventListener('click', () => {
-  createItemRow('questions-container');
+  createQuestionRow();
 });
 
 // Form submission
@@ -402,7 +476,8 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
     const author = document.getElementById('author').value.trim();
     const districtId = document.getElementById('district-id').value || null;
     const anticipatedStrategies = getItemValues('strategies-container');
-    const connectingQuestions = getItemValues('questions-container');
+    const questions = getQuestionValues();
+    const mathContentSelection = taxonomyPicker.getSelection();
     
     // Validate
     if (!title || !learningGoal || !task || !author) {
@@ -435,7 +510,8 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
       diagramUrl,
       launchDetails,
       anticipatedStrategies,
-      connectingQuestions,
+      questions,
+      mathContentSelection,
       author,
       districtId
     };

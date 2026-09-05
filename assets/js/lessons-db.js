@@ -1,4 +1,24 @@
 import { supabase, getCurrentUser } from './lessons-supabase-client.js';
+import { flattenLessonMathTopics, setLessonMathTopics } from './taxonomy-db.js';
+
+// Nested select fragment pulling each lesson's tagged Math Topics
+// (Grade/Course + Domain + Math Topic, via the taxonomy table) along
+// with whether each is the lesson's primary topic.
+const MATH_CONTENT_SELECT = `lesson_math_topics(
+  is_primary,
+  taxonomy:taxonomy_id (
+    id,
+    grade_course:grades_courses(name),
+    domain:domains(name),
+    math_topic:math_topics(name)
+  )
+)`;
+
+function withMathContent(lesson) {
+  if (!lesson) return lesson;
+  const { lesson_math_topics, ...rest } = lesson;
+  return { ...rest, mathContent: flattenLessonMathTopics(lesson_math_topics) };
+}
 
 /**
  * Get all math lessons (public, no auth required for now)
@@ -8,7 +28,7 @@ export async function getAllLessons() {
   try {
     const { data, error } = await supabase
       .from('math_lessons')
-      .select('*, districts(name)')
+      .select(`*, districts(name), ${MATH_CONTENT_SELECT}`)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -16,7 +36,7 @@ export async function getAllLessons() {
       return { success: false, error };
     }
 
-    return { success: true, data };
+    return { success: true, data: (data || []).map(withMathContent) };
   } catch (err) {
     console.error('Unexpected error fetching lessons:', err);
     return { success: false, error: { message: err.message } };
@@ -32,7 +52,7 @@ export async function getLessonById(lessonId) {
   try {
     const { data, error } = await supabase
       .from('math_lessons')
-      .select('*')
+      .select(`*, ${MATH_CONTENT_SELECT}`)
       .eq('id', lessonId)
       .single();
 
@@ -41,7 +61,7 @@ export async function getLessonById(lessonId) {
       return { success: false, error };
     }
 
-    return { success: true, data };
+    return { success: true, data: withMathContent(data) };
   } catch (err) {
     console.error('Unexpected error fetching lesson:', err);
     return { success: false, error: { message: err.message } };
@@ -67,7 +87,7 @@ export async function createLesson(lesson) {
         diagram_url: lesson.diagramUrl || null,
         launch_details: lesson.launchDetails || null,
         anticipated_strategies: lesson.anticipatedStrategies || [],
-        connecting_questions: lesson.connectingQuestions || [],
+        questions: lesson.questions || [],
         author: lesson.author,
         district_id: lesson.districtId || null,
         created_by: user?.id || null
@@ -79,7 +99,21 @@ export async function createLesson(lesson) {
       return { success: false, error };
     }
 
-    return { success: true, data: data[0] };
+    const newLesson = data[0];
+
+    if (lesson.mathContentSelection) {
+      const tagResult = await setLessonMathTopics(newLesson.id, lesson.mathContentSelection);
+      if (!tagResult.success) {
+        console.error('Error saving Math Content tags for new lesson:', tagResult.error);
+        return {
+          success: false,
+          data: newLesson,
+          error: { message: 'Lesson was created, but Math Content tags failed to save. Edit the lesson to try again.' }
+        };
+      }
+    }
+
+    return { success: true, data: newLesson };
   } catch (err) {
     console.error('Unexpected error creating lesson:', err);
     return { success: false, error: { message: err.message } };
@@ -103,7 +137,7 @@ export async function updateLesson(lessonId, updates) {
     if (updates.diagramUrl !== undefined) updateData.diagram_url = updates.diagramUrl;
     if (updates.launchDetails !== undefined) updateData.launch_details = updates.launchDetails;
     if (updates.anticipatedStrategies !== undefined) updateData.anticipated_strategies = updates.anticipatedStrategies;
-    if (updates.connectingQuestions !== undefined) updateData.connecting_questions = updates.connectingQuestions;
+    if (updates.questions !== undefined) updateData.questions = updates.questions;
     if (updates.author !== undefined) updateData.author = updates.author;
     if (updates.districtId !== undefined) updateData.district_id = updates.districtId;
 
@@ -126,6 +160,18 @@ export async function updateLesson(lessonId, updates) {
       const message = 'No lesson was updated. You may not have permission to edit this lesson (e.g. it belongs to a different district).';
       console.error('Error updating lesson:', message);
       return { success: false, error: { message } };
+    }
+
+    if (updates.mathContentSelection !== undefined) {
+      const tagResult = await setLessonMathTopics(lessonId, updates.mathContentSelection);
+      if (!tagResult.success) {
+        console.error('Error saving Math Content tags:', tagResult.error);
+        return {
+          success: false,
+          data: data[0],
+          error: { message: 'Lesson was updated, but Math Content tags failed to save. Try saving again.' }
+        };
+      }
     }
 
     return { success: true, data: data[0] };

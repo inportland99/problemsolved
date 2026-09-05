@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wavelength</title>
+  <meta name="description" content="A party game of guessing where a clue falls on a spectrum.">
+  <link rel="stylesheet" href="/styles/output.css">
+  <link rel="stylesheet" href="/assets/css/wavelength.css">
+</head>
+<body class="min-h-screen">
+  
+<div class="wl-board" id="wl-board" data-revealed="false">
+
+  <header class="wl-topbar">
+    <div class="wl-round-chip">Round <span id="wl-round">1</span></div>
+    <div class="wl-brand">Wavelength</div>
+    <div class="wl-topbar-spacer"></div>
+  </header>
+
+  <main class="wl-stage">
+    <div class="wl-label wl-label--left" id="wl-left-label">Worthless</div>
+
+    <div class="wl-gauge-wrap">
+      <svg id="wl-gauge" class="wl-gauge" viewBox="0 0 1000 560" role="img"
+           aria-label="Spectrum dial with a movable needle">
+        <path id="wl-track" class="wl-track"></path>
+        <g id="wl-bands" class="wl-bands"></g>
+        <g id="wl-ticks" class="wl-ticks"></g>
+        <line id="wl-target-line" class="wl-target-line"></line>
+        <g id="wl-needle" class="wl-needle">
+          <path class="wl-needle-shape" d="M 500 14 L 514 452 L 500 516 L 486 452 Z"></path>
+        </g>
+        <circle class="wl-hub" cx="500" cy="500" r="34"></circle>
+        <circle class="wl-hub-dot" cx="500" cy="500" r="12"></circle>
+
+        
+        <g id="wl-score" class="wl-score" aria-live="polite">
+          <rect id="wl-score-bg" class="wl-score-bg" width="0" height="0"></rect>
+          <text id="wl-score-text" class="wl-score-text" x="500" y="380"></text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="wl-label wl-label--right" id="wl-right-label">Priceless</div>
+  </main>
+
+  <footer class="wl-footer">
+    <div class="wl-controls">
+      <button type="button" class="wl-btn" id="wl-btn-left" aria-label="Move needle left">&#9664;</button>
+      <button type="button" class="wl-btn" id="wl-btn-right" aria-label="Move needle right">&#9654;</button>
+      <button type="button" class="wl-btn wl-btn--wide" id="wl-btn-reveal">Reveal</button>
+      <button type="button" class="wl-btn wl-btn--wide" id="wl-btn-next">Next</button>
+    </div>
+    <p class="wl-keyhints">
+      <kbd>&larr;</kbd><kbd>&rarr;</kbd> move
+      <span>&middot;</span> <kbd>Shift</kbd> fine
+      <span>&middot;</span> <kbd>Space</kbd> reveal
+      <span>&middot;</span> <kbd>N</kbd> next
+      <span>&middot;</span> <kbd>R</kbd> reroll
+      <span>&middot;</span> <kbd>F</kbd> fullscreen
+      <span>&middot;</span> <kbd>Q</kbd> qr
+    </p>
+  </footer>
+
+  <aside class="wl-qr-panel" id="wl-qr-panel" title="Scan to give the clue (press Q to enlarge)">
+    <div class="wl-qr" id="wl-qr"></div>
+    <p class="wl-qr-caption">Scan to give the clue</p>
+  </aside>
+
+</div>
+
+<script type="module">
+  import { initBoard } from '/assets/js/wavelength/board.js';
+
+  try {
+    initBoard(document.getElementById('wl-board'));
+  } catch (error) {
+    console.error('[wavelength] Board failed to start:', error);
+    document.getElementById('wl-board').insertAdjacentHTML(
+      'afterbegin',
+      '<p class="wl-fatal">The board failed to start. Check the browser console for details.</p>'
+    );
+  }
+</script>
+
+</body>
+</html>
