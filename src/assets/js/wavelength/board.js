@@ -7,10 +7,10 @@
 // wavelength-clue.njk. Otherwise phones that already cached the old module
 // keep running stale code after a deploy (this bit us once: a decoder fix
 // shipped, but a phone's cached copy of round.js still ran the old logic).
-import { GAUGE, bandArcPath, bandLabelPoint, pointOnArc, positionToAngle } from './gauge.js?v=5';
-import { newRound, rerollTarget, clueUrlForRound } from './round.js?v=5';
-import { bandRanges, calculateScore, clampPosition } from './scoring.js?v=5';
-import { renderQr } from './qr.js?v=5';
+import { GAUGE, bandArcPath, bandLabelPoint, pointOnArc, positionToAngle } from './gauge.js?v=6';
+import { newRound, rerollTarget, clueUrlForRound } from './round.js?v=6';
+import { bandRanges, calculateScore, clampPosition } from './scoring.js?v=6';
+import { renderQr } from './qr.js?v=6';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -37,6 +37,7 @@ export function initBoard(root) {
     bands: root.querySelector('#wl-bands'),
     bandsContent: root.querySelector('#wl-bands-content'),
     screen: root.querySelector('#wl-screen'),
+    screenRotor: root.querySelector('#wl-screen-rotor'),
     targetLine: root.querySelector('#wl-target-line'),
     needle: root.querySelector('#wl-needle'),
     score: root.querySelector('#wl-score'),
@@ -145,11 +146,13 @@ export function initBoard(root) {
     renderScore();
     root.dataset.revealed = 'true';
 
-    // Restart the CSS animations from the top.
-    el.screen.classList.remove('is-revealed');
+    // Restart the CSS animations from the top. Reflow is forced via
+    // getBoundingClientRect() rather than offsetWidth, since offsetWidth
+    // is unreliable on SVG elements in some browsers.
+    el.screenRotor.classList.remove('is-revealed');
     el.score.classList.remove('is-revealed');
-    void el.screen.offsetWidth;
-    el.screen.classList.add('is-revealed');
+    void el.screenRotor.getBoundingClientRect();
+    el.screenRotor.classList.add('is-revealed');
     el.score.classList.add('is-revealed');
   }
 
@@ -163,7 +166,7 @@ export function initBoard(root) {
 
     // Snap the screen back to fully covering (no transition) for the next
     // round's reveal.
-    el.screen.classList.remove('is-revealed');
+    el.screenRotor.classList.remove('is-revealed');
     el.score.classList.remove('is-revealed');
     el.bandsContent.replaceChildren();
 

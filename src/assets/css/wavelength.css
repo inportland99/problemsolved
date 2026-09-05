@@ -139,19 +139,24 @@
 }
 
 /* The sliding cover, styled identically to the empty track underneath it so
-   pre-reveal the dial reads as a plain, untouched semicircle. Pivots around
-   the same point the needle rotates on and slowly sweeps 180deg clockwise
-   — like the physical game's occluder — progressively exposing the bands
-   underneath from left to right as it swings out of the way. */
+   pre-reveal the dial reads as a plain, untouched semicircle. It slowly
+   sweeps 180deg clockwise around the hub — like the physical game's
+   occluder — progressively exposing the bands underneath from left to
+   right as it swings out of the way.
+
+   The rotation is applied to .wl-screen-rotor, a wrapper <g> in the markup
+   (not to this element). Its ancestor <g>s carry static SVG `transform`
+   attributes that shift the hub (500,500) to the local origin and back, so
+   this rule never needs `transform-origin`/`transform-box`: rotating
+   around the default (0,0) origin is the one case every browser (notably
+   Safari) computes identically. */
 .wl-screen {
   fill: #16143a;
   stroke: #2c2a5e;
   stroke-width: 3;
-  transform-box: view-box;
-  transform-origin: 500px 500px;
 }
 
-.wl-screen.is-revealed {
+.wl-screen-rotor.is-revealed {
   animation: wl-screen-open 2400ms linear forwards;
 }
 
@@ -205,10 +210,11 @@
 
 /* ---- Needle ---- */
 
-.wl-needle {
-  transform-box: view-box;
-  transform-origin: 500px 500px;
-}
+/* Rotation is applied here directly (from board.js), pivoting on the hub.
+   As with .wl-screen-rotor above, the pivot is baked into static SVG
+   `transform` attributes on this element's markup ancestor/descendant
+   <g>s rather than via `transform-origin`, which Safari has long-standing
+   bugs computing correctly against an SVG view-box reference. */
 
 .wl-needle-shape {
   fill: var(--wl-needle);
