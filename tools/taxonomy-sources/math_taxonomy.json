@@ -1,0 +1,1934 @@
+{
+  "gradeCourses": [
+    "K",
+    "Grade 1",
+    "Grade 2",
+    "Grade 3",
+    "Grade 4",
+    "Grade 5",
+    "Grade 6",
+    "Grade 7",
+    "Grade 8",
+    "Algebra 1",
+    "Geometry",
+    "Algebra 2",
+    "Precalculus",
+    "Statistics"
+  ],
+  "domains": [
+    "Counting & Cardinality",
+    "Operations & Algebraic Thinking",
+    "Number & Operations in Base Ten",
+    "Measurement & Data",
+    "Geometry",
+    "Number & Operations—Fractions",
+    "Ratios & Proportional Relationships",
+    "The Number System",
+    "Expressions & Equations",
+    "Statistics & Probability",
+    "Functions",
+    "Number & Quantity",
+    "Algebra"
+  ],
+  "topics": [
+    {
+      "domain": "Counting & Cardinality",
+      "topic": "Number Names & Counting",
+      "courses": [
+        {
+          "gradeCourse": "K",
+          "standards": "K.CC.1–K.CC.3",
+          "cluster": "Know number names and the count sequence"
+        }
+      ]
+    },
+    {
+      "domain": "Counting & Cardinality",
+      "topic": "Counting Objects",
+      "courses": [
+        {
+          "gradeCourse": "K",
+          "standards": "K.CC.4–K.CC.5",
+          "cluster": "Count to tell the number of objects"
+        }
+      ]
+    },
+    {
+      "domain": "Counting & Cardinality",
+      "topic": "Comparing Numbers",
+      "courses": [
+        {
+          "gradeCourse": "K",
+          "standards": "K.CC.6–K.CC.7",
+          "cluster": "Compare numbers"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Addition & Subtraction Concepts",
+      "courses": [
+        {
+          "gradeCourse": "K",
+          "standards": "K.OA.1–K.OA.5",
+          "cluster": "Understand addition as putting together and adding to, and understand subtrac..."
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Teen Numbers & Place Value",
+      "courses": [
+        {
+          "gradeCourse": "K",
+          "standards": "K.NBT.1",
+          "cluster": "Work with numbers 11–19 to gain foundations for place value"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Comparing Measurements",
+      "courses": [
+        {
+          "gradeCourse": "K",
+          "standards": "K.MD.1–K.MD.2",
+          "cluster": "Describe and compare measurable attributes"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Classifying & Counting Objects",
+      "courses": [
+        {
+          "gradeCourse": "K",
+          "standards": "K.MD.3",
+          "cluster": "Classify objects and count the number of objects in each category"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Identifying & Describing Shapes",
+      "courses": [
+        {
+          "gradeCourse": "K",
+          "standards": "K.G.1–K.G.3",
+          "cluster": "Identify and describe shapes"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Composing & Comparing Shapes",
+      "courses": [
+        {
+          "gradeCourse": "K",
+          "standards": "K.G.4–K.G.6",
+          "cluster": "Analyze, compare, create, and compose shapes"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Addition & Subtraction Word Problems",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.OA.1–1.OA.2",
+          "cluster": "Represent and solve problems involving addition and subtraction"
+        },
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.OA.1",
+          "cluster": "Represent and solve problems involving addition and subtraction"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Addition & Subtraction Strategies",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.OA.3–1.OA.4",
+          "cluster": "Understand and apply properties of operations and the relationship between ad..."
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Adding & Subtracting Within 20",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.OA.5–1.OA.6",
+          "cluster": "Add and subtract within 20"
+        },
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.OA.2",
+          "cluster": "Add and subtract within 20"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Addition & Subtraction Equations",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.OA.7–1.OA.8",
+          "cluster": "Work with addition and subtraction equations"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Counting to 120",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.NBT.1",
+          "cluster": "Extend the counting sequence"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Place Value & Comparing Numbers",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.NBT.2–1.NBT.3",
+          "cluster": "Understand place value"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Adding & Subtracting Within 100",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.NBT.4–1.NBT.6",
+          "cluster": "Use place value understanding and properties of operations to add and subtract"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Measuring Length",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.MD.1–1.MD.2",
+          "cluster": "Measure lengths indirectly and by iterating length units"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Telling Time",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.MD.3",
+          "cluster": "Tell and write time"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Data & Graphs",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.MD.4",
+          "cluster": "Represent and interpret data"
+        },
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.MD.9–2.MD.10",
+          "cluster": "Represent and interpret data"
+        },
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.MD.3–3.MD.4",
+          "cluster": "Represent and interpret data"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Shapes & Equal Shares",
+      "courses": [
+        {
+          "gradeCourse": "Grade 1",
+          "standards": "1.G.1–1.G.3",
+          "cluster": "Reason with shapes and their attributes"
+        },
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.G.1–2.G.3",
+          "cluster": "Reason with shapes and their attributes"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Odd & Even Numbers and Arrays",
+      "courses": [
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.OA.3–2.OA.4",
+          "cluster": "Work with equal groups of objects to gain foundations for multiplication"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Place Value to 1,000",
+      "courses": [
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.NBT.1–2.NBT.4",
+          "cluster": "Understand place value"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Adding & Subtracting Within 1,000",
+      "courses": [
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.NBT.5–2.NBT.9",
+          "cluster": "Use place value understanding and properties of operations to add and subtract"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Measuring & Estimating Length",
+      "courses": [
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.MD.1–2.MD.4",
+          "cluster": "Measure and estimate lengths in standard units"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Length & Number Lines",
+      "courses": [
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.MD.5–2.MD.6",
+          "cluster": "Relate addition and subtraction to length"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Time & Money",
+      "courses": [
+        {
+          "gradeCourse": "Grade 2",
+          "standards": "2.MD.7–2.MD.8",
+          "cluster": "Work with time and money"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Multiplication & Division Concepts",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.OA.1–3.OA.4",
+          "cluster": "Represent and solve problems involving multiplication and division"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Multiplication & Division Strategies",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.OA.5–3.OA.6",
+          "cluster": "Understand properties of multiplication and the relationship between multipli..."
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Multiplication & Division Facts Within 100",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.OA.7",
+          "cluster": "Multiply and divide within 100"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Four Operations & Arithmetic Patterns",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.OA.8–3.OA.9",
+          "cluster": "Solve problems involving the four operations, and identify and explain patter..."
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Rounding & Arithmetic Within 1,000",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.NBT.1–3.NBT.3",
+          "cluster": "Use place value understanding and properties of operations to perform multi-d..."
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations—Fractions",
+      "topic": "Understanding Fractions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.NF.1–3.NF.3",
+          "cluster": "Develop understanding of fractions as numbers"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Time, Volume & Mass",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.MD.1–3.MD.2",
+          "cluster": "Solve problems involving measurement and estimation of intervals of time, liq..."
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Area",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.MD.5–3.MD.7",
+          "cluster": "Geometric measurement: understand concepts of area and relate area to multipl..."
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Perimeter",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.MD.8",
+          "cluster": "Geometric measurement: recognize perimeter as an attribute of plane figures a..."
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Shapes & Equal Areas",
+      "courses": [
+        {
+          "gradeCourse": "Grade 3",
+          "standards": "3.G.1–3.G.2",
+          "cluster": "Reason with shapes and their attributes"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Four Operations Word Problems",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.OA.1–4.OA.3",
+          "cluster": "Use the four operations with whole numbers to solve problems"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Factors & Multiples",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.OA.4",
+          "cluster": "Gain familiarity with factors and multiples"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Number & Shape Patterns",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.OA.5",
+          "cluster": "Generate and analyze patterns"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Place Value & Rounding",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.NBT.1–4.NBT.3",
+          "cluster": "Generalize place value understanding for multi-digit whole numbers"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Multi-Digit Arithmetic",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.NBT.4–4.NBT.6",
+          "cluster": "Use place value understanding and properties of operations to perform multi-d..."
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations—Fractions",
+      "topic": "Equivalent & Comparing Fractions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.NF.1–4.NF.2",
+          "cluster": "Extend understanding of fraction equivalence and ordering"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations—Fractions",
+      "topic": "Adding, Subtracting & Multiplying Fractions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.NF.3–4.NF.4",
+          "cluster": "Build fractions from unit fractions by applying and extending previous unders..."
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations—Fractions",
+      "topic": "Decimals & Decimal Fractions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.NF.5–4.NF.7",
+          "cluster": "Understand decimal notation for fractions, and compare decimal fractions"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Measurement, Conversions, Area & Perimeter",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.MD.1–4.MD.3",
+          "cluster": "Solve problems involving measurement and conversion of measurements"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Data & Line Plots",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.MD.4",
+          "cluster": "Represent and interpret data"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Angles & Angle Measurement",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.MD.5–4.MD.7",
+          "cluster": "Geometric measurement: understand concepts of angle and measure angles"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Lines, Angles, Shapes & Symmetry",
+      "courses": [
+        {
+          "gradeCourse": "Grade 4",
+          "standards": "4.G.1–4.G.3",
+          "cluster": "Draw and identify lines and angles, and classify shapes by properties of their lines and angles"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Numerical Expressions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.OA.1–5.OA.2",
+          "cluster": "Write and interpret numerical expressions"
+        }
+      ]
+    },
+    {
+      "domain": "Operations & Algebraic Thinking",
+      "topic": "Patterns & Relationships",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.OA.3",
+          "cluster": "Analyze patterns and relationships"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Place Value & Decimals",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.NBT.1–5.NBT.4",
+          "cluster": "Understand the place value system"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations in Base Ten",
+      "topic": "Whole Number & Decimal Operations",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.NBT.5–5.NBT.7",
+          "cluster": "Perform operations with multi-digit whole numbers and with decimals to hundre..."
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations—Fractions",
+      "topic": "Adding & Subtracting Fractions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.NF.1–5.NF.2",
+          "cluster": "Use equivalent fractions as a strategy to add and subtract fractions"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Operations—Fractions",
+      "topic": "Multiplying & Dividing Fractions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.NF.3–5.NF.7",
+          "cluster": "Apply and extend previous understandings of multiplication and division to mu..."
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Measurement Conversions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.MD.1",
+          "cluster": "Convert like measurement units within a given measurement system"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Fraction Data & Line Plots",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.MD.2",
+          "cluster": "Represent and interpret data"
+        }
+      ]
+    },
+    {
+      "domain": "Measurement & Data",
+      "topic": "Volume",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.MD.3–5.MD.5",
+          "cluster": "Geometric measurement: understand concepts of volume and relate volume to mul..."
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Coordinate Plane",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.G.1–5.G.2",
+          "cluster": "Graph points on the coordinate plane to solve real-world and mathematical pro..."
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Classifying 2-Dimensional Figures",
+      "courses": [
+        {
+          "gradeCourse": "Grade 5",
+          "standards": "5.G.3–5.G.4",
+          "cluster": "Classify two-dimensional figures into categories based on their properties"
+        }
+      ]
+    },
+    {
+      "domain": "Ratios & Proportional Relationships",
+      "topic": "Ratios & Rates",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.RP.1–6.RP.3",
+          "cluster": "Understand ratio concepts and use ratio reasoning to solve problems"
+        }
+      ]
+    },
+    {
+      "domain": "The Number System",
+      "topic": "Dividing Fractions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.NS.1",
+          "cluster": "Apply and extend previous understandings of multiplication and division to di..."
+        }
+      ]
+    },
+    {
+      "domain": "The Number System",
+      "topic": "Multi-Digit Operations, Factors & Multiples",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.NS.2–6.NS.4",
+          "cluster": "Compute fluently with multi-digit numbers and find common factors and multiples"
+        }
+      ]
+    },
+    {
+      "domain": "The Number System",
+      "topic": "Rational Numbers",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.NS.5–6.NS.8",
+          "cluster": "Apply and extend previous understandings of numbers to the system of rational..."
+        }
+      ]
+    },
+    {
+      "domain": "Expressions & Equations",
+      "topic": "Expressions & Exponents",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.EE.1–6.EE.4",
+          "cluster": "Apply and extend previous understandings of arithmetic to algebraic expressions"
+        }
+      ]
+    },
+    {
+      "domain": "Expressions & Equations",
+      "topic": "Equations & Inequalities",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.EE.5–6.EE.8",
+          "cluster": "Reason about and solve one-variable equations and inequalities"
+        },
+        {
+          "gradeCourse": "Grade 7",
+          "standards": "7.EE.3–7.EE.4",
+          "cluster": "Solve real-life and mathematical problems using numerical and algebraic expre..."
+        }
+      ]
+    },
+    {
+      "domain": "Expressions & Equations",
+      "topic": "Variables & Relationships",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.EE.9",
+          "cluster": "Represent and analyze quantitative relationships between dependent and indepe..."
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Area, Surface Area & Volume",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.G.1–6.G.4",
+          "cluster": "Solve real-world and mathematical problems involving area, surface area, and ..."
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Statistical Variability",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.SP.1–6.SP.3",
+          "cluster": "Develop understanding of statistical variability"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Data Distributions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 6",
+          "standards": "6.SP.4–6.SP.5",
+          "cluster": "Summarize and describe distributions"
+        },
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSS.ID.A.1–4",
+          "cluster": "Summarize, represent, and interpret data on a single count or measurement variable",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSS.ID.A.1–4",
+          "cluster": "Summarize, represent, and interpret data on a single count or measurement variable",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Ratios & Proportional Relationships",
+      "topic": "Proportional Relationships",
+      "courses": [
+        {
+          "gradeCourse": "Grade 7",
+          "standards": "7.RP.1–7.RP.3",
+          "cluster": "Analyze proportional relationships and use them to solve real-world and mathe..."
+        }
+      ]
+    },
+    {
+      "domain": "The Number System",
+      "topic": "Operations with Rational Numbers",
+      "courses": [
+        {
+          "gradeCourse": "Grade 7",
+          "standards": "7.NS.1–7.NS.3",
+          "cluster": "Apply and extend previous understandings of operations with fractions to add,..."
+        }
+      ]
+    },
+    {
+      "domain": "Expressions & Equations",
+      "topic": "Equivalent Expressions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 7",
+          "standards": "7.EE.1–7.EE.2",
+          "cluster": "Use properties of operations to generate equivalent expressions"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Scale Drawings & Geometric Constructions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 7",
+          "standards": "7.G.1–7.G.3",
+          "cluster": "Draw, construct, and describe geometrical figures and describe the relationsh..."
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Angles, Circles, Area & Volume",
+      "courses": [
+        {
+          "gradeCourse": "Grade 7",
+          "standards": "7.G.4–7.G.6",
+          "cluster": "Solve real-life and mathematical problems involving angle measure, area, surf..."
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Sampling & Populations",
+      "courses": [
+        {
+          "gradeCourse": "Grade 7",
+          "standards": "7.SP.1–7.SP.2",
+          "cluster": "Use random sampling to draw inferences about a population"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Comparing Data Distributions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 7",
+          "standards": "7.SP.3–7.SP.4",
+          "cluster": "Draw informal comparative inferences about two populations"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Probability",
+      "courses": [
+        {
+          "gradeCourse": "Grade 7",
+          "standards": "7.SP.5–7.SP.8",
+          "cluster": "Investigate chance processes and develop, use, and evaluate probability models"
+        }
+      ]
+    },
+    {
+      "domain": "The Number System",
+      "topic": "Irrational Numbers",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.NS.1–8.NS.2",
+          "cluster": "Know that there are numbers that are not rational, and approximate them by ra..."
+        }
+      ]
+    },
+    {
+      "domain": "Expressions & Equations",
+      "topic": "Exponents, Roots & Scientific Notation",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.EE.1–8.EE.4",
+          "cluster": "Work with radicals and integer exponents"
+        }
+      ]
+    },
+    {
+      "domain": "Expressions & Equations",
+      "topic": "Slope & Linear Relationships",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.EE.5–8.EE.6",
+          "cluster": "Understand the connections between proportional relationships, lines, and lin..."
+        }
+      ]
+    },
+    {
+      "domain": "Expressions & Equations",
+      "topic": "Linear Equations & Systems",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.EE.7–8.EE.8",
+          "cluster": "Analyze and solve linear equations and pairs of simultaneous linear equations"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Functions",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.F.1–8.F.3",
+          "cluster": "Define, evaluate, and compare functions"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Linear Functions & Modeling",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.F.4–8.F.5",
+          "cluster": "Use functions to model relationships between quantities"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Transformations, Congruence & Similarity",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.G.1–8.G.5",
+          "cluster": "Understand congruence and similarity using physical models, transparencies, o..."
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Pythagorean Theorem",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.G.6–8.G.8",
+          "cluster": "Understand and apply the Pythagorean Theorem"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Volume of Cylinders, Cones & Spheres",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.G.9",
+          "cluster": "Solve real-world and mathematical problems involving volume of cylinders, con..."
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Bivariate Data",
+      "courses": [
+        {
+          "gradeCourse": "Grade 8",
+          "standards": "8.SP.1–8.SP.4",
+          "cluster": "Investigate patterns of association in bivariate data"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Quantity",
+      "topic": "Rational Exponents",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSN.RN.A.1–2",
+          "cluster": "Extend the properties of exponents to rational exponents",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSN.RN.A.1–2",
+          "cluster": "Extend the properties of exponents to rational exponents",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSN.RN.A.1–2",
+          "cluster": "Extend the properties of exponents to rational exponents",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Quantity",
+      "topic": "Rational & Irrational Numbers",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSN.RN.B.3",
+          "cluster": "Use properties of rational and irrational numbers",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Quantity",
+      "topic": "Units & Quantitative Reasoning",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSN.Q.A.1–3",
+          "cluster": "Reason quantitatively and use units to solve problems",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSN.Q.A.1–3",
+          "cluster": "Reason quantitatively and use units to solve problems",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSN.Q.A.1–3",
+          "cluster": "Reason quantitatively and use units to solve problems",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSN.Q.A.1–3",
+          "cluster": "Reason quantitatively and use units to solve problems",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSN.Q.A.1–3",
+          "cluster": "Reason quantitatively and use units to solve problems",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Quantity",
+      "topic": "Complex Number Operations",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSN.CN.A.1–3",
+          "cluster": "Perform arithmetic operations with complex numbers",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSN.CN.A.1–3",
+          "cluster": "Perform arithmetic operations with complex numbers",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Quantity",
+      "topic": "Complex Numbers on the Complex Plane",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSN.CN.B.4–6",
+          "cluster": "Represent complex numbers and their operations on the complex plane",
+          "level": "Advanced"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSN.CN.B.4–6",
+          "cluster": "Represent complex numbers and their operations on the complex plane",
+          "level": "Advanced"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Quantity",
+      "topic": "Complex Solutions & Polynomials",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSN.CN.C.7–9",
+          "cluster": "Use complex numbers in polynomial identities and equations",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSN.CN.C.7–9",
+          "cluster": "Use complex numbers in polynomial identities and equations",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Quantity",
+      "topic": "Vectors",
+      "courses": [
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSN.VM.A.1–3",
+          "cluster": "Represent and model with vector quantities",
+          "level": "Advanced"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Quantity",
+      "topic": "Vector Operations",
+      "courses": [
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSN.VM.B.4–5",
+          "cluster": "Perform operations on vectors",
+          "level": "Advanced"
+        }
+      ]
+    },
+    {
+      "domain": "Number & Quantity",
+      "topic": "Matrices",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSN.VM.C.6–12",
+          "cluster": "Perform operations on matrices and use matrices in applications",
+          "level": "Optional"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSN.VM.C.6–12",
+          "cluster": "Perform operations on matrices and use matrices in applications",
+          "level": "Advanced"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Interpreting & Rewriting Expressions",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSA.SSE.A.1–2",
+          "cluster": "Interpret the structure of expressions",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.SSE.A.1–2",
+          "cluster": "Interpret the structure of expressions",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSA.SSE.A.1–2",
+          "cluster": "Interpret the structure of expressions",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Equivalent Expressions",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSA.SSE.B.3–4",
+          "cluster": "Write expressions in equivalent forms to solve problems",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.SSE.B.3–4",
+          "cluster": "Write expressions in equivalent forms to solve problems",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSA.SSE.B.3–4",
+          "cluster": "Write expressions in equivalent forms to solve problems",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Polynomial Operations",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSA.APR.A.1",
+          "cluster": "Perform arithmetic operations on polynomials",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.APR.A.1",
+          "cluster": "Perform arithmetic operations on polynomials",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Zeros & Factors of Polynomials",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSA.APR.B.2–3",
+          "cluster": "Understand the relationship between zeros and factors of polynomials",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.APR.B.2–3",
+          "cluster": "Understand the relationship between zeros and factors of polynomials",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSA.APR.B.2–3",
+          "cluster": "Understand the relationship between zeros and factors of polynomials",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Polynomial Identities",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.APR.C.4–5",
+          "cluster": "Use polynomial identities to solve problems",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSA.APR.C.4–5",
+          "cluster": "Use polynomial identities to solve problems",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Rational Expressions",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.APR.D.6–7",
+          "cluster": "Rewrite rational expressions",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSA.APR.D.6–7",
+          "cluster": "Rewrite rational expressions",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Creating Equations & Inequalities",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSA.CED.A.1–4",
+          "cluster": "Create equations that describe numbers or relationships",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSA.CED.A.1–4",
+          "cluster": "Create equations that describe numbers or relationships",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.CED.A.1–4",
+          "cluster": "Create equations that describe numbers or relationships",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Reasoning About Equations",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSA.REI.A.1–2",
+          "cluster": "Understand solving equations as a process of reasoning and explain the reasoning",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.REI.A.1–2",
+          "cluster": "Understand solving equations as a process of reasoning and explain the reasoning",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Solving Equations & Inequalities",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSA.REI.B.3–4",
+          "cluster": "Solve equations and inequalities in one variable",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.REI.B.3–4",
+          "cluster": "Solve equations and inequalities in one variable",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Systems of Equations",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSA.REI.C.5–9",
+          "cluster": "Solve systems of equations",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.REI.C.5–9",
+          "cluster": "Solve systems of equations",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Algebra",
+      "topic": "Graphing Equations & Inequalities",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSA.REI.D.10–12",
+          "cluster": "Represent and solve equations and inequalities graphically",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSA.REI.D.10–12",
+          "cluster": "Represent and solve equations and inequalities graphically",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Functions & Function Notation",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSF.IF.A.1–3",
+          "cluster": "Understand the concept of a function and use function notation",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSF.IF.A.1–3",
+          "cluster": "Understand the concept of a function and use function notation",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSF.IF.A.1–3",
+          "cluster": "Understand the concept of a function and use function notation",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Interpreting Functions",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSF.IF.B.4–6",
+          "cluster": "Interpret functions that arise in applications in terms of the context",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSF.IF.B.4–6",
+          "cluster": "Interpret functions that arise in applications in terms of the context",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSF.IF.B.4–6",
+          "cluster": "Interpret functions that arise in applications in terms of the context",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Representing & Analyzing Functions",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSF.IF.C.7–9",
+          "cluster": "Analyze functions using different representations",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSF.IF.C.7–9",
+          "cluster": "Analyze functions using different representations",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSF.IF.C.7–9",
+          "cluster": "Analyze functions using different representations",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Building Functions",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSF.BF.A.1–2",
+          "cluster": "Build a function that models a relationship between two quantities",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSF.BF.A.1–2",
+          "cluster": "Build a function that models a relationship between two quantities",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSF.BF.A.1–2",
+          "cluster": "Build a function that models a relationship between two quantities",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Function Transformations & Inverses",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSF.BF.B.3–5",
+          "cluster": "Build new functions from existing functions",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSF.BF.B.3–5",
+          "cluster": "Build new functions from existing functions",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSF.BF.B.3–5",
+          "cluster": "Build new functions from existing functions",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Linear & Exponential Models",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSF.LE.A.1–4",
+          "cluster": "Construct and compare linear, quadratic, and exponential models and solve problems",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSF.LE.A.1–4",
+          "cluster": "Construct and compare linear, quadratic, and exponential models and solve problems",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Interpreting Function Models",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSF.LE.B.5",
+          "cluster": "Interpret expressions for functions in terms of the situation they model",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSF.LE.B.5",
+          "cluster": "Interpret expressions for functions in terms of the situation they model",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Unit Circle & Trigonometric Functions",
+      "courses": [
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSF.TF.A.1–4",
+          "cluster": "Extend the domain of trigonometric functions using the unit circle",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Trigonometric Models",
+      "courses": [
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSF.TF.B.5",
+          "cluster": "Model periodic phenomena with trigonometric functions",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Functions",
+      "topic": "Trigonometric Identities",
+      "courses": [
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSF.TF.C.8–9",
+          "cluster": "Prove and apply trigonometric identities",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Geometric Transformations",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.CO.A.1–5",
+          "cluster": "Experiment with transformations in the plane",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Congruence & Rigid Motions",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.CO.B.6–8",
+          "cluster": "Understand congruence in terms of rigid motions",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Geometric Proofs",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.CO.C.9–11",
+          "cluster": "Prove geometric theorems",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Geometric Constructions",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.CO.D.12–13",
+          "cluster": "Make geometric constructions",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Similarity & Dilations",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.SRT.A.1–3",
+          "cluster": "Understand similarity in terms of similarity transformations",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Similarity & Triangle Theorems",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.SRT.B.4–5",
+          "cluster": "Prove theorems involving similarity",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Right Triangle Trigonometry",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.SRT.C.6–8",
+          "cluster": "Define trigonometric ratios and solve problems involving right triangles",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Trigonometry with General Triangles",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.SRT.D.9–11",
+          "cluster": "Apply trigonometry to general triangles",
+          "level": "Advanced"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSG.SRT.D.9–11",
+          "cluster": "Apply trigonometry to general triangles",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Circle Theorems",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.C.A.1–4",
+          "cluster": "Understand and apply theorems about circles",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Arc Length & Sector Area",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.C.B.5",
+          "cluster": "Find arc lengths and areas of sectors of circles",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Equations of Conic Sections",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.GPE.A.1–3",
+          "cluster": "Translate between the geometric description and the equation for a conic section",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Algebra 2",
+          "standards": "HSG.GPE.A.1–3",
+          "cluster": "Translate between the geometric description and the equation for a conic section",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Precalculus",
+          "standards": "HSG.GPE.A.1–3",
+          "cluster": "Translate between the geometric description and the equation for a conic section",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Coordinate Geometry & Proof",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.GPE.B.4–7",
+          "cluster": "Use coordinates to prove simple geometric theorems algebraically",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Volume",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.GMD.A.1–3",
+          "cluster": "Explain volume formulas and use them to solve problems",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "2-D & 3-D Relationships",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.GMD.B.4",
+          "cluster": "Visualize relationships between two-dimensional and three-dimensional objects",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Geometry",
+      "topic": "Geometric Modeling",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSG.MG.A.1–3",
+          "cluster": "Apply geometric concepts in modeling situations",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Bivariate & Categorical Data",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSS.ID.B.5–6",
+          "cluster": "Summarize, represent, and interpret data on two categorical and quantitative variables",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSS.ID.B.5–6",
+          "cluster": "Summarize, represent, and interpret data on two categorical and quantitative variables",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Linear Models & Correlation",
+      "courses": [
+        {
+          "gradeCourse": "Algebra 1",
+          "standards": "HSS.ID.C.7–9",
+          "cluster": "Interpret linear models",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSS.ID.C.7–9",
+          "cluster": "Interpret linear models",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Random Processes & Statistical Inference",
+      "courses": [
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSS.IC.A.1–2",
+          "cluster": "Understand and evaluate random processes underlying statistical experiments",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Sampling, Experiments & Inference",
+      "courses": [
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSS.IC.B.3–6",
+          "cluster": "Make inferences and justify conclusions from sample surveys, experiments, and observational studies",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Conditional Probability & Independence",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSS.CP.A.1–5",
+          "cluster": "Understand independence and conditional probability and use them to interpret data",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSS.CP.A.1–5",
+          "cluster": "Understand independence and conditional probability and use them to interpret data",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Probability Rules & Compound Events",
+      "courses": [
+        {
+          "gradeCourse": "Geometry",
+          "standards": "HSS.CP.B.6–9",
+          "cluster": "Use the rules of probability to compute probabilities of compound events",
+          "level": "Core"
+        },
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSS.CP.B.6–9",
+          "cluster": "Use the rules of probability to compute probabilities of compound events",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Expected Value & Probability Distributions",
+      "courses": [
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSS.MD.A.1–4",
+          "cluster": "Calculate expected values and use them to solve problems",
+          "level": "Core"
+        }
+      ]
+    },
+    {
+      "domain": "Statistics & Probability",
+      "topic": "Probability & Decision Making",
+      "courses": [
+        {
+          "gradeCourse": "Statistics",
+          "standards": "HSS.MD.B.5–7",
+          "cluster": "Use probability to evaluate outcomes of decisions",
+          "level": "Core"
+        }
+      ]
+    }
+  ]
+}

@@ -46,5 +46,11 @@
     "description": "Create, schedule, and send quotes and designs to your Vestaboard.",
     "link": "/personal/vestaboard/",
     "icon": "🟦"
+  },
+  {
+    "name": "Wavelength",
+    "description": "Big-screen party game. Move the needle to guess where a clue falls on a spectrum, then reveal the target.",
+    "link": "/personal/wavelength/",
+    "icon": "🎯"
   }
 ]
