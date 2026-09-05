@@ -291,7 +291,7 @@ The board redraws the QR on every next-round (`N`) and reroll (`R`), so re-scann
 
 All positions are normalized `0.0`–`1.0` (`0.0` = far left, `1.0` = far right). Never store or score in pixels. The dial converts a position to an angle with `angle = -90 + position * 180`, drawn in a fixed `0 0 1000 660` SVG user space (pivot at `500,500`, radii 330–460; the extra height below the pivot is what keeps the big spectrum labels clear of the arc ends).
 
-Scoring bands are half-widths measured from the target center — 4 pts ≤ 0.03, 3 pts ≤ 0.09, 2 pts ≤ 0.17, else 0 — giving the classic `2 | 3 | 4 | 3 | 2` strip 34% of the spectrum wide. `randomTarget()` is constrained to `[0.17, 0.83]` so the whole scoring area always stays on the dial. There is no running score total by design.
+Scoring bands are half-widths measured from the target center — 4 pts ≤ 0.02, 3 pts ≤ 0.06, 2 pts ≤ 0.12, else 0 — giving the classic `2 | 3 | 4 | 3 | 2` strip 24% of the spectrum wide (deliberately narrower than a standard Wavelength board). `randomTarget()` is constrained to `[0.12, 0.88]` so the whole scoring area always stays on the dial. There is no running score total by design.
 
 ### Board controls
 

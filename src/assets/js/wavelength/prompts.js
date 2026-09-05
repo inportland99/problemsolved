@@ -42,10 +42,9 @@ export const PROMPTS = [
   { left: 'Simple', right: 'Complicated' },
   { left: 'Terrible Job', right: 'Dream Job' },
   { left: 'Nobody Likes It', right: 'Everybody Likes It' },
-  { left: 'Bad Icebreaker', right: 'Great Icebreaker' },
+  { left: 'Bad Flavor', right: 'Great Flavor' },
   { left: 'Fleeting Trend', right: 'Timeless Classic' },
   { left: 'Uncomfortable', right: 'Cozy' },
-  { left: 'Bad Math Problem', right: 'Beautiful Math Problem' },
   { left: 'Boring Subject', right: 'Fascinating Subject' },
 ];
 

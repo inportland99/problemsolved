@@ -1,5 +1,7 @@
-import { pickPrompt } from './prompts.js';
-import { randomTarget } from './scoring.js';
+// CACHE-BUSTING: see the comment in board.js. Bump this "?v=N" alongside
+// every other one in this feature whenever any wavelength JS file changes.
+import { pickPrompt } from './prompts.js?v=4';
+import { randomTarget } from './scoring.js?v=4';
 
 /**
  * A round is the complete, self-contained description of what is being

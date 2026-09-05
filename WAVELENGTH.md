@@ -47,16 +47,20 @@ the room close in and unconsciously react.
 
 ## Scoring
 
-The scoring area is 34% of the spectrum wide, centered on a random target:
+The scoring area is 24% of the spectrum wide, centered on a random target:
 
 ```text
 2 | 3 | 4 | 3 | 2
 ```
 
-- **4 points** — within 3% of the center
-- **3 points** — within 9%
-- **2 points** — within 17%
+- **4 points** — within 2% of the center
+- **3 points** — within 6%
+- **2 points** — within 12%
 - **0 points** — anywhere else
+
+These widths are deliberately narrower than a standard Wavelength board, to
+keep the needle honest. Tune them in `src/assets/js/wavelength/scoring.js`
+(the `BANDS` array) if you want it easier or harder.
 
 There is no running total. Each round is scored on its own; keep score out
 loud if you want to.

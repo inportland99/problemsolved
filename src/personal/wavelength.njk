@@ -20,9 +20,15 @@ pageCss: /assets/css/wavelength.css
       <svg id="wl-gauge" class="wl-gauge" viewBox="0 0 1000 560" role="img"
            aria-label="Spectrum dial with a movable needle">
         <path id="wl-track" class="wl-track"></path>
-        <g id="wl-bands" class="wl-bands"></g>
+        {# The outer group is what the reveal animation rotates/scales as a
+           unit; the target line lives inside it (not just the color wedges)
+           so it stays visually locked to the shrunken band ring instead of
+           poking out past its edge. #}
+        <g id="wl-bands" class="wl-bands">
+          <g id="wl-bands-content"></g>
+          <line id="wl-target-line" class="wl-target-line"></line>
+        </g>
         <g id="wl-ticks" class="wl-ticks"></g>
-        <line id="wl-target-line" class="wl-target-line"></line>
         <g id="wl-needle" class="wl-needle">
           <path class="wl-needle-shape" d="M 500 14 L 514 452 L 500 516 L 486 452 Z"></path>
         </g>
@@ -67,7 +73,8 @@ pageCss: /assets/css/wavelength.css
 </div>
 
 <script type="module">
-  import { initBoard } from '/assets/js/wavelength/board.js';
+  {# CACHE-BUSTING: keep this ?v= in sync with the imports in board.js. #}
+  import { initBoard } from '/assets/js/wavelength/board.js?v=4';
 
   try {
     initBoard(document.getElementById('wl-board'));

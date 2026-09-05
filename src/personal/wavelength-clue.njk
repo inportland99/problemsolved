@@ -24,6 +24,9 @@ permalink: /personal/wavelength/clue/index.html
     <div class="wl-clue-spectrum">
       <div class="wl-clue-track"></div>
       <div class="wl-clue-bands" id="wl-clue-bands"></div>
+      {# Always-on midpoint reference (not the target) so the clue giver can
+         judge how far left/right of center the target actually sits. #}
+      <div class="wl-clue-center"></div>
       <div class="wl-clue-marker" id="wl-clue-marker"></div>
     </div>
 
@@ -37,7 +40,8 @@ permalink: /personal/wavelength/clue/index.html
 </div>
 
 <script type="module">
-  import { initClue } from '/assets/js/wavelength/clue.js';
+  {# CACHE-BUSTING: keep this ?v= in sync with the imports in clue.js. #}
+  import { initClue } from '/assets/js/wavelength/clue.js?v=4';
 
   try {
     initClue(document.getElementById('wl-clue'));
