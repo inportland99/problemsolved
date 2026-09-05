@@ -133,9 +133,11 @@ src/assets/js/wavelength/
 The round travels to the phone in the URL hash:
 
 ```text
-/personal/wavelength/clue/#3|Worthless|Priceless|0.4213
+/personal/wavelength/clue/#3,Worthless,Priceless,0.4213
                            ^ round     ^ labels   ^ target (0.0-1.0)
 ```
+
+The delimiter is a comma, not a pipe (`|`) — `|` isn't a legal URL character, and some phone camera apps silently percent-encode it to `%7C` before opening the link, which broke decoding on real phones.
 
 Because the board redraws the QR on every `N` and `R`, re-scanning always
 gives the current round. The phone does not update on its own — that's the

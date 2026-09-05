@@ -37,11 +37,18 @@ export function rerollTarget(round) {
 /**
  * Encode a round into a compact URL hash fragment:
  *
- *   3|Worthless|Priceless|0.4213
+ *   3,Worthless,Priceless,0.4213
  *
- * Labels are percent-encoded so a literal "|" in a prompt can't break
- * parsing. Kept short deliberately: the whole thing has to fit in a QR
- * code that people scan from across a room.
+ * The delimiter is a comma, not a pipe: "|" is not a legal URL character
+ * (RFC 3986), so phone camera apps and QR readers often "fix" it by
+ * percent-encoding it to "%7C" before handing the link to the browser.
+ * That silently broke decoding here, since a literal "|" split no longer
+ * matched. A comma is a valid sub-delimiter that can appear unescaped in a
+ * URL fragment, and `encodeURIComponent` always escapes it in the labels
+ * below, so it can never collide with label content either.
+ *
+ * Kept short deliberately: the whole thing has to fit in a QR code that
+ * people scan from across a room.
  */
 export function encodeRound(round) {
   return [
@@ -49,7 +56,7 @@ export function encodeRound(round) {
     encodeURIComponent(round.left),
     encodeURIComponent(round.right),
     round.target.toFixed(4),
-  ].join('|');
+  ].join(',');
 }
 
 /**
@@ -63,7 +70,7 @@ export function decodeRound(hash) {
   const raw = hash.startsWith('#') ? hash.slice(1) : hash;
   if (!raw) return null;
 
-  const parts = raw.split('|');
+  const parts = raw.split(',');
   if (parts.length !== 4) return null;
 
   const number = Number.parseInt(parts[0], 10);

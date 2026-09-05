@@ -268,11 +268,11 @@ A big-screen party game (a personal take on Wavelength) with a laptop/TV board a
 There is **no Supabase, no API, no persistence, and no realtime sync** in this feature, and that is intentional — do not add any. The board keeps the current round in memory; the round is handed to the phone entirely inside the QR code's URL hash:
 
 ```text
-/personal/wavelength/clue/#3|Worthless|Priceless|0.4213
+/personal/wavelength/clue/#3,Worthless,Priceless,0.4213
                            ^ round     ^ labels   ^ target (0.0-1.0)
 ```
 
-The board redraws the QR on every next-round (`N`) and reroll (`R`), so re-scanning always yields the current round. The phone never updates on its own. A page refresh on the board simply starts a new game. Labels are percent-encoded in the hash so a literal `|` in a prompt cannot break parsing.
+The board redraws the QR on every next-round (`N`) and reroll (`R`), so re-scanning always yields the current round. The phone never updates on its own. A page refresh on the board simply starts a new game. Labels are percent-encoded in the hash so a literal `,` in a prompt cannot break parsing. The delimiter is a comma rather than a pipe (`|`): `|` is not a legal URL character, and some phone camera/QR apps percent-encode it to `%7C` before opening the link, which broke decoding on real devices.
 
 ### Pages and modules
 
