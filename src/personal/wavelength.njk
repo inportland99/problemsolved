@@ -19,14 +19,29 @@ pageCss: /assets/css/wavelength.css
     <div class="wl-gauge-wrap">
       <svg id="wl-gauge" class="wl-gauge" viewBox="0 0 1000 560" role="img"
            aria-label="Spectrum dial with a movable needle">
+        <defs>
+          {# Clips the rotating screen below (see .wl-screen) to the dial's
+             own visible half, so the swept-away portion doesn't bleed down
+             into the score/footer area as it spins past the hub. #}
+          <clipPath id="wl-dial-clip">
+            <rect x="0" y="0" width="1000" height="500"></rect>
+          </clipPath>
+        </defs>
+
         <path id="wl-track" class="wl-track"></path>
-        {# The outer group is what the reveal animation rotates/scales as a
-           unit; the target line lives inside it (not just the color wedges)
-           so it stays visually locked to the shrunken band ring instead of
-           poking out past its edge. #}
+        {# The color wedges sit statically in their true position from the
+           moment they're drawn — they never move or fade. What performs the
+           reveal is .wl-screen just below: an opaque panel, the same shape
+           and color as the empty track, that starts directly on top of the
+           bands (so pre-reveal it looks identical to a plain empty dial)
+           and rotates 180deg clockwise around the needle's pivot, sweeping
+           away left-to-right like the physical game's sliding cover. #}
         <g id="wl-bands" class="wl-bands">
           <g id="wl-bands-content"></g>
           <line id="wl-target-line" class="wl-target-line"></line>
+        </g>
+        <g clip-path="url(#wl-dial-clip)">
+          <path id="wl-screen" class="wl-screen"></path>
         </g>
         <g id="wl-ticks" class="wl-ticks"></g>
         <g id="wl-needle" class="wl-needle">
@@ -74,7 +89,7 @@ pageCss: /assets/css/wavelength.css
 
 <script type="module">
   {# CACHE-BUSTING: keep this ?v= in sync with the imports in board.js. #}
-  import { initBoard } from '/assets/js/wavelength/board.js?v=4';
+  import { initBoard } from '/assets/js/wavelength/board.js?v=5';
 
   try {
     initBoard(document.getElementById('wl-board'));
