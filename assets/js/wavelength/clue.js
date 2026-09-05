@@ -1,7 +1,7 @@
 // CACHE-BUSTING: see the comment in board.js. Bump this "?v=N" alongside
 // every other one in this feature whenever any wavelength JS file changes.
-import { decodeRound } from './round.js?v=5';
-import { bandRanges } from './scoring.js?v=5';
+import { decodeRound } from './round.js?v=6';
+import { bandRanges } from './scoring.js?v=6';
 
 /**
  * The clue-giver's phone.

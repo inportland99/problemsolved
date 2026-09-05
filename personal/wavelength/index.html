@@ -38,11 +38,23 @@
           <line id="wl-target-line" class="wl-target-line"></line>
         </g>
         <g clip-path="url(#wl-dial-clip)">
-          <path id="wl-screen" class="wl-screen"></path>
+          
+          <g transform="translate(500 500)">
+            <g id="wl-screen-rotor" class="wl-screen-rotor">
+              <g transform="translate(-500 -500)">
+                <path id="wl-screen" class="wl-screen"></path>
+              </g>
+            </g>
+          </g>
         </g>
         <g id="wl-ticks" class="wl-ticks"></g>
-        <g id="wl-needle" class="wl-needle">
-          <path class="wl-needle-shape" d="M 500 14 L 514 452 L 500 516 L 486 452 Z"></path>
+        
+        <g transform="translate(500 500)">
+          <g id="wl-needle" class="wl-needle">
+            <g transform="translate(-500 -500)">
+              <path class="wl-needle-shape" d="M 500 14 L 514 452 L 500 516 L 486 452 Z"></path>
+            </g>
+          </g>
         </g>
         <circle class="wl-hub" cx="500" cy="500" r="34"></circle>
         <circle class="wl-hub-dot" cx="500" cy="500" r="12"></circle>
@@ -85,7 +97,7 @@
 
 <script type="module">
   
-  import { initBoard } from '/assets/js/wavelength/board.js?v=5';
+  import { initBoard } from '/assets/js/wavelength/board.js?v=6';
 
   try {
     initBoard(document.getElementById('wl-board'));
