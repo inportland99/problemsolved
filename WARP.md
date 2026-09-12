@@ -299,6 +299,43 @@ Scoring bands are half-widths measured from the target center — 4 pts ≤ 0.02
 
 The needle uses a rAF loop that eases a rendered position toward the true position, so taps and holds both look smooth. Rotation is applied as a CSS `transform` on the SVG group with `transform-box: view-box; transform-origin: 500px 500px`.
 
+## Mah Jongg Reference (/personal/mahjong)
+
+A private, phone-first American Mah Jongg (NMJL) reference card at `/personal/mahjong/`. Uses `minimal.njk` with `pageCss: /assets/css/mahjong.css` and the same Supabase auth-guard pattern as the other `/personal/` tools.
+
+### Why it is behind auth
+
+The NMJL hand list is **copyrighted**. The hands stored here are a personal transcription of a purchased card, so `mahjong_hands` is RLS-scoped to `auth.uid() = user_id` and there is deliberately **no anon/public read policy** — do not add one, and do not move the hand list into a committed JSON data file or any public page. The general rules content (Charleston, joker rules, payouts, tile counts) is *not* NMJL IP and is hardcoded in the template.
+
+### Pages and modules
+- `src/personal/mahjong.njk` — the page: sticky header with a card-year selector, a search box, hands grouped into collapsible sections, static rules accordions, and a bottom-sheet hand editor modal.
+- `src/assets/js/mahjong-db.js` — CRUD for `mahjong_hands` (`getHands`, `getCardYears`, `createHand`, `updateHand`, `deleteHand`, `bulkCreateHands`, `deleteCardYear`) plus the pattern helpers `parsePatternBlocks()` and `blocksToText()`.
+- `src/assets/css/mahjong.css` — monospace pattern rendering, the `.mj-g0`–`.mj-g2` ink-color classes, and the `.mj-or` alternate-pattern separator.
+- `supabase-mahjong-setup.sql` — schema + RLS. Idempotent; run it once in the Supabase SQL Editor.
+
+### Data model
+`mahjong_hands`: `id`, `user_id`, `card_year`, `category` (printed section heading, e.g. `2468`), `category_note`, `category_order`, `sort_order`, `pattern_blocks` (jsonb), `alt_pattern_blocks` (jsonb, nullable), `pattern_text` (denormalized, for search), `value`, `concealed`, `notes`, timestamps.
+
+### Pattern representation
+A hand is stored as an ordered array of blocks rather than a single string, because the printed card uses **color** to indicate which suit each block belongs to:
+
+```json
+[{ "text": "FF", "group": 0 }, { "text": "2222", "group": 1 }, { "text": "4444", "group": 2 }]
+```
+
+The card prints in exactly three ink colors, so there are three groups (`GROUP_COUNT` in `mahjong-db.js`): `0` is black, which does double duty as both neutral tiles (flowers, winds, dragons) and the card's third suit; `1` is green and `2` is red. `pattern_text` is kept in sync by `mahjong-db.js` on every write — never set it by hand.
+
+Many card lines print **two ways to build the same hand**, joined by `-or-`. Both live on one row: the first in `pattern_blocks`, the second in `alt_pattern_blocks` (null when the line has no alternate). The page renders them on one line separated by a `.mj-or` label, and the editor exposes a second "Alternate pattern" input.
+
+In the editor you type the pattern as space-separated blocks (`FF 2222 4444 6666`) and tap each block to cycle its color group. `parsePatternBlocks(text, previousBlocks)` re-splits the string while inheriting existing colors positionally, so retyping a block does not reset the colors of its neighbors.
+
+### Transcribing a card
+`import-mahjong-card-2026.js` (repo root) is the 2026 transcription: paste it into the browser console on `/personal/mahjong/` while logged in and it clears and re-imports that year via `deleteCardYear()` + `bulkCreateHands()`. It uses a compact `TEXT.GROUP` notation (`FF.0 2222.1 4444.2`) that is far less error-prone to proofread than raw block JSON.
+
+**Always validate a transcription by tile count**: every American Mah Jongg hand is exactly 14 tiles, and each character in a block is one tile (`1D` = 2, `2026` = 4, `NEWS` = 4), so the characters across all blocks in a pattern must sum to 14. This catches most misreadings mechanically. Lines flagged `// VERIFY:` are ones where the source photo was ambiguous and the reading was inferred — check those against the physical card.
+
+Entering hands through the UI works too; `category_order`/`sort_order` control display order and the UI assigns them automatically in the order sections and hands are first added.
+
 ## Development Notes
 
 - The build process runs Tailwind CLI separately from Eleventy

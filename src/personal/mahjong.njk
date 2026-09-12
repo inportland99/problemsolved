@@ -1,0 +1,669 @@
+---
+layout: minimal.njk
+title: Mah Jongg Reference
+description: Personal American Mah Jongg reference card
+pageCss: /assets/css/mahjong.css
+---
+
+<div class="min-h-screen bg-base-200">
+  <!-- Auth loading -->
+  <div id="auth-loading" class="flex justify-center items-center min-h-screen">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+
+  <div id="app" class="hidden">
+    <!-- Sticky header -->
+    <div class="navbar bg-base-100 shadow-md sticky top-0 z-30 min-h-0 py-2">
+      <div class="flex-1">
+        <span class="text-lg font-bold px-2">🀄 Mah Jongg</span>
+      </div>
+      <div class="flex-none gap-1">
+        <select id="year-select" class="select select-bordered select-sm w-24"></select>
+        <button id="logout-btn" class="btn btn-ghost btn-sm">Exit</button>
+      </div>
+    </div>
+
+    <div class="max-w-2xl mx-auto px-3 py-4 pb-24">
+      <div id="alert-container" class="mb-3"></div>
+
+      <!-- Search -->
+      <input
+        id="search"
+        type="search"
+        inputmode="search"
+        placeholder="Search hands — e.g. 2468, FF, dragons"
+        class="input input-bordered w-full mb-3"
+      />
+
+      <!-- Hands -->
+      <div id="loading" class="flex justify-center py-10">
+        <span class="loading loading-spinner loading-lg"></span>
+      </div>
+
+      <div id="empty-state" class="hidden text-center py-10">
+        <div class="text-5xl mb-3">🀄</div>
+        <h2 class="text-xl font-bold mb-1">No hands yet</h2>
+        <p class="text-sm text-base-content/70 mb-4">
+          Add hands from your card to build the reference.
+        </p>
+        <button id="empty-add-btn" class="btn btn-primary btn-sm">Add first hand</button>
+      </div>
+
+      <div id="no-results" class="hidden text-center py-8 text-sm text-base-content/60">
+        No hands match that search.
+      </div>
+
+      <div id="hands-container" class="hidden space-y-3"></div>
+
+      <!-- ── Rules reference (general rules, not card content) ──────────── -->
+      <h2 class="text-sm font-bold uppercase tracking-wide text-base-content/50 mt-8 mb-2 px-1">
+        Rules Reference
+      </h2>
+
+      <div class="collapse collapse-arrow bg-base-100 shadow-sm mb-2">
+        <input type="checkbox" />
+        <div class="collapse-title font-semibold">📖 Notation key</div>
+        <div class="collapse-content text-sm space-y-2">
+          <p>Hands are written the way they are printed on the card:</p>
+          <ul class="list-disc list-inside space-y-1">
+            <li><strong>1–9</strong> — a numbered tile in a suit</li>
+            <li><strong>B / C / D</strong> — Bam, Crak, Dot</li>
+            <li><strong>F</strong> — Flower</li>
+            <li><strong>N E W S</strong> — North, East, West, South</li>
+            <li><strong>R / G / 0</strong> — Red, Green, and White (Soap) dragons</li>
+            <li><strong>J</strong> — Joker</li>
+          </ul>
+          <p class="pt-1">
+            <strong>Color</strong> indicates which suit a block belongs to. Blocks in the
+            same color are the same suit; different colors are different suits.
+            Flowers, winds, and dragons are shown in neutral.
+          </p>
+          <p>
+            <span class="badge badge-sm badge-neutral">C</span> = concealed hand ·
+            <span class="badge badge-sm badge-outline">X</span> = may be exposed
+          </p>
+        </div>
+      </div>
+
+      <div class="collapse collapse-arrow bg-base-100 shadow-sm mb-2">
+        <input type="checkbox" />
+        <div class="collapse-title font-semibold">🔄 Charleston</div>
+        <div class="collapse-content text-sm space-y-3">
+          <div>
+            <p class="font-semibold mb-1">First Charleston (required)</p>
+            <ol class="list-decimal list-inside space-y-0.5">
+              <li>Pass 3 right</li>
+              <li>Pass 3 across</li>
+              <li>Pass 3 left — may be a blind pass</li>
+            </ol>
+          </div>
+          <div>
+            <p class="font-semibold mb-1">Second Charleston (optional)</p>
+            <p class="text-xs text-base-content/70 mb-1">
+              Any single player may stop it.
+            </p>
+            <ol class="list-decimal list-inside space-y-0.5" start="4">
+              <li>Pass 3 left</li>
+              <li>Pass 3 across</li>
+              <li>Pass 3 right — may be a blind pass</li>
+            </ol>
+          </div>
+          <div>
+            <p class="font-semibold mb-1">Courtesy pass</p>
+            <p>
+              After the Charleston, you and the player across may exchange
+              0–3 tiles. Both must agree on the number; the lower number wins.
+            </p>
+          </div>
+          <div class="bg-warning/20 p-2 rounded text-xs">
+            <strong>Jokers may never be passed</strong> during any Charleston or
+            courtesy pass.
+          </div>
+          <p class="text-xs text-base-content/70">
+            A <em>blind pass</em> means passing 1–3 tiles face down without looking,
+            taken from the tiles you just received.
+          </p>
+        </div>
+      </div>
+
+      <div class="collapse collapse-arrow bg-base-100 shadow-sm mb-2">
+        <input type="checkbox" />
+        <div class="collapse-title font-semibold">🃏 Joker rules</div>
+        <div class="collapse-content text-sm space-y-2">
+          <ul class="list-disc list-inside space-y-1">
+            <li>Usable in any group of <strong>3 or more identical tiles</strong> — pung, kong, quint, sextet</li>
+            <li><strong>Never</strong> usable for a single or a pair</li>
+            <li>Cannot be passed in the Charleston</li>
+            <li>A discarded joker is dead — no one may claim it</li>
+          </ul>
+          <div>
+            <p class="font-semibold mt-2 mb-1">Redeeming a joker</p>
+            <p>
+              On your turn, you may swap the real tile from your hand for a joker
+              sitting in <em>any</em> player's exposure, including your own.
+              Jokers cannot be redeemed from a pair or from a concealed hand.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="collapse collapse-arrow bg-base-100 shadow-sm mb-2">
+        <input type="checkbox" />
+        <div class="collapse-title font-semibold">💵 Payouts</div>
+        <div class="collapse-content text-sm space-y-2">
+          <ul class="list-disc list-inside space-y-1">
+            <li>
+              <strong>Won on a discard:</strong> the discarder pays
+              <strong>double</strong> the hand's value; the other two each pay
+              face value.
+            </li>
+            <li>
+              <strong>Won on a self-pick:</strong> all three players pay
+              <strong>double</strong>.
+            </li>
+            <li><strong>Wall game:</strong> nobody pays.</li>
+            <li>
+              <strong>Dead hand:</strong> the player stays in and still pays the
+              winner at the end.
+            </li>
+          </ul>
+          <div class="bg-info/20 p-2 rounded text-xs">
+            A <strong>jokerless bonus</strong> (commonly double) is a house rule,
+            not an NMJL rule — agree on it before you start.
+          </div>
+        </div>
+      </div>
+
+      <div class="collapse collapse-arrow bg-base-100 shadow-sm mb-2">
+        <input type="checkbox" />
+        <div class="collapse-title font-semibold">🎴 Tiles &amp; play</div>
+        <div class="collapse-content text-sm space-y-3">
+          <div>
+            <p class="font-semibold mb-1">The 152 tiles</p>
+            <ul class="list-disc list-inside space-y-0.5">
+              <li>108 suit tiles — Bams, Craks, Dots, 1–9, four of each</li>
+              <li>16 winds — N, E, W, S, four of each</li>
+              <li>12 dragons — Red, Green, White (Soap), four of each</li>
+              <li>8 flowers</li>
+              <li>8 jokers</li>
+            </ul>
+          </div>
+          <div>
+            <p class="font-semibold mb-1">Dragon ↔ suit pairing</p>
+            <p>Red goes with Craks · Green with Bams · Soap with Dots.</p>
+          </div>
+          <div>
+            <p class="font-semibold mb-1">Play</p>
+            <ul class="list-disc list-inside space-y-0.5">
+              <li>Everyone holds 13 tiles; East starts with 14 and discards first</li>
+              <li>On your turn: draw, optionally expose, then discard</li>
+              <li>
+                Any player may claim a discard to complete an exposure or for
+                mah jongg
+              </li>
+              <li>
+                If two players claim the same discard, mah jongg wins; otherwise
+                the player next in turn order gets it
+              </li>
+              <li>Exposures must match a hand printed on the card</li>
+            </ul>
+          </div>
+          <div class="bg-warning/20 p-2 rounded text-xs">
+            There are <strong>no chows</strong> in American Mah Jongg. A
+            "consecutive run" is built from pungs and kongs of consecutive
+            numbers, not from a 3-tile sequence.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating add button -->
+    <button
+      id="add-hand-btn"
+      class="btn btn-primary btn-circle fixed bottom-5 right-5 shadow-lg text-2xl z-40"
+      aria-label="Add hand"
+    >+</button>
+  </div>
+</div>
+
+<!-- ── Hand editor modal ──────────────────────────────────────────────────── -->
+<dialog id="hand-modal" class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 id="hand-modal-title" class="font-bold text-lg mb-3">Add Hand</h3>
+
+    <input type="hidden" id="hand-id" />
+
+    <div class="space-y-3">
+      <div class="form-control">
+        <label class="label py-1"><span class="label-text text-sm">Section</span></label>
+        <input
+          id="hand-category"
+          list="category-options"
+          class="input input-bordered input-sm"
+          placeholder="e.g. 2468"
+        />
+        <datalist id="category-options"></datalist>
+      </div>
+
+      <div class="form-control">
+        <label class="label py-1">
+          <span class="label-text text-sm">Pattern</span>
+          <span class="label-text-alt text-xs">separate blocks with spaces</span>
+        </label>
+        <input
+          id="hand-pattern"
+          class="input input-bordered input-sm font-mono"
+          placeholder="FF 2222 4444 6666"
+          autocapitalize="characters"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <div>
+        <p class="text-sm font-semibold mb-1">Tap a block to set its color</p>
+        <div id="pattern-preview" class="mj-pattern bg-base-200 rounded p-3 min-h-14"></div>
+      </div>
+
+      <div class="form-control">
+        <label class="label py-1">
+          <span class="label-text text-sm">Alternate pattern</span>
+          <span class="label-text-alt text-xs">the “-or-” version, if any</span>
+        </label>
+        <input
+          id="hand-alt-pattern"
+          class="input input-bordered input-sm font-mono"
+          placeholder="leave blank if none"
+          autocapitalize="characters"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <div id="alt-preview-wrap" class="hidden">
+        <div id="alt-pattern-preview" class="mj-pattern bg-base-200 rounded p-3 min-h-14"></div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-control">
+          <label class="label py-1"><span class="label-text text-sm">Value</span></label>
+          <input
+            id="hand-value"
+            type="number"
+            inputmode="numeric"
+            step="5"
+            min="0"
+            class="input input-bordered input-sm"
+            placeholder="25"
+          />
+        </div>
+        <div class="form-control">
+          <label class="label py-1"><span class="label-text text-sm">Type</span></label>
+          <select id="hand-concealed" class="select select-bordered select-sm">
+            <option value="false">X — exposed</option>
+            <option value="true">C — concealed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label class="label py-1"><span class="label-text text-sm">Notes</span></label>
+        <textarea
+          id="hand-notes"
+          class="textarea textarea-bordered textarea-sm h-16"
+          placeholder="Optional — e.g. 'any 3 suits'"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="modal-action">
+      <button id="delete-hand-btn" class="btn btn-sm btn-outline btn-error mr-auto hidden">
+        Delete
+      </button>
+      <button id="save-hand-btn" class="btn btn-sm btn-primary">Save</button>
+      <form method="dialog"><button class="btn btn-sm">Cancel</button></form>
+    </div>
+  </div>
+</dialog>
+
+<script type="module">
+import { getCurrentUser, signOut } from '/assets/js/supabase-client.js';
+import {
+  getHands, getCardYears, createHand, updateHand, deleteHand,
+  parsePatternBlocks, GROUP_COUNT,
+} from '/assets/js/mahjong-db.js';
+
+const LOGIN_URL = '/personal/coaching/login/';
+const DEFAULT_YEAR = new Date().getFullYear();
+
+// ─── Auth gate ──────────────────────────────────────────────────────────────
+const user = await getCurrentUser();
+if (!user) {
+  window.location.href = LOGIN_URL;
+  throw new Error('Not authenticated');
+}
+document.getElementById('auth-loading').classList.add('hidden');
+document.getElementById('app').classList.remove('hidden');
+
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await signOut();
+  window.location.href = LOGIN_URL;
+});
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+
+function showAlert(message, type = 'info') {
+  const container = document.getElementById('alert-container');
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type} shadow-sm py-2`;
+  const span = document.createElement('span');
+  span.textContent = message;
+  alert.appendChild(span);
+  container.appendChild(alert);
+  setTimeout(() => alert.remove(), 4000);
+}
+
+function patternHtml(blocks) {
+  return (blocks || [])
+    .map((b) => `<span class="mj-block mj-g${b.group ?? 0}">${escapeHtml(b.text)}</span>`)
+    .join('');
+}
+
+// A card line may print two ways to build the same hand, joined by "-or-".
+function fullPatternHtml(hand) {
+  const main = patternHtml(hand.pattern_blocks);
+  if (!hand.alt_pattern_blocks || hand.alt_pattern_blocks.length === 0) return main;
+  return `${main}<span class="mj-or">-or-</span>${patternHtml(hand.alt_pattern_blocks)}`;
+}
+
+// ─── State ──────────────────────────────────────────────────────────────────
+let allHands = [];
+let currentYear = DEFAULT_YEAR;
+let editorBlocks = [];
+let editorAltBlocks = [];
+
+// ─── Year selector ──────────────────────────────────────────────────────────
+async function initYears() {
+  const result = await getCardYears();
+  const years = result.success ? result.data : [];
+  if (!years.includes(DEFAULT_YEAR)) years.unshift(DEFAULT_YEAR);
+
+  currentYear = years[0];
+
+  const select = document.getElementById('year-select');
+  select.innerHTML = years
+    .map((y) => `<option value="${y}">${y}</option>`)
+    .join('');
+  select.value = String(currentYear);
+
+  select.addEventListener('change', async () => {
+    currentYear = Number(select.value);
+    await loadHands();
+  });
+}
+
+// ─── Rendering ──────────────────────────────────────────────────────────────
+function groupByCategory(hands) {
+  const groups = [];
+  const index = new Map();
+
+  for (const hand of hands) {
+    if (!index.has(hand.category)) {
+      const group = { category: hand.category, note: hand.category_note, hands: [] };
+      index.set(hand.category, group);
+      groups.push(group);
+    }
+    index.get(hand.category).hands.push(hand);
+  }
+  return groups;
+}
+
+function render() {
+  const query = document.getElementById('search').value.trim().toLowerCase();
+  const container = document.getElementById('hands-container');
+  const emptyState = document.getElementById('empty-state');
+  const noResults = document.getElementById('no-results');
+
+  container.classList.add('hidden');
+  emptyState.classList.add('hidden');
+  noResults.classList.add('hidden');
+
+  if (allHands.length === 0) {
+    emptyState.classList.remove('hidden');
+    return;
+  }
+
+  const filtered = query
+    ? allHands.filter((h) =>
+        `${h.pattern_text} ${h.category} ${h.notes || ''}`.toLowerCase().includes(query))
+    : allHands;
+
+  if (filtered.length === 0) {
+    noResults.classList.remove('hidden');
+    return;
+  }
+
+  const groups = groupByCategory(filtered);
+
+  container.innerHTML = groups
+    .map((group, i) => `
+      <div class="collapse collapse-arrow bg-base-100 shadow-sm">
+        <input type="checkbox" ${query || i === 0 ? 'checked' : ''} />
+        <div class="collapse-title font-bold">
+          ${escapeHtml(group.category)}
+          <span class="badge badge-sm badge-ghost ml-1">${group.hands.length}</span>
+          ${group.note ? `<div class="text-xs font-normal text-base-content/60">${escapeHtml(group.note)}</div>` : ''}
+        </div>
+        <div class="collapse-content">
+          ${group.hands.map((hand) => `
+            <div class="mj-hand" data-hand-id="${hand.id}" role="button" tabindex="0">
+              <div class="mj-pattern">${fullPatternHtml(hand)}</div>
+              <div class="mj-hand-meta">
+                <span class="badge badge-sm ${hand.concealed ? 'badge-neutral' : 'badge-outline'}">
+                  ${hand.concealed ? 'C' : 'X'}
+                </span>
+                <span class="badge badge-sm badge-primary">${hand.value}</span>
+              </div>
+            </div>
+            ${hand.notes ? `<div class="text-xs text-base-content/60 -mt-1 mb-1">${escapeHtml(hand.notes)}</div>` : ''}
+          `).join('')}
+        </div>
+      </div>
+    `)
+    .join('');
+
+  container.classList.remove('hidden');
+
+  container.querySelectorAll('.mj-hand').forEach((row) => {
+    const open = () => {
+      const hand = allHands.find((h) => h.id === row.dataset.handId);
+      if (hand) openModal(hand);
+    };
+    row.addEventListener('click', open);
+    row.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        open();
+      }
+    });
+  });
+
+  // Refresh the section autocomplete options
+  document.getElementById('category-options').innerHTML = [...new Set(allHands.map((h) => h.category))]
+    .map((c) => `<option value="${escapeHtml(c)}"></option>`)
+    .join('');
+}
+
+async function loadHands() {
+  const loading = document.getElementById('loading');
+  loading.classList.remove('hidden');
+  document.getElementById('hands-container').classList.add('hidden');
+
+  const result = await getHands(currentYear);
+  loading.classList.add('hidden');
+
+  if (!result.success) {
+    showAlert(result.error?.message || 'Could not load hands', 'error');
+    return;
+  }
+
+  allHands = result.data;
+  render();
+}
+
+document.getElementById('search').addEventListener('input', render);
+
+// ─── Editor ─────────────────────────────────────────────────────────────────
+const modal = document.getElementById('hand-modal');
+
+// Renders a tappable block list; each tap cycles that block's color group.
+function renderBlockEditor(previewId, getBlocks, emptyMessage) {
+  const preview = document.getElementById(previewId);
+  const blocks = getBlocks();
+
+  if (blocks.length === 0) {
+    preview.innerHTML = `<span class="text-sm font-normal text-base-content/40">${emptyMessage}</span>`;
+    return;
+  }
+
+  preview.innerHTML = blocks
+    .map((b, i) => `
+      <button type="button" class="mj-block-btn mj-g${b.group}" data-i="${i}">
+        ${escapeHtml(b.text)}
+      </button>
+    `)
+    .join('');
+
+  preview.querySelectorAll('.mj-block-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const i = Number(btn.dataset.i);
+      const current = getBlocks();
+      current[i].group = (current[i].group + 1) % GROUP_COUNT;
+      renderBlockEditor(previewId, getBlocks, emptyMessage);
+    });
+  });
+}
+
+function renderEditorPreview() {
+  renderBlockEditor('pattern-preview', () => editorBlocks, 'Type a pattern above');
+}
+
+function renderAltEditorPreview() {
+  document.getElementById('alt-preview-wrap').classList.toggle('hidden', editorAltBlocks.length === 0);
+  renderBlockEditor('alt-pattern-preview', () => editorAltBlocks, '');
+}
+
+document.getElementById('hand-pattern').addEventListener('input', (e) => {
+  editorBlocks = parsePatternBlocks(e.target.value, editorBlocks);
+  renderEditorPreview();
+});
+
+document.getElementById('hand-alt-pattern').addEventListener('input', (e) => {
+  editorAltBlocks = parsePatternBlocks(e.target.value, editorAltBlocks);
+  renderAltEditorPreview();
+});
+
+function openModal(hand = null) {
+  document.getElementById('hand-modal-title').textContent = hand ? 'Edit Hand' : 'Add Hand';
+  document.getElementById('hand-id').value = hand?.id || '';
+  document.getElementById('hand-category').value = hand?.category || '';
+  document.getElementById('hand-value').value = hand?.value ?? '';
+  document.getElementById('hand-concealed').value = String(hand?.concealed ?? false);
+  document.getElementById('hand-notes').value = hand?.notes || '';
+
+  editorBlocks = hand
+    ? (hand.pattern_blocks || []).map((b) => ({ text: b.text, group: b.group ?? 0 }))
+    : [];
+  document.getElementById('hand-pattern').value = editorBlocks.map((b) => b.text).join(' ');
+  renderEditorPreview();
+
+  editorAltBlocks = hand
+    ? (hand.alt_pattern_blocks || []).map((b) => ({ text: b.text, group: b.group ?? 0 }))
+    : [];
+  document.getElementById('hand-alt-pattern').value = editorAltBlocks.map((b) => b.text).join(' ');
+  renderAltEditorPreview();
+
+  document.getElementById('delete-hand-btn').classList.toggle('hidden', !hand);
+  modal.showModal();
+}
+
+document.getElementById('add-hand-btn').addEventListener('click', () => openModal());
+document.getElementById('empty-add-btn').addEventListener('click', () => openModal());
+
+document.getElementById('save-hand-btn').addEventListener('click', async () => {
+  const id = document.getElementById('hand-id').value;
+  const category = document.getElementById('hand-category').value.trim();
+  const value = Number(document.getElementById('hand-value').value);
+
+  if (!category) return showAlert('Section is required', 'warning');
+  if (editorBlocks.length === 0) return showAlert('Pattern is required', 'warning');
+  if (!Number.isFinite(value) || value <= 0) return showAlert('Value is required', 'warning');
+
+  // Keep new sections grouped in the order they were first added.
+  const existing = allHands.find((h) => h.category === category);
+  const categoryOrder = existing
+    ? existing.category_order
+    : new Set(allHands.map((h) => h.category)).size;
+
+  const payload = {
+    card_year: currentYear,
+    category,
+    category_order: categoryOrder,
+    sort_order: existing
+      ? Math.max(...allHands.filter((h) => h.category === category).map((h) => h.sort_order)) + 1
+      : 0,
+    pattern_blocks: editorBlocks,
+    alt_pattern_blocks: editorAltBlocks.length ? editorAltBlocks : null,
+    value,
+    concealed: document.getElementById('hand-concealed').value === 'true',
+    notes: document.getElementById('hand-notes').value.trim() || null,
+  };
+
+  const result = id
+    ? await updateHand(id, {
+        category: payload.category,
+        pattern_blocks: payload.pattern_blocks,
+        alt_pattern_blocks: payload.alt_pattern_blocks,
+        value: payload.value,
+        concealed: payload.concealed,
+        notes: payload.notes,
+      })
+    : await createHand(payload);
+
+  if (!result.success) {
+    showAlert(result.error?.message || 'Could not save hand', 'error');
+    return;
+  }
+
+  modal.close();
+  showAlert(id ? 'Hand updated' : 'Hand added', 'success');
+  await loadHands();
+});
+
+document.getElementById('delete-hand-btn').addEventListener('click', async () => {
+  const id = document.getElementById('hand-id').value;
+  if (!id || !confirm('Delete this hand?')) return;
+
+  const result = await deleteHand(id);
+  if (!result.success) {
+    showAlert(result.error?.message || 'Could not delete hand', 'error');
+    return;
+  }
+
+  modal.close();
+  showAlert('Hand deleted', 'success');
+  await loadHands();
+});
+
+// ─── Boot ───────────────────────────────────────────────────────────────────
+await initYears();
+await loadHands();
+</script>

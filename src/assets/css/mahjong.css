@@ -1,0 +1,93 @@
+/* Mah Jongg reference card — pattern rendering
+   Suit colors mirror the printed NMJL card convention: three distinct colors
+   distinguishing which suit each block belongs to, plus neutral for
+   flowers / dragons / winds / jokers. */
+
+.mj-pattern {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.mj-block {
+  white-space: nowrap;
+}
+
+/* Separator between a hand's two printed alternatives */
+.mj-or {
+  font-family: system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: 0;
+  color: #6b7280;
+  padding: 0 0.1rem;
+}
+
+/* group 0 — neutral: flowers, dragons, winds, jokers */
+.mj-g0 { color: #1f2937; }
+/* group 1 */
+.mj-g1 { color: #1b973a; }
+/* group 2 */
+.mj-g2 { color: #b91c1c; }
+/* group 3 */
+.mj-g3 { color: #047857; }
+
+/* Editor: tappable blocks that cycle through color groups */
+.mj-block-btn {
+  cursor: pointer;
+  border: 2px dashed transparent;
+  border-radius: 0.375rem;
+  padding: 0.1rem 0.35rem;
+  background: none;
+  font: inherit;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.mj-block-btn:hover,
+.mj-block-btn:focus-visible {
+  border-color: currentColor;
+  background-color: rgb(0 0 0 / 0.04);
+  outline: none;
+}
+
+/* Larger tap targets on touch devices */
+@media (pointer: coarse) {
+  .mj-block-btn {
+    padding: 0.3rem 0.5rem;
+  }
+}
+
+/* Hand rows */
+.mj-hand {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgb(0 0 0 / 0.08);
+}
+
+.mj-hand:last-child {
+  border-bottom: none;
+}
+
+.mj-hand-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+/* Keep long patterns readable on narrow phones */
+@media (max-width: 480px) {
+  .mj-pattern {
+    font-size: 1.15rem;
+  }
+}

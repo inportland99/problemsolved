@@ -52,5 +52,11 @@
     "description": "Big-screen party game. Move the needle to guess where a clue falls on a spectrum, then reveal the target.",
     "link": "/personal/wavelength/",
     "icon": "🎯"
+  },
+  {
+    "name": "Mah Jongg Reference",
+    "description": "Phone-friendly American Mah Jongg card: your hands by section, plus Charleston, joker, and payout rules.",
+    "link": "/personal/mahjong/",
+    "icon": "🀄"
   }
 ]
