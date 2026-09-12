@@ -259,7 +259,7 @@
           <span class="label-text font-semibold text-sm truncate">${player}</span>
         </label>
         <input type="number" id="bid-${index}" min="0" max="${gameState.cardsThisHand}" ${valueAttr} 
-               class="input input-bordered input-sm w-full no-spinner">
+               class="input input-bordered input-sm w-full">
       `;
       bidInputsDiv.appendChild(div);
     });
@@ -301,7 +301,7 @@
           </span>
         </label>
         <input type="number" id="result-${index}" min="0" max="${gameState.cardsThisHand}" placeholder="0" 
-               class="input input-bordered input-sm w-full no-spinner">
+               class="input input-bordered input-sm w-full">
       `;
       resultInputsDiv.appendChild(div);
     });
@@ -347,7 +347,7 @@
     // Move to next hand
     gameState.currentHand++;
     gameState.cardsThisHand = gameState.handSequence[gameState.currentHand - 1];
-    
+    Object.keys(gameState.bids).forEach(key => gameState.bids[key] = 0);     // zero out the bids
     updateGameDisplay();
     showBiddingPhase();
   });
