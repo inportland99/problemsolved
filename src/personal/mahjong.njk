@@ -6,12 +6,7 @@ pageCss: /assets/css/mahjong.css
 ---
 
 <div class="min-h-screen bg-base-200">
-  <!-- Auth loading -->
-  <div id="auth-loading" class="flex justify-center items-center min-h-screen">
-    <span class="loading loading-spinner loading-lg"></span>
-  </div>
-
-  <div id="app" class="hidden">
+  <div id="app">
     <!-- Sticky header -->
     <div class="navbar bg-base-100 shadow-md sticky top-0 z-30 min-h-0 py-2">
       <div class="flex-1">
@@ -19,7 +14,7 @@ pageCss: /assets/css/mahjong.css
       </div>
       <div class="flex-none gap-1">
         <select id="year-select" class="select select-bordered select-sm w-24"></select>
-        <button id="logout-btn" class="btn btn-ghost btn-sm">Exit</button>
+        <button id="session-btn" class="btn btn-ghost btn-sm">Log in</button>
       </div>
     </div>
 
@@ -46,7 +41,7 @@ pageCss: /assets/css/mahjong.css
         <p class="text-sm text-base-content/70 mb-4">
           Add hands from your card to build the reference.
         </p>
-        <button id="empty-add-btn" class="btn btn-primary btn-sm">Add first hand</button>
+        <button id="empty-add-btn" class="btn btn-primary btn-sm hidden">Add first hand</button>
       </div>
 
       <div id="no-results" class="hidden text-center py-8 text-sm text-base-content/60">
@@ -217,10 +212,10 @@ pageCss: /assets/css/mahjong.css
       </div>
     </div>
 
-    <!-- Floating add button -->
+    <!-- Floating add button (owner only) -->
     <button
       id="add-hand-btn"
-      class="btn btn-primary btn-circle fixed bottom-5 right-5 shadow-lg text-2xl z-40"
+      class="btn btn-primary btn-circle fixed bottom-5 right-5 shadow-lg text-2xl z-40 hidden"
       aria-label="Add hand"
     >+</button>
   </div>
@@ -339,19 +334,29 @@ import {
 const LOGIN_URL = '/personal/coaching/login/';
 const DEFAULT_YEAR = new Date().getFullYear();
 
-// ─── Auth gate ──────────────────────────────────────────────────────────────
+// ─── Session ───────────────────────────────────────────────────────────────────
+// Reads are public — this page renders for anyone with the link. Editing is
+// restricted (by RLS) to whoever is logged in as the site owner, so we only
+// reveal edit affordances once we know that's the case.
 const user = await getCurrentUser();
-if (!user) {
-  window.location.href = LOGIN_URL;
-  throw new Error('Not authenticated');
-}
-document.getElementById('auth-loading').classList.add('hidden');
-document.getElementById('app').classList.remove('hidden');
+const isOwner = !!user;
 
-document.getElementById('logout-btn').addEventListener('click', async () => {
-  await signOut();
-  window.location.href = LOGIN_URL;
-});
+const sessionBtn = document.getElementById('session-btn');
+if (isOwner) {
+  sessionBtn.textContent = 'Log out';
+  sessionBtn.addEventListener('click', async () => {
+    await signOut();
+    window.location.reload();
+  });
+
+  document.getElementById('add-hand-btn').classList.remove('hidden');
+  document.getElementById('empty-add-btn').classList.remove('hidden');
+} else {
+  sessionBtn.textContent = 'Log in';
+  sessionBtn.addEventListener('click', () => {
+    window.location.href = LOGIN_URL;
+  });
+}
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 function escapeHtml(str) {
@@ -464,7 +469,7 @@ function render() {
         </div>
         <div class="collapse-content">
           ${group.hands.map((hand) => `
-            <div class="mj-hand" data-hand-id="${hand.id}" role="button" tabindex="0">
+            <div class="mj-hand${isOwner ? ' mj-hand-editable' : ''}" data-hand-id="${hand.id}" ${isOwner ? 'role="button" tabindex="0"' : ''}>
               <div class="mj-pattern">${fullPatternHtml(hand)}</div>
               <div class="mj-hand-meta">
                 <span class="badge badge-sm ${hand.concealed ? 'badge-neutral' : 'badge-outline'}">
@@ -482,19 +487,21 @@ function render() {
 
   container.classList.remove('hidden');
 
-  container.querySelectorAll('.mj-hand').forEach((row) => {
-    const open = () => {
-      const hand = allHands.find((h) => h.id === row.dataset.handId);
-      if (hand) openModal(hand);
-    };
-    row.addEventListener('click', open);
-    row.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        open();
-      }
+  if (isOwner) {
+    container.querySelectorAll('.mj-hand').forEach((row) => {
+      const open = () => {
+        const hand = allHands.find((h) => h.id === row.dataset.handId);
+        if (hand) openModal(hand);
+      };
+      row.addEventListener('click', open);
+      row.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          open();
+        }
+      });
     });
-  });
+  }
 
   // Refresh the section autocomplete options
   document.getElementById('category-options').innerHTML = [...new Set(allHands.map((h) => h.category))]

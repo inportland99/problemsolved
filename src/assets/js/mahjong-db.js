@@ -59,21 +59,19 @@ function searchTextFor(blocks, altBlocks) {
 // ─── Hands ──────────────────────────────────────────────────────────────────
 
 /**
- * Get all hands for the current user, optionally filtered to one card year.
+ * Get all hands, optionally filtered to one card year.
+ *
+ * Read access is public (see supabase-mahjong-setup.sql) so this does not
+ * require a signed-in user — it returns the single owner's transcription for
+ * anyone with the link.
  * @param {number} [cardYear]
  * @returns {Object} { success: boolean, data: array, error: object }
  */
 export async function getHands(cardYear) {
   try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return { success: false, error: { message: 'You must be logged in to view hands' } };
-    }
-
     let query = supabase
       .from('mahjong_hands')
       .select('*')
-      .eq('user_id', user.id)
       .order('category_order', { ascending: true })
       .order('sort_order', { ascending: true });
 
@@ -96,20 +94,15 @@ export async function getHands(cardYear) {
 }
 
 /**
- * Get the distinct card years the current user has transcribed.
+ * Get the distinct card years that have been transcribed. Public read, same
+ * as getHands() — no login required.
  * @returns {Object} { success: boolean, data: number[], error: object }
  */
 export async function getCardYears() {
   try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return { success: false, error: { message: 'You must be logged in' } };
-    }
-
     const { data, error } = await supabase
       .from('mahjong_hands')
-      .select('card_year')
-      .eq('user_id', user.id);
+      .select('card_year');
 
     if (error) {
       console.error('Error fetching card years:', error);

@@ -3,9 +3,11 @@
 -- ============================================================================
 -- Stores a personal transcription of a purchased NMJL card.
 --
--- IMPORTANT: the NMJL hand list is copyrighted. Rows here are private to the
--- user who created them (enforced by RLS below) and are never exposed to
--- anonymous visitors. Do not add a public-read policy to this table.
+-- IMPORTANT: the NMJL hand list is copyrighted. This page is shared only with
+-- people who already own the physical card, by deliberate choice of the site
+-- owner — read access is intentionally public (see the anon SELECT policy
+-- below). Writes (insert/update/delete) remain restricted to the owner via
+-- auth.uid() = user_id. Do not loosen the write policies.
 --
 -- Safe to re-run.
 -- ============================================================================
@@ -76,17 +78,18 @@ create trigger mahjong_hands_updated_at
   for each row
   execute function public.mahjong_hands_set_updated_at();
 
--- ─── Row Level Security ─────────────────────────────────────────────────────
--- Every policy is scoped to auth.uid() = user_id. There is intentionally no
--- policy granting access to the 'anon' role.
+-- ─── Row Level Security ───────────────────────────────────────────────────────────────────
+-- Reads are public (anon + authenticated); writes stay scoped to the owner.
 
 alter table public.mahjong_hands enable row level security;
 
 drop policy if exists "Users can view their own mahjong hands" on public.mahjong_hands;
-create policy "Users can view their own mahjong hands"
+drop policy if exists "Public can view mahjong hands" on public.mahjong_hands;
+create policy "Public can view mahjong hands"
   on public.mahjong_hands
   for select
-  using (auth.uid() = user_id);
+  to anon, authenticated
+  using (true);
 
 drop policy if exists "Users can insert their own mahjong hands" on public.mahjong_hands;
 create policy "Users can insert their own mahjong hands"

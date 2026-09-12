@@ -301,11 +301,13 @@ The needle uses a rAF loop that eases a rendered position toward the true positi
 
 ## Mah Jongg Reference (/personal/mahjong)
 
-A private, phone-first American Mah Jongg (NMJL) reference card at `/personal/mahjong/`. Uses `minimal.njk` with `pageCss: /assets/css/mahjong.css` and the same Supabase auth-guard pattern as the other `/personal/` tools.
+A phone-first American Mah Jongg (NMJL) reference card at `/personal/mahjong/`. Uses `minimal.njk` with `pageCss: /assets/css/mahjong.css`.
 
-### Why it is behind auth
+### Access model: public read, owner-only write
 
-The NMJL hand list is **copyrighted**. The hands stored here are a personal transcription of a purchased card, so `mahjong_hands` is RLS-scoped to `auth.uid() = user_id` and there is deliberately **no anon/public read policy** — do not add one, and do not move the hand list into a committed JSON data file or any public page. The general rules content (Charleston, joker rules, payouts, tile counts) is *not* NMJL IP and is hardcoded in the template.
+Unlike the other `/personal/` tools, this page does **not** require login to view — by deliberate choice of the site owner, since the hand list is only meaningful (and only shared) with people who already own the physical card. `mahjong_hands` has a `select` policy open to `anon, authenticated` (`using (true)`), while `insert`/`update`/`delete` remain scoped to `auth.uid() = user_id`. `getHands()`/`getCardYears()` in `mahjong-db.js` do not require a session; `createHand`/`updateHand`/`deleteHand`/`bulkCreateHands`/`deleteCardYear` do.
+
+The page calls `getCurrentUser()` on load to compute `isOwner` (used only client-side to show/hide edit affordances — the header's Log in/Log out button, the floating add button, and click-to-edit on hand rows). This is a UX convenience, not the security boundary; the RLS write policies are what actually prevent visitors from modifying data. The NMJL hand list is still **copyrighted**; keep it in the database rather than a committed JSON file or any statically-rendered content, since Eleventy bakes template data into the built HTML at deploy time. The general rules content (Charleston, joker rules, payouts, tile counts) is *not* NMJL IP and is hardcoded in the template.
 
 ### Pages and modules
 - `src/personal/mahjong.njk` — the page: sticky header with a card-year selector, a search box, hands grouped into collapsible sections, static rules accordions, and a bottom-sheet hand editor modal.
