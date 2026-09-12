@@ -74,6 +74,11 @@
   border-bottom: 1px solid rgb(0 0 0 / 0.08);
 }
 
+/* Only tappable when signed in as the owner (see isOwner in mahjong.njk) */
+.mj-hand-editable {
+  cursor: pointer;
+}
+
 .mj-hand:last-child {
   border-bottom: none;
 }
