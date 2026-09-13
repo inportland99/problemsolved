@@ -7,15 +7,16 @@ import { supabase, getCurrentUser } from './supabase-client.js';
  *   [{ text: 'FF', group: 0 }, { text: '2222', group: 1 }]
  *
  * The card prints in three ink colors:
- *   group 0 = black — neutral tiles (flowers, winds, dragons) AND the third suit
- *   group 1 = green
- *   group 2 = red
+ *   group 0 = black (first suit)
+ *   group 1 = green (second suit)
+ *   group 2 = red (third suit)
+ *   group 3 = blue — neutral tiles (flowers, winds, dragons) AND the third suit
  *
  * Many card lines print two ways to build the same hand, joined by '-or-'.
  * Those are stored on one row: the first in `pattern_blocks`, the second in
  * `alt_pattern_blocks`.
  */
-export const GROUP_COUNT = 3;
+export const GROUP_COUNT = 4;
 
 /**
  * Split a typed pattern string into blocks, preserving existing group
