@@ -1,7 +1,6 @@
 /* Mah Jongg reference card — pattern rendering
-   Suit colors mirror the printed NMJL card convention: three distinct colors
-   distinguishing which suit each block belongs to, plus neutral for
-   flowers / dragons / winds / jokers. */
+   Three distinct suit colors distinguishing which suit each block belongs to,
+   plus neutral for flowers / dragons / winds / jokers. */
 
 .mj-pattern {
   display: flex;
@@ -33,11 +32,11 @@
 /* group 0 — neutral: flowers, dragons, winds, jokers */
 .mj-g0 { color: #4e4e4e; }
 /* group 1 */
-.mj-g1 { color: #1b973a; }
+.mj-g1 { color: #ea8a41; }
 /* group 2 */
-.mj-g2 { color: #b91c1c; }
+.mj-g2 { color: #874dcd; }
 /* group 3 */
-.mj-g3 { color: #3770cc; }
+.mj-g3 { color: #008cff; }
 
 /* Editor: tappable blocks that cycle through color groups */
 .mj-block-btn {
