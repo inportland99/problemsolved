@@ -32,11 +32,11 @@
 /* group 0 — neutral: flowers, dragons, winds, jokers */
 .mj-g0 { color: #4e4e4e; }
 /* group 1 */
-.mj-g1 { color: #ea8a41; }
+.mj-g1 { color: #7F2CCB; }
 /* group 2 */
-.mj-g2 { color: #874dcd; }
+.mj-g2 { color: #55D6BE; }
 /* group 3 */
-.mj-g3 { color: #008cff; }
+.mj-g3 { color: #FB6376; }
 
 /* Editor: tappable blocks that cycle through color groups */
 .mj-block-btn {
