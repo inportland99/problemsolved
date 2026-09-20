@@ -67,7 +67,6 @@
 .mj-hand {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 0.75rem;
   padding: 0.7rem 0;
   border-bottom: 1px solid rgb(0 0 0 / 0.08);
@@ -87,6 +86,9 @@
   align-items: center;
   gap: 0.35rem;
   flex-shrink: 0;
+  /* Pins the badges to the right regardless of how many items (e.g. the
+     prospective checkbox) come before .mj-pattern in the row. */
+  margin-left: auto;
 }
 
 /* Keep long patterns readable on narrow phones */
