@@ -26,6 +26,16 @@
     <div class="max-w-2xl mx-auto px-3 py-4 pb-24">
       <div id="alert-container" class="mb-3"></div>
 
+      <!-- Prospective hands the visitor is considering for their game -->
+      <div id="prospective-section" class="hidden mb-4">
+        <div class="border-2 border-primary/40 rounded-lg p-3 bg-primary/5">
+          <h2 class="text-sm font-bold uppercase tracking-wide text-primary mb-2">
+            Prospective Hands
+          </h2>
+          <div id="prospective-list" class="space-y-1"></div>
+        </div>
+      </div>
+
       <!-- Search -->
       <input
         id="search"
@@ -303,7 +313,7 @@
           <span class="label-text text-sm">Search patterns</span>
         </label>
         <textarea
-          id="hand-search-pattern"
+          id="hand-search-patterns"
           class="textarea textarea-bordered textarea-sm h-16"
           placeholder="leave blank if none"
           autocapitalize="characters"

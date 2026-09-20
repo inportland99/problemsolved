@@ -62,11 +62,67 @@ function fullPatternHtml(hand) {
   return `${main}<span class="mj-or">-or-</span>${patternHtml(hand.alt_pattern_blocks)}`;
 }
 
-// ─── State ──────────────────────────────────────────────────────────────────
+// ─── State ────────────────────────────────────────────────────────────────────
 let allHands = [];
 let currentYear = DEFAULT_YEAR;
 let editorBlocks = [];
 let editorAltBlocks = [];
+
+// Hands the visitor is considering for their game, kept in localStorage so
+// the list survives a page reload. Independent of search/owner status.
+const PROSPECTIVE_STORAGE_KEY = 'mahjong-prospective-hands';
+const prospectiveIds = loadProspectiveIds();
+// handId -> index into that hand's search_patterns, for the tap-to-cycle
+// feature in the Prospective Hands panel.
+const prospectivePatternIndex = new Map();
+
+function loadProspectiveIds() {
+  try {
+    const raw = localStorage.getItem(PROSPECTIVE_STORAGE_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveProspectiveIds() {
+  try {
+    localStorage.setItem(PROSPECTIVE_STORAGE_KEY, JSON.stringify([...prospectiveIds]));
+  } catch {
+    // Ignore storage errors (e.g. private browsing).
+  }
+}
+
+function toggleProspective(handId, isChecked) {
+  if (isChecked) {
+    prospectiveIds.add(handId);
+    if (!prospectivePatternIndex.has(handId)) prospectivePatternIndex.set(handId, 0);
+  } else {
+    prospectiveIds.delete(handId);
+    prospectivePatternIndex.delete(handId);
+  }
+  saveProspectiveIds();
+  render();
+}
+
+// Renders one pattern option from a hand's search_patterns, reusing the
+// color assigned to each position in pattern_blocks so the tile colors stay
+// consistent as the displayed combination changes.
+function coloredPatternFromSearch(hand, index) {
+  const blocks = hand.pattern_blocks || [];
+  const patterns = hand.search_patterns || [];
+  const tokens = patterns[index] || patterns[0] || blocks.map((b) => b.text);
+
+  if (tokens.length !== blocks.length) {
+    // Can't map colors positionally if the shapes don't match — fall back to
+    // plain, uncolored text rather than guessing.
+    return tokens.map((text) => `<span class="mj-block mj-g0">${escapeHtml(text)}</span>`).join('');
+  }
+
+  return tokens
+    .map((text, i) => `<span class="mj-block mj-g${blocks[i]?.group ?? 0}">${escapeHtml(text)}</span>`)
+    .join('');
+}
 
 // ─── Year selector ──────────────────────────────────────────────────────────
 async function initYears() {
@@ -88,7 +144,13 @@ async function initYears() {
   });
 }
 
-// ─── Search pattern logic ────────────────────────────────────────────────────
+// ─── Search pattern logic ────────────────────────────────────────────────
+// Matching runs entirely against hand.search_patterns — an array of tile-token
+// arrays, one per valid combination for that hand. A hand matches if ANY one
+// of its pattern options satisfies the query, so a search like "9999" can
+// find a Consecutive Run hand whose *displayed* pattern doesn't contain it but
+// whose other listed combinations do. See defaultSearchPatternRows() for how
+// this is populated when a hand has no explicit search patterns of its own.
 function handMatchesQuery(hand, query) {
   const searchGroups = query
     .trim()
@@ -98,9 +160,12 @@ function handMatchesQuery(hand, query) {
 
   if (searchGroups.length === 0) return true;
 
-  const blocks = hand.pattern_blocks || [];
+  const patterns = hand.search_patterns || [];
+  return patterns.some((blocks) => patternMatchesSearch(blocks, searchGroups));
+}
 
-  // Try to assign each search group to a different pattern block.
+// Try to assign each search group to a different block within one pattern option.
+function patternMatchesSearch(blocks, searchGroups) {
   function canMatch(searchIndex, usedBlocks) {
     if (searchIndex === searchGroups.length) {
       return true;
@@ -111,7 +176,7 @@ function handMatchesQuery(hand, query) {
     for (let i = 0; i < blocks.length; i++) {
       if (usedBlocks.has(i)) continue;
 
-      if (blockCanContain(blocks[i].text, search)) {
+      if (blockCanContain(blocks[i], search)) {
         usedBlocks.add(i);
 
         if (canMatch(searchIndex + 1, usedBlocks)) {
@@ -147,6 +212,44 @@ function countTiles(text) {
   return counts;
 }
 
+// ─── Search pattern functions ───────────────────────────────────────────────
+// converts a string into and JSON for storing in the database
+function parseSearchPatterns(value) {
+  return value
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(line => line.split(/\s+/));
+}
+// converts JSON to text for search and display in the editor
+function formatSearchPatterns(patterns) {
+  return (patterns || [])
+    .map(pattern => pattern.join(' '))
+    .join('\n');
+}
+// Default search-pattern rows derived from a hand's display pattern(s) (main
+// + alt, if any), as plain text with no group info. Used both to prefill the
+// editor and as the fallback when saving a hand with no explicit search
+// patterns typed in, so every hand always has at least one row to match on.
+function defaultSearchPatternRows(blocks, altBlocks) {
+  const rows = [(blocks || []).map((block) => block.text)];
+  if (altBlocks?.length) {
+    rows.push(altBlocks.map((block) => block.text));
+  }
+  return rows;
+}
+
+// prepopulates the search pattern editor with the hand's patterns, if any.
+// Falls back to defaultSearchPatternRows() for hands that haven't had
+// explicit search patterns entered yet.
+function getSearchPatternsForEdit(hand) {
+  if (hand.search_patterns?.length) {
+    return formatSearchPatterns(hand.search_patterns);
+  }
+
+  return formatSearchPatterns(defaultSearchPatternRows(hand.pattern_blocks, hand.alt_pattern_blocks));
+}
+
 // ─── Rendering ──────────────────────────────────────────────────────────────
 function groupByCategory(hands) {
   const groups = [];
@@ -163,7 +266,73 @@ function groupByCategory(hands) {
   return groups;
 }
 
+// Renders the "Prospective Hands" panel from prospectiveIds. Independent of
+// the search box — it always shows every currently-loaded hand the visitor
+// has checked, regardless of what's typed in the search field.
+function renderProspectivePanel() {
+  const section = document.getElementById('prospective-section');
+  const list = document.getElementById('prospective-list');
+
+  const hands = allHands.filter((h) => prospectiveIds.has(h.id));
+
+  if (hands.length === 0) {
+    section.classList.add('hidden');
+    list.innerHTML = '';
+    return;
+  }
+
+  section.classList.remove('hidden');
+
+  list.innerHTML = hands
+    .map((hand) => {
+      const canCycle = (hand.search_patterns?.length || 0) > 1;
+      const index = prospectivePatternIndex.get(hand.id) || 0;
+      return `
+        <div class="mj-hand${canCycle ? ' mj-hand-editable' : ''}" data-hand-id="${hand.id}" ${canCycle ? 'role="button" tabindex="0"' : ''}>
+          <input type="checkbox" class="checkbox checkbox-sm mj-prospective-check mt-1" data-hand-id="${hand.id}" checked />
+          <div class="mj-pattern" data-prospective-pattern="${hand.id}">${coloredPatternFromSearch(hand, index)}</div>
+          <div class="mj-hand-meta">
+            <span class="badge badge-sm ${hand.concealed ? 'badge-neutral' : 'badge-outline'}">
+              ${hand.concealed ? 'C' : 'X'}
+            </span>
+            <span class="badge badge-sm badge-primary">${hand.value}</span>
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+
+  list.querySelectorAll('.mj-prospective-check').forEach((checkbox) => {
+    checkbox.addEventListener('click', (e) => e.stopPropagation());
+    checkbox.addEventListener('change', (e) => {
+      toggleProspective(e.target.dataset.handId, e.target.checked);
+    });
+  });
+
+  list.querySelectorAll('.mj-hand').forEach((row) => {
+    const handId = row.dataset.handId;
+    const hand = hands.find((h) => h.id === handId);
+    if (!hand || (hand.search_patterns?.length || 0) <= 1) return;
+
+    const cycle = () => {
+      const next = ((prospectivePatternIndex.get(handId) || 0) + 1) % hand.search_patterns.length;
+      prospectivePatternIndex.set(handId, next);
+      row.querySelector('.mj-pattern').innerHTML = coloredPatternFromSearch(hand, next);
+    };
+
+    row.addEventListener('click', cycle);
+    row.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        cycle();
+      }
+    });
+  });
+}
+
 function render() {
+  renderProspectivePanel();
+
   const query = document.getElementById('search').value.trim().toLowerCase();
   const container = document.getElementById('hands-container');
   const emptyState = document.getElementById('empty-state');
@@ -201,6 +370,7 @@ function render() {
         <div class="collapse-content">
           ${group.hands.map((hand) => `
             <div class="mj-hand${isOwner ? ' mj-hand-editable' : ''}" data-hand-id="${hand.id}" ${isOwner ? 'role="button" tabindex="0"' : ''}>
+              <input type="checkbox" class="checkbox checkbox-sm mj-prospective-check mt-1" data-hand-id="${hand.id}" ${prospectiveIds.has(hand.id) ? 'checked' : ''} />
               <div class="mj-pattern">${fullPatternHtml(hand)}
                 ${hand.notes ? `<span class="text-xs font-normal text-base-content/60 mt-1 mb-1">(${escapeHtml(hand.notes)})</span>` : ''}
               </div>
@@ -218,6 +388,13 @@ function render() {
     .join('');
 
   container.classList.remove('hidden');
+
+  container.querySelectorAll('.mj-prospective-check').forEach((checkbox) => {
+    checkbox.addEventListener('click', (e) => e.stopPropagation());
+    checkbox.addEventListener('change', (e) => {
+      toggleProspective(e.target.dataset.handId, e.target.checked);
+    });
+  });
 
   if (isOwner) {
     container.querySelectorAll('.mj-hand').forEach((row) => {
@@ -317,6 +494,7 @@ function openModal(hand = null) {
   document.getElementById('hand-value').value = hand?.value ?? '';
   document.getElementById('hand-concealed').value = String(hand?.concealed ?? false);
   document.getElementById('hand-notes').value = hand?.notes || '';
+  document.getElementById('hand-search-patterns').value = hand ? getSearchPatternsForEdit(hand) : '';
 
   editorBlocks = hand
     ? (hand.pattern_blocks || []).map((b) => ({ text: b.text, group: b.group ?? 0 }))
@@ -352,6 +530,18 @@ document.getElementById('save-hand-btn').addEventListener('click', async () => {
     ? existing.category_order
     : new Set(allHands.map((h) => h.category)).size;
 
+  // Prepares the search patterns for the hand, either from the editor or
+  // (when left blank) derived from the main/alt display patterns, so every
+  // hand always has at least one row to match on.
+  const searchPatterns = parseSearchPatterns(
+    document.getElementById('hand-search-patterns').value.trim()
+  );
+
+  if (searchPatterns.length === 0) {
+    searchPatterns.push(...defaultSearchPatternRows(editorBlocks, editorAltBlocks));
+  }
+
+  // Prepares the payload for creating or updating a hand.
   const payload = {
     card_year: currentYear,
     category,
@@ -361,6 +551,7 @@ document.getElementById('save-hand-btn').addEventListener('click', async () => {
       : 0,
     pattern_blocks: editorBlocks,
     alt_pattern_blocks: editorAltBlocks.length ? editorAltBlocks : null,
+    search_patterns: searchPatterns,
     value,
     concealed: document.getElementById('hand-concealed').value === 'true',
     notes: document.getElementById('hand-notes').value.trim() || null,
@@ -371,6 +562,7 @@ document.getElementById('save-hand-btn').addEventListener('click', async () => {
         category: payload.category,
         pattern_blocks: payload.pattern_blocks,
         alt_pattern_blocks: payload.alt_pattern_blocks,
+        search_patterns: payload.search_patterns,
         value: payload.value,
         concealed: payload.concealed,
         notes: payload.notes,
