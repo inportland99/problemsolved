@@ -68,6 +68,13 @@ let currentYear = DEFAULT_YEAR;
 let editorBlocks = [];
 let editorAltBlocks = [];
 
+// Which category accordions are expanded, so re-rendering the list (e.g. when
+// toggling a Prospective Hands checkbox) doesn't collapse everything back to
+// just the first section. null means "not yet initialized" — render() then
+// defaults to opening just the first category. Reset to null whenever the
+// underlying hand set changes wholesale (switching years).
+let openCategories = null;
+
 // Hands the visitor is considering for their game, kept in localStorage so
 // the list survives a page reload. Independent of search/owner status.
 const PROSPECTIVE_STORAGE_KEY = 'mahjong-prospective-hands';
@@ -105,23 +112,81 @@ function toggleProspective(handId, isChecked) {
   render();
 }
 
-// Renders one pattern option from a hand's search_patterns, reusing the
-// color assigned to each position in pattern_blocks so the tile colors stay
-// consistent as the displayed combination changes.
-function coloredPatternFromSearch(hand, index) {
-  const blocks = hand.pattern_blocks || [];
-  const patterns = hand.search_patterns || [];
-  const tokens = patterns[index] || patterns[0] || blocks.map((b) => b.text);
+function tokensEqual(a, b) {
+  return !!a && !!b && a.length === b.length && a.every((t, i) => t.toUpperCase() === b[i].toUpperCase());
+}
 
-  if (tokens.length !== blocks.length) {
-    // Can't map colors positionally if the shapes don't match — fall back to
-    // plain, uncolored text rather than guessing.
-    return tokens.map((text) => `<span class="mj-block mj-g0">${escapeHtml(text)}</span>`).join('');
+// Which of a hand's search_patterns rows represent something genuinely beyond
+// its main + alt display pattern (e.g. the other Consecutive Run combinations,
+// or the other kong numbers in a "Like kongs 2,4,6,8" line). The main and alt
+// patterns are always shown together (see fullPatternHtml); tapping only ever
+// cycles through these extras, so the alt is never replaced/hidden by a tap.
+function extraVariantsFor(hand) {
+  const mainTokens = (hand.pattern_blocks || []).map((b) => b.text);
+  const altTokens = hand.alt_pattern_blocks?.length
+    ? hand.alt_pattern_blocks.map((b) => b.text)
+    : null;
+
+  return (hand.search_patterns || []).filter(
+    (row) => !tokensEqual(row, mainTokens) && !(altTokens && tokensEqual(row, altTokens))
+  );
+}
+
+// Colors a token array using a given blocks array's group assignments,
+// applied positionally (block i's color goes with token i).
+function colorTokensWith(blocks, tokens) {
+  if (!tokens || !blocks || tokens.length !== blocks.length) {
+    return (tokens || []).map((text) => `<span class="mj-block mj-g0">${escapeHtml(text)}</span>`).join('');
   }
-
   return tokens
     .map((text, i) => `<span class="mj-block mj-g${blocks[i]?.group ?? 0}">${escapeHtml(text)}</span>`)
     .join('');
+}
+
+// Renders one extra pattern variant, reusing the color assigned to each
+// position in pattern_blocks so the tile colors stay consistent as the
+// displayed combination changes.
+function coloredPatternFromTokens(hand, tokens) {
+  return colorTokensWith(hand.pattern_blocks, tokens);
+}
+
+// True when the alt pattern is purely a recoloring of the exact same tiles as
+// the main pattern (e.g. an "Any 1 or 2 Suits" line where -or- just swaps
+// which blocks are which color), rather than a genuinely different
+// combination. Only in that case does it make sense to reapply the alt's
+// color scheme to *other* variants of the hand.
+function altIsRecolorOnly(hand) {
+  if (!hand.alt_pattern_blocks?.length) return false;
+  const mainTokens = (hand.pattern_blocks || []).map((b) => b.text);
+  const altTokens = hand.alt_pattern_blocks.map((b) => b.text);
+  return tokensEqual(mainTokens, altTokens);
+}
+
+// The Prospective panel's default (untapped, index 0) state always looks like
+// the main list — main pattern plus the printed "-or-" alternate, if any.
+// Tapping past that cycles through extraVariantsFor(hand) one at a time.
+//
+// When the alt is a genuinely different combination (tied specifically to the
+// main pattern's own tiles), it's only ever shown at index 0, exactly as
+// printed on the card. When the alt is purely a recoloring of the same tiles,
+// that recoloring is reapplied to whichever variant is currently displayed,
+// so the "-or-" stays visible through every tap, not just the default one.
+function prospectivePatternHtml(hand, index) {
+  const extras = extraVariantsFor(hand);
+  const atDefault = index <= 0 || extras.length === 0;
+
+  if (!altIsRecolorOnly(hand)) {
+    if (atDefault) return fullPatternHtml(hand);
+    return coloredPatternFromTokens(hand, extras[(index - 1) % extras.length]);
+  }
+
+  const tokens = atDefault
+    ? (hand.pattern_blocks || []).map((b) => b.text)
+    : extras[(index - 1) % extras.length];
+
+  const mainHtml = colorTokensWith(hand.pattern_blocks, tokens);
+  const altHtml = colorTokensWith(hand.alt_pattern_blocks, tokens);
+  return `${mainHtml}<span class="mj-or">-or-</span>${altHtml}`;
 }
 
 // ─── Year selector ──────────────────────────────────────────────────────────
@@ -140,6 +205,7 @@ async function initYears() {
 
   select.addEventListener('change', async () => {
     currentYear = Number(select.value);
+    openCategories = null; // re-default to "first section open" for the new year
     await loadHands();
   });
 }
@@ -285,12 +351,12 @@ function renderProspectivePanel() {
 
   list.innerHTML = hands
     .map((hand) => {
-      const canCycle = (hand.search_patterns?.length || 0) > 1;
+      const canCycle = extraVariantsFor(hand).length > 0;
       const index = prospectivePatternIndex.get(hand.id) || 0;
       return `
         <div class="mj-hand${canCycle ? ' mj-hand-editable' : ''}" data-hand-id="${hand.id}" ${canCycle ? 'role="button" tabindex="0"' : ''}>
           <input type="checkbox" class="checkbox checkbox-sm mj-prospective-check mt-1" data-hand-id="${hand.id}" checked />
-          <div class="mj-pattern" data-prospective-pattern="${hand.id}">${coloredPatternFromSearch(hand, index)}</div>
+          <div class="mj-pattern" data-prospective-pattern="${hand.id}">${prospectivePatternHtml(hand, index)}</div>
           <div class="mj-hand-meta">
             <span class="badge badge-sm ${hand.concealed ? 'badge-neutral' : 'badge-outline'}">
               ${hand.concealed ? 'C' : 'X'}
@@ -312,12 +378,16 @@ function renderProspectivePanel() {
   list.querySelectorAll('.mj-hand').forEach((row) => {
     const handId = row.dataset.handId;
     const hand = hands.find((h) => h.id === handId);
-    if (!hand || (hand.search_patterns?.length || 0) <= 1) return;
+    const extras = hand ? extraVariantsFor(hand) : [];
+    if (!hand || extras.length === 0) return;
 
+    // States are: 0 = default main+alt view, 1..extras.length = each extra
+    // variant in turn, then wraps back to the default view.
+    const totalStates = extras.length + 1;
     const cycle = () => {
-      const next = ((prospectivePatternIndex.get(handId) || 0) + 1) % hand.search_patterns.length;
+      const next = ((prospectivePatternIndex.get(handId) || 0) + 1) % totalStates;
       prospectivePatternIndex.set(handId, next);
-      row.querySelector('.mj-pattern').innerHTML = coloredPatternFromSearch(hand, next);
+      row.querySelector('.mj-pattern').innerHTML = prospectivePatternHtml(hand, next);
     };
 
     row.addEventListener('click', cycle);
@@ -358,10 +428,17 @@ function render() {
 
   const groups = groupByCategory(filtered);
 
+  // Default to opening just the first category the first time hands are
+  // rendered for this year; after that, whatever the user has manually
+  // expanded/collapsed persists across re-renders.
+  if (openCategories === null) {
+    openCategories = new Set(groups.length ? [groups[0].category] : []);
+  }
+
   container.innerHTML = groups
-    .map((group, i) => `
+    .map((group) => `
       <div class="collapse collapse-arrow bg-base-100 shadow-sm">
-        <input type="checkbox" ${query || i === 0 ? 'checked' : ''} />
+        <input type="checkbox" class="mj-category-toggle" data-category="${escapeHtml(group.category)}" ${query || openCategories.has(group.category) ? 'checked' : ''} />
         <div class="collapse-title font-bold">
           ${escapeHtml(group.category)}
           <span class="badge badge-sm badge-ghost ml-1">${group.hands.length}</span>
@@ -388,6 +465,17 @@ function render() {
     .join('');
 
   container.classList.remove('hidden');
+
+  container.querySelectorAll('.mj-category-toggle').forEach((toggle) => {
+    toggle.addEventListener('change', () => {
+      const category = toggle.dataset.category;
+      if (toggle.checked) {
+        openCategories.add(category);
+      } else {
+        openCategories.delete(category);
+      }
+    });
+  });
 
   container.querySelectorAll('.mj-prospective-check').forEach((checkbox) => {
     checkbox.addEventListener('click', (e) => e.stopPropagation());
