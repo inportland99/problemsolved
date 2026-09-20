@@ -40,6 +40,15 @@ create table if not exists public.mahjong_hands (
   -- When present, this holds the second pattern in the same block format.
   alt_pattern_blocks jsonb,
 
+  -- Extra tile-pattern combinations to match on search, as plain text (no
+  -- color/group info) — an array of token arrays, e.g.:
+  --   [["FFF","1111","234","5555"], ["FFF","2222","345","6666"], ...]
+  -- Used so hands whose card line covers many valid variants (Consecutive
+  -- Run, Any Like Numbers, etc.) can be found by searching any one of them.
+  -- Falls back to pattern_blocks/alt_pattern_blocks text when empty; never
+  -- rendered directly.
+  search_patterns jsonb,
+
   -- Denormalized plain-text pattern for search; includes the alt pattern.
   pattern_text text not null default '',
 
@@ -56,6 +65,10 @@ create table if not exists public.mahjong_hands (
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
+
+-- Idempotent column add for databases created before search_patterns existed.
+alter table public.mahjong_hands
+  add column if not exists search_patterns jsonb;
 
 create index if not exists mahjong_hands_user_year_idx
   on public.mahjong_hands (user_id, card_year, category_order, sort_order);
