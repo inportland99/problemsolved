@@ -107,14 +107,47 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { action, email, authId, redirectTo } = await req.json();
+const { action, email, password, authId, redirectTo } = await req.json();
 
-    // ── ACTION: invite ──────────────────────────────────────────────────────
-    // ── ACTION: resend ──────────────────────────────────────────────
-    // Both share the same underlying mechanism: generateLink creates (or
-    // re-tokenizes, for an existing unconfirmed user) the invite and returns
-    // a link plus a 6-digit OTP code, which we email ourselves via the
-    // Resend API so both a link click and manual code entry are supported.
+    // ── ACTION: create ──────────────────────────────────────────────────────
+    // Create a confirmed login with a password you set manually. No email is
+    // sent — share the credentials with the teacher out of band.
+    if (action === "create") {
+      if (!email) {
+        return jsonResponse({ error: "email is required" }, 400);
+      }
+      if (!password || typeof password !== "string" || password.length < 6) {
+        return jsonResponse(
+          { error: "password is required and must be at least 6 characters" },
+          400
+        );
+      }
+
+      const { data: created, error: createError } =
+        await adminClient.auth.admin.createUser({
+          email,
+          password,
+          email_confirm: true,
+        });
+
+      if (createError) {
+        return jsonResponse({ error: createError.message }, 400);
+      }
+
+      const newAuthId = created?.user?.id;
+      if (!newAuthId) {
+        return jsonResponse(
+          { error: "User was created, but no user id was returned" },
+          500
+        );
+      }
+
+      return jsonResponse({ success: true, authId: newAuthId });
+    }
+
+    // ── ACTION: invite / resend ─────────────────────────────────────────────
+    // Kept for optional later use. generateLink creates (or re-tokenizes) an
+    // invite and returns a link plus OTP, which we email via Resend.
     if (action === "invite" || action === "resend") {
       if (!email) {
         return jsonResponse({ error: "email is required" }, 400);
@@ -174,8 +207,8 @@ serve(async (req: Request) => {
       return jsonResponse({ success: true });
     }
 
-    return jsonResponse(
-      { error: "Invalid action. Use 'invite', 'resend', or 'remove'." },
+return jsonResponse(
+      { error: "Invalid action. Use 'create', 'invite', 'resend', or 'remove'." },
       400
     );
   } catch (err) {
