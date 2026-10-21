@@ -119,9 +119,10 @@ function createCard(obs) {
   return `
     <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
       <div class="card-body">
-        <h2 class="card-title text-lg">${obs.teacher_name || 'Unknown Teacher'}</h2>
+<h2 class="card-title text-lg">${obs.teacher_name || 'Unknown Teacher'}</h2>
         <p class="text-sm text-gray-600">${obs.lesson || 'No lesson specified'}</p>
-        <p class="text-xs text-gray-500">${obs.grade_course || ''}</p>
+        <p class="text-xs text-gray-500">${obs.mathContentLabel || obs.grade_course || ''}</p>
+        ${obs.linkedLessonTitle ? `<p class="text-xs text-primary/80">📚 ${obs.linkedLessonTitle}</p>` : ''}
 
         <div class="flex flex-wrap gap-1 mt-2">
           ${obs.planning_score != null ? `<div class="tooltip" data-tip="Planning">${scoreBadge(obs.planning_score)}</div>` : ''}

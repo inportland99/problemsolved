@@ -42,14 +42,18 @@
     <div class="card bg-base-100 shadow-xl mb-6">
       <div class="card-body">
         <h1 id="teacher-name" class="text-3xl font-bold"></h1>
-        <div class="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
-          <div>
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Grade / Course</p>
-            <p id="grade-course" class="mt-1"></p>
+<div class="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
+          <div class="col-span-2">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Math Content</p>
+            <p id="math-content" class="mt-1"></p>
           </div>
           <div>
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Lesson</p>
             <p id="lesson" class="mt-1"></p>
+          </div>
+          <div id="linked-lesson-wrap" class="hidden">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Portal Lesson</p>
+            <p class="mt-1"><a id="linked-lesson" class="link link-primary" href="#"></a></p>
           </div>
           <div>
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</p>
@@ -172,9 +176,16 @@ if (!result.success) {
 } else {
   const obs = result.data;
 
-  document.getElementById('teacher-name').textContent = obs.teacher_name || 'Unknown Teacher';
-  document.getElementById('grade-course').textContent  = obs.grade_course || '—';
+document.getElementById('teacher-name').textContent = obs.teacher_name || 'Unknown Teacher';
+  document.getElementById('math-content').textContent =
+    obs.mathContentLabel || obs.grade_course || '—';
   document.getElementById('lesson').textContent        = obs.lesson || '—';
+  if (obs.math_lesson_id) {
+    const link = document.getElementById('linked-lesson');
+    link.href = `/teacherportal/lesson-show/?id=${obs.math_lesson_id}`;
+    link.textContent = obs.linkedLessonTitle || 'View lesson';
+    document.getElementById('linked-lesson-wrap').classList.remove('hidden');
+  }
   document.getElementById('obs-date').textContent      = formatDate(obs.observation_date);
   document.getElementById('observer-name').textContent = obs.observer_name || '—';
 
