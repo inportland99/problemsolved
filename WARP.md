@@ -195,15 +195,16 @@ A private, authenticated teacher portal at `/teacherportal/` for managing math l
 - `reset-password.njk` (`/teacherportal/reset-password/`) — lets a user set a password after a password-recovery link (or legacy invite link)
 - `lesson-index.njk` / `lesson-edit.njk` / `lesson-show.njk` — browse, create, edit, view, delete math lessons (with diagram image upload)
 - `observation-index.njk` / `observation-edit.njk` / `observation-show.njk` — create, edit, list, and view classroom lesson observations (scored 0–5 across Planning/Launch/Problem Solving/Closing)
-- `teacher-index.njk` / `teacher-edit.njk` — admin-only teacher account management
+- `teacher-index.njk` / `teacher-edit.njk` — admin-only teacher account management (list/edit/remove; add with temporary password)
 
 ### Authentication
-- Backed by **Supabase Auth** (email/password). Public sign-up is disabled at the project level; teachers are provisioned by an admin (see Authorization Model below). Auth UI is client-side; privileged account create/remove goes through the `teacherportal-admin` Edge Function.
+- Backed by **Supabase Auth** (email/password) on the **math-lessons** project (`ffwljxasdsgtzbwwvxyi`). Public sign-up is disabled; teachers are provisioned by an admin (see Teacher account management below). Auth UI is client-side; privileged account create/remove goes through the `teacherportal-admin` Edge Function.
 - `src/assets/js/lessons-supabase-client.js` creates the Supabase client (project URL + publishable anon key hardcoded in the file) and exposes `getCurrentUser`, `signIn`, `signOut`, `resetPasswordForEmail`.
 - `src/assets/js/teacher-portal-auth-guard.js` provides the guard used by every protected page:
   - `requireAuth()` — calls `getCurrentUser()`; if no session, redirects to `/teacherportal/login/` and throws to halt page script execution.
   - `logout()` — signs out via Supabase then redirects to `/teacherportal/login/`.
   - `isAdmin()` — **async**; calls the `is_admin()` Postgres RPC function, which checks `teachers.role = 'admin'` for the current user. This is DB-backed (not a hardcoded email), so it must be `await`-ed at every call site.
+  - `renderUserBadge(elementId)` — loads `getCurrentTeacher()` and shows `Name · Role` in the navbar.
 - Each protected page's `<script type="module">` block calls `await requireAuth()` (or manually checks `getCurrentUser()` on `index.njk`) before rendering content, and wires the `#logout-btn` to `logout()`.
 - `login.njk` redirects already-authenticated users straight to `/teacherportal/` and calls `signIn(email, password)` on submit.
 - This is **client-side route protection only** (content briefly exists in the DOM/JS bundle); real data security relies on Supabase Row Level Security policies, not on anything in this repo.
@@ -213,13 +214,44 @@ A private, authenticated teacher portal at `/teacherportal/` for managing math l
 - **Lessons** (`math_lessons.district_id`, nullable): `NULL` means visible to every teacher; a set value scopes visibility to that district plus admin. Teachers can only publish/edit lessons in their own district; only admin can set/move a lesson to "All Districts". `math_lessons.created_by` records the authenticated author (distinct from the free-text `author` display name) so that only the author or admin can delete a lesson.
 - **Observations** (`observations.observed_teacher_id`, FK to `teachers.id`): identifies who was observed, distinct from `created_by` (who wrote it). Visibility is restricted to the observed teacher and admin only. Only admin can delete an observation.
 - All of this is enforced in Postgres RLS policies using security-definer helper functions (`is_admin()`, `current_teacher_district()`, `is_district_admin()`), not just in the UI — see `supabase-teacherportal-districts-rls-upgrade.sql`.
-- Onboarding a teacher (no invite email): admin uses `/teacherportal/teacher-edit/` to set name/email/district/role plus a temporary password. That calls the `teacherportal-admin` Edge Function `create` action (`auth.admin.createUser` with `email_confirm: true`, no email sent), then inserts the `teachers` row via `createTeacherRow`. Share the email + temporary password with the teacher out of band. Remove still uses the Edge Function `remove` action after deleting the `teachers` row. Legacy `invite`/`resend` actions remain in the function but are not used by the UI.
+
+### Teacher account management (manual create, no invite email)
+Teachers are **not** onboarded via invite email. An admin sets credentials directly and shares them out of band.
+
+**Add teacher** (`/teacherportal/teacher-edit/`):
+1. Admin enters name, email, temporary password (confirmed), district, and role.
+2. Browser calls `supabase.functions.invoke('teacherportal-admin', { body: { action: 'create', email, password } })`.
+3. Edge Function (admin-only) uses the service role to run `auth.admin.createUser({ email, password, email_confirm: true })` — **no email is sent**; the account is confirmed and can log in immediately.
+4. On success, the page inserts the `teachers` row via `createTeacherRow({ authId, name, email, districtId, role })`.
+5. Share the email + temporary password with the teacher; they use `/teacherportal/login/`.
+
+**Edit teacher**: name, district, and role only. Login email is not editable in the UI; password fields are hidden in edit mode.
+
+**Remove teacher** (`teacher-index.njk`):
+1. Delete the `teachers` row first (`deleteTeacherRow`) — `auth_id` has no ON DELETE cascade, so the auth user cannot be removed while the row still references it.
+2. Then call `teacherportal-admin` with `{ action: 'remove', authId }` to revoke the login. Admins cannot remove their own account.
+
+There is **no Resend Invite** control in the UI. Password recovery for existing users still goes through login → "Forgot password?" → `reset-password.njk`.
+
+**`teacherportal-admin` Edge Function** (`supabase/functions/teacherportal-admin/index.ts`):
+- Verifies the caller's JWT, then `rpc('is_admin')`; non-admins get 403.
+- Actions:
+  - `create` — `{ email, password }` → confirmed auth user, returns `{ success, authId }` (primary path; no email).
+  - `remove` — `{ authId }` → `auth.admin.deleteUser`.
+  - `invite` / `resend` — legacy; still implemented (Resend + `generateLink`) but **unused by the UI**.
+
+**Deploying the Edge Function** (static site deploy does **not** ship this):
+```bash
+# CLI may be linked to a different project (e.g. personal); always target math-lessons:
+supabase functions deploy teacherportal-admin --project-ref ffwljxasdsgtzbwwvxyi
+```
+Redeploy whenever `supabase/functions/teacherportal-admin/index.ts` changes. The site UI ships via the normal GitHub Actions → GitHub Pages path on push to `main`.
 
 ### Data Layer
 - `src/assets/js/lessons-db.js` — CRUD for the `math_lessons` table plus `uploadLessonImage()` to the `lesson-images` Supabase Storage bucket. `createLesson()` stamps `created_by` with the current user's id. Also persists `questions` (jsonb array of `{ type, text }`, type is `extension`/`probing`/`connecting`). `getAllLessons`/`getLessonById` nested-select each lesson's `lesson_math_topics` rows and flatten them into `lesson.mathContent` (see Math Content Taxonomy below); `createLesson`/`updateLesson` accept an optional `mathContentSelection` and persist it via `setLessonMathTopics()`.
 - `src/assets/js/observations-db.js` — CRUD for the `observations` table; `createObservation`/`updateObservation` persist both `created_by` (observer) and `observed_teacher_id` (observed teacher).
 - `src/assets/js/teachers-db.js` — `getTeacherRoster()` (observation form picker), `getCurrentTeacher()`, plus admin CRUD helpers `getAllTeachers` / `createTeacherRow` / `updateTeacherRow` / `deleteTeacherRow`.
-- `supabase/functions/teacherportal-admin/index.ts` — admin-only Edge Function: `create` (passworded user, no email), legacy `invite`/`resend` (Resend), and `remove` (delete auth user).
+- `supabase/functions/teacherportal-admin/index.ts` — see Teacher account management above.
 - `src/assets/js/districts-db.js` — `getAllDistricts()`, used by the lesson form's District control.
 
 ### Math Content Taxonomy (Grade/Course, Domain, Math Topic)
