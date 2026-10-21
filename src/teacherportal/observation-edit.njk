@@ -28,28 +28,13 @@ description: Lesson observation form for classroom visits
     <div id="alert-container" class="mb-4"></div>
 
     <form id="observation-form" class="space-y-6">
-      <!-- Meta fields -->
+<!-- Meta fields -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="form-control">
           <label class="label"><span class="label-text font-semibold">Teacher</span></label>
           <select id="teacherId" class="select select-bordered w-full">
             <option value="">Select teacher</option>
           </select>
-        </div>
-        <div class="form-control">
-          <label class="label"><span class="label-text font-semibold">Grade / Course</span></label>
-          <select id="gradeCourse" class="select select-bordered w-full" onchange="document.getElementById('gradeCourseOther').classList.toggle('hidden', this.value !== 'other')">
-            <option value="">Select grade or course</option>
-            {% for grade in grades %}
-            <option>{{ grade }}</option>
-            {% endfor %}
-            <option value="other">Other...</option>
-          </select>
-          <input type="text" id="gradeCourseOther" class="input input-bordered mt-2 hidden" placeholder="Specify grade or course">
-        </div>
-        <div class="form-control">
-          <label class="label"><span class="label-text font-semibold">Lesson</span></label>
-          <input type="text" id="lesson" class="input input-bordered" placeholder="Enter lesson topic">
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text font-semibold">Date</span></label>
@@ -59,6 +44,26 @@ description: Lesson observation form for classroom visits
           <label class="label"><span class="label-text font-semibold">Observer's Name</span></label>
           <input type="text" id="observerName" class="input input-bordered" placeholder="Enter observer name">
         </div>
+        <div class="form-control md:col-span-2">
+          <label class="label"><span class="label-text font-semibold">Portal Lesson (optional)</span></label>
+          <select id="mathLessonId" class="select select-bordered w-full">
+            <option value="">None — not in the lesson library</option>
+          </select>
+          <label class="label">
+            <span class="label-text-alt">If you pick a library lesson, its title and primary Math Content are filled in (you can still change them).</span>
+          </label>
+        </div>
+        <div class="form-control md:col-span-2">
+          <label class="label"><span class="label-text font-semibold">Lesson title</span></label>
+          <input type="text" id="lesson" class="input input-bordered" placeholder="What was the lesson called in class?">
+        </div>
+      </div>
+
+      <!-- Math Content (single taxonomy tag) -->
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold">Math Content</span></label>
+        <p class="text-sm text-base-content/60 mb-2">Pick one Grade/Course · Domain · Math Topic for this observation. Filter or search, then select a topic.</p>
+        <div id="taxonomy-picker-container"></div>
       </div>
 
       <div class="divider"></div>
@@ -148,15 +153,31 @@ description: Lesson observation form for classroom visits
 import { requireAuth, logout, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 import { createObservation, updateObservation, getObservationById } from '/assets/js/observations-db.js';
 import { getTeacherRoster } from '/assets/js/teachers-db.js';
+import { getAllLessons } from '/assets/js/lessons-db.js';
+import { getTaxonomy } from '/assets/js/taxonomy-db.js';
+import { renderTaxonomyPicker } from '/assets/js/math-taxonomy-picker.js';
 
-// Auth guard
 await requireAuth();
 renderUserBadge('user-badge');
-
-// Logout
 document.getElementById('logout-btn').addEventListener('click', logout);
 
-// Populate the teacher picker
+function showAlert(message, type = 'info') {
+  const container = document.getElementById('alert-container');
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type} shadow-lg`;
+  alert.innerHTML = `<span>${message}</span>`;
+  container.appendChild(alert);
+  setTimeout(() => alert.remove(), 5000);
+}
+
+/** Primary taxonomy id from a lesson's mathContent, else first tag. */
+function primaryTaxonomyIdFromLesson(lesson) {
+  if (!lesson?.mathContent?.length) return null;
+  const primary = lesson.mathContent.find(t => t.isPrimary);
+  return (primary || lesson.mathContent[0])?.taxonomyId ?? null;
+}
+
+// Teachers
 const rosterResult = await getTeacherRoster();
 if (rosterResult.success) {
   const teacherSelect = document.getElementById('teacherId');
@@ -168,44 +189,70 @@ if (rosterResult.success) {
   });
 }
 
-// Check if viewing existing observation
+// Portal lessons (optional link)
+const lessonsResult = await getAllLessons();
+const LESSONS = lessonsResult.success ? lessonsResult.data : [];
+if (!lessonsResult.success) {
+  showAlert('Failed to load portal lessons', 'error');
+}
+const lessonSelect = document.getElementById('mathLessonId');
+const lessonsById = new Map();
+LESSONS.forEach(lesson => {
+  lessonsById.set(lesson.id, lesson);
+  const opt = document.createElement('option');
+  opt.value = lesson.id;
+  const district = lesson.districts?.name ? ` · ${lesson.districts.name}` : '';
+  opt.textContent = `${lesson.title || 'Untitled'}${district}`;
+  lessonSelect.appendChild(opt);
+});
+
+// Math Content picker (exactly one tag)
+const taxonomyResult = await getTaxonomy();
+const TAXONOMY = taxonomyResult.success ? taxonomyResult.data : [];
+const taxonomyById = new Map(TAXONOMY.map(row => [row.id, row]));
+if (!taxonomyResult.success) {
+  showAlert('Failed to load Math Content taxonomy', 'error');
+}
+const taxonomyPicker = renderTaxonomyPicker(
+  document.getElementById('taxonomy-picker-container'),
+  TAXONOMY,
+  {},
+  { singleSelect: true }
+);
+
+// Autofill title + taxonomy when a library lesson is chosen
+lessonSelect.addEventListener('change', () => {
+  const lesson = lessonsById.get(lessonSelect.value);
+  if (!lesson) return;
+  const titleInput = document.getElementById('lesson');
+  if (!titleInput.value.trim() || titleInput.dataset.autofilled === '1') {
+    titleInput.value = lesson.title || '';
+    titleInput.dataset.autofilled = '1';
+  }
+  const taxId = primaryTaxonomyIdFromLesson(lesson);
+  if (taxId != null) {
+    taxonomyPicker.setSelection({ taxonomyIds: [taxId] });
+  }
+});
+document.getElementById('lesson').addEventListener('input', (e) => {
+  e.target.dataset.autofilled = '0';
+});
+
 const urlParams = new URLSearchParams(window.location.search);
 const obsId = urlParams.get('id');
-let isViewMode = false;
 
-// Alert helper
-function showAlert(message, type = 'info') {
-  const container = document.getElementById('alert-container');
-  const alert = document.createElement('div');
-  alert.className = `alert alert-${type} shadow-lg`;
-  alert.innerHTML = `<span>${message}</span>`;
-  container.appendChild(alert);
-  setTimeout(() => alert.remove(), 5000);
-}
-
-// Set default date
 document.getElementById('obsDate').valueAsDate = new Date();
 
-// Load existing observation if ?id= provided
 if (obsId) {
-  isViewMode = true;
-  document.getElementById('page-title').textContent = 'View Observation';
+  document.getElementById('page-title').textContent = 'Edit Observation';
   document.getElementById('save-text').textContent = 'Update Observation';
 
   const result = await getObservationById(obsId);
   if (result.success) {
     const obs = result.data;
     document.getElementById('teacherId').value = obs.observed_teacher_id || '';
-    const gradeOptions = {{ grades | dump | safe }};
-    const gradeVal = obs.grade_course || '';
-    if (gradeOptions.includes(gradeVal)) {
-      document.getElementById('gradeCourse').value = gradeVal;
-    } else if (gradeVal) {
-      document.getElementById('gradeCourse').value = 'other';
-      document.getElementById('gradeCourseOther').value = gradeVal;
-      document.getElementById('gradeCourseOther').classList.remove('hidden');
-    }
     document.getElementById('lesson').value = obs.lesson || '';
+    document.getElementById('lesson').dataset.autofilled = '0';
     document.getElementById('obsDate').value = obs.observation_date || '';
     document.getElementById('observerName').value = obs.observer_name || '';
     document.getElementById('planningScore').value = obs.planning_score || 0;
@@ -217,12 +264,27 @@ if (obsId) {
     document.getElementById('closingScore').value = obs.closing_score || 0;
     document.getElementById('closingNotes').value = obs.closing_notes || '';
     document.getElementById('additionalNotes').value = obs.additional_notes || '';
+
+    if (obs.math_lesson_id) {
+      lessonSelect.value = obs.math_lesson_id;
+      // Ensure option exists even if the lesson is no longer in the visible list
+      if (lessonSelect.value !== obs.math_lesson_id) {
+        const opt = document.createElement('option');
+        opt.value = obs.math_lesson_id;
+        opt.textContent = obs.linkedLessonTitle || 'Linked lesson';
+        lessonSelect.appendChild(opt);
+        lessonSelect.value = obs.math_lesson_id;
+      }
+    }
+
+    if (obs.taxonomy_id) {
+      taxonomyPicker.setSelection({ taxonomyIds: [obs.taxonomy_id] });
+    }
   } else {
     showAlert('Failed to load observation', 'error');
   }
 }
 
-// Save observation
 document.getElementById('observation-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -234,40 +296,48 @@ document.getElementById('observation-form').addEventListener('submit', async (e)
   saveText.classList.add('hidden');
   saveSpinner.classList.remove('hidden');
 
-  const teacherSelect = document.getElementById('teacherId');
-  const selectedOption = teacherSelect.options[teacherSelect.selectedIndex];
+  try {
+    const teacherSelect = document.getElementById('teacherId');
+    const selectedOption = teacherSelect.options[teacherSelect.selectedIndex];
+    const selection = taxonomyPicker.getSelection();
+    const taxonomyId = selection.taxonomyIds[0] ?? null;
+    const taxRow = taxonomyId != null ? taxonomyById.get(taxonomyId) : null;
 
-  const data = {
-    observedTeacherId: teacherSelect.value || null,
-    teacherName: selectedOption && selectedOption.value ? selectedOption.textContent.trim() : '',
-    gradeCourse: (() => { const s = document.getElementById('gradeCourse'); return (s.value === 'other' ? document.getElementById('gradeCourseOther').value : s.value).trim(); })(),
-    lesson: document.getElementById('lesson').value.trim(),
-    observationDate: document.getElementById('obsDate').value,
-    observerName: document.getElementById('observerName').value.trim(),
-    planningScore: parseFloat(document.getElementById('planningScore').value),
-    planningNotes: document.getElementById('planningNotes').value.trim(),
-    launchScore: parseFloat(document.getElementById('launchScore').value),
-    launchNotes: document.getElementById('launchNotes').value.trim(),
-    problemSolvingScore: parseFloat(document.getElementById('problemSolvingScore').value),
-    problemSolvingNotes: document.getElementById('problemSolvingNotes').value.trim(),
-    closingScore: parseFloat(document.getElementById('closingScore').value),
-    closingNotes: document.getElementById('closingNotes').value.trim(),
-    additionalNotes: document.getElementById('additionalNotes').value.trim()
-  };
+    const data = {
+      observedTeacherId: teacherSelect.value || null,
+      teacherName: selectedOption && selectedOption.value ? selectedOption.textContent.trim() : '',
+      // Denormalize grade label from taxonomy for older list UIs / exports
+      gradeCourse: taxRow?.gradeCourse || null,
+      lesson: document.getElementById('lesson').value.trim(),
+      observationDate: document.getElementById('obsDate').value,
+      observerName: document.getElementById('observerName').value.trim(),
+      planningScore: parseFloat(document.getElementById('planningScore').value),
+      planningNotes: document.getElementById('planningNotes').value.trim(),
+      launchScore: parseFloat(document.getElementById('launchScore').value),
+      launchNotes: document.getElementById('launchNotes').value.trim(),
+      problemSolvingScore: parseFloat(document.getElementById('problemSolvingScore').value),
+      problemSolvingNotes: document.getElementById('problemSolvingNotes').value.trim(),
+      closingScore: parseFloat(document.getElementById('closingScore').value),
+      closingNotes: document.getElementById('closingNotes').value.trim(),
+      additionalNotes: document.getElementById('additionalNotes').value.trim(),
+      mathLessonId: document.getElementById('mathLessonId').value || null,
+      taxonomyId
+    };
 
-  const result = obsId ? await updateObservation(obsId, data) : await createObservation(data);
+    const result = obsId ? await updateObservation(obsId, data) : await createObservation(data);
 
-  saveBtn.disabled = false;
-  saveText.classList.remove('hidden');
-  saveSpinner.classList.add('hidden');
-
-  if (result.success) {
-    showAlert(obsId ? 'Observation updated!' : 'Observation saved!', 'success');
-    setTimeout(() => {
-      window.location.href = '/teacherportal/observation-index/';
-    }, 1000);
-  } else {
-    showAlert(result.error?.message || 'Failed to save observation', 'error');
+    if (result.success) {
+      showAlert(obsId ? 'Observation updated!' : 'Observation saved!', 'success');
+      setTimeout(() => {
+        window.location.href = '/teacherportal/observation-index/';
+      }, 1000);
+    } else {
+      showAlert(result.error?.message || 'Failed to save observation', 'error');
+    }
+  } finally {
+    saveBtn.disabled = false;
+    saveText.classList.remove('hidden');
+    saveSpinner.classList.add('hidden');
   }
 });
 </script>

@@ -14,9 +14,13 @@
  * @param {HTMLElement} container - Element to render the picker into.
  * @param {Array} taxonomy - Flat rows from getTaxonomy(): { id, gradeCourse, gradeCourseSortOrder, domain, domainSortOrder, topic, ccssReference }
  * @param {Object} initialSelection - Optional { taxonomyIds: number[], primaryTaxonomyId: number|null }
- * @returns {{ getSelection: () => { taxonomyIds: number[], primaryTaxonomyId: number|null } }}
+ * @param {Object} options - Optional { singleSelect: boolean } — when true, at most one
+ *   topic may be selected (used by observations); primary star UI is hidden and the
+ *   sole selection is treated as primary.
+ * @returns {{ getSelection: () => { taxonomyIds: number[], primaryTaxonomyId: number|null }, setSelection: (sel) => void }}
  */
-export function renderTaxonomyPicker(container, taxonomy, initialSelection = {}) {
+export function renderTaxonomyPicker(container, taxonomy, initialSelection = {}, options = {}) {
+  const singleSelect = !!options.singleSelect;
   // Guard against duplicate delegated listeners if this is called more
   // than once on the same container (e.g. an initial empty render
   // followed by a re-render once an existing lesson's tags load).
@@ -29,13 +33,19 @@ export function renderTaxonomyPicker(container, taxonomy, initialSelection = {})
 
   const byId = new Map(taxonomy.map(row => [row.id, row]));
 
+const initialIds = initialSelection.taxonomyIds || [];
   const state = {
     filterGrades: new Set(),
     filterDomains: new Set(),
-    selectedIds: new Set(initialSelection.taxonomyIds || []),
-    primaryId: initialSelection.primaryTaxonomyId ?? null,
+    selectedIds: new Set(singleSelect ? initialIds.slice(0, 1) : initialIds),
+    primaryId: singleSelect
+      ? (initialIds[0] ?? null)
+      : (initialSelection.primaryTaxonomyId ?? null),
     searchQuery: ''
   };
+  if (singleSelect && state.selectedIds.size === 1 && state.primaryId == null) {
+    state.primaryId = Array.from(state.selectedIds)[0];
+  }
 
   const DOMAIN_SHORT = {
     'Number & Operations—Fractions': 'Fractions',
@@ -143,14 +153,17 @@ export function renderTaxonomyPicker(container, taxonomy, initialSelection = {})
       </button>`;
   }
 
-  function topicRowHtml(row, { showGroupContext = false } = {}) {
+function topicRowHtml(row, { showGroupContext = false } = {}) {
     const checked = state.selectedIds.has(row.id);
     const context = showGroupContext
       ? `<span class="text-xs text-base-content/60">${escapeHtml(row.gradeCourse)} • ${escapeHtml(domainShortLabel(row.domain))} → </span>`
       : '';
+    const inputType = singleSelect ? 'radio' : 'checkbox';
+    const inputClass = singleSelect ? 'radio radio-sm mt-0.5 topic-checkbox' : 'checkbox checkbox-sm mt-0.5 topic-checkbox';
+    const nameAttr = singleSelect ? 'name="taxonomy-single"' : '';
     return `
       <label class="flex items-start gap-2 py-1 cursor-pointer">
-        <input type="checkbox" class="checkbox checkbox-sm mt-0.5 topic-checkbox" data-id="${row.id}" ${checked ? 'checked' : ''}>
+        <input type="${inputType}" class="${inputClass}" ${nameAttr} data-id="${row.id}" ${checked ? 'checked' : ''}>
         <span class="text-sm">${context}${escapeHtml(row.topic)}</span>
       </label>`;
   }
@@ -177,24 +190,26 @@ export function renderTaxonomyPicker(container, taxonomy, initialSelection = {})
     return `<div>${results.map(row => topicRowHtml(row, { showGroupContext: true })).join('')}</div>`;
   }
 
-  function renderSelected() {
+function renderSelected() {
     const rows = Array.from(state.selectedIds)
       .map(id => byId.get(id))
       .filter(Boolean)
       .sort((a, b) => (b.id === state.primaryId) - (a.id === state.primaryId));
 
     if (rows.length === 0) {
-      return '<p class="text-sm text-base-content/50">No Math Topics selected yet.</p>';
+      return `<p class="text-sm text-base-content/50">${singleSelect ? 'No Math Topic selected yet.' : 'No Math Topics selected yet.'}</p>`;
     }
 
     return rows.map(row => {
       const isPrimary = row.id === state.primaryId;
-      return `
-        <div class="flex items-center gap-2 py-1">
+      const star = singleSelect ? '' : `
           <button type="button" class="star-btn text-lg leading-none ${isPrimary ? 'text-warning' : 'text-base-content/30 hover:text-warning'}"
             data-id="${row.id}" title="${isPrimary ? 'Primary Math Topic' : 'Set as Primary Math Topic'}">
             ${isPrimary ? '★' : '☆'}
-          </button>
+          </button>`;
+      return `
+        <div class="flex items-center gap-2 py-1">
+          ${star}
           <span class="text-sm flex-1">${escapeHtml(row.gradeCourse)} · ${escapeHtml(domainShortLabel(row.domain))} · ${escapeHtml(row.topic)}</span>
           <button type="button" class="remove-selected-btn btn btn-ghost btn-xs" data-id="${row.id}" aria-label="Remove">✕</button>
         </div>`;
@@ -235,8 +250,8 @@ export function renderTaxonomyPicker(container, taxonomy, initialSelection = {})
           ${state.searchQuery.trim() ? renderSearchSection() : renderBrowseSection()}
         </div>
 
-        <div>
-          <p class="text-sm font-medium mb-2">Selected Topics</p>
+<div>
+          <p class="text-sm font-medium mb-2">${singleSelect ? 'Selected Topic' : 'Selected Topics'}</p>
           <div data-role="selected-list" class="space-y-0.5">
             ${renderSelected()}
           </div>
@@ -280,8 +295,8 @@ export function renderTaxonomyPicker(container, taxonomy, initialSelection = {})
       return;
     }
 
-    const starBtn = e.target.closest('.star-btn');
-    if (starBtn) {
+const starBtn = e.target.closest('.star-btn');
+    if (starBtn && !singleSelect) {
       const id = Number(starBtn.dataset.id);
       state.primaryId = state.primaryId === id ? null : id;
       render();
@@ -297,12 +312,17 @@ export function renderTaxonomyPicker(container, taxonomy, initialSelection = {})
     }
   }, { signal });
 
-  container.addEventListener('change', (e) => {
+container.addEventListener('change', (e) => {
     const checkbox = e.target.closest('.topic-checkbox');
     if (!checkbox) return;
     const id = Number(checkbox.dataset.id);
     if (checkbox.checked) {
-      state.selectedIds.add(id);
+      if (singleSelect) {
+        state.selectedIds = new Set([id]);
+        state.primaryId = id;
+      } else {
+        state.selectedIds.add(id);
+      }
     } else {
       state.selectedIds.delete(id);
       if (state.primaryId === id) state.primaryId = null;
@@ -319,12 +339,27 @@ export function renderTaxonomyPicker(container, taxonomy, initialSelection = {})
 
   render();
 
-  return {
+return {
     getSelection() {
+      const taxonomyIds = Array.from(state.selectedIds);
       return {
-        taxonomyIds: Array.from(state.selectedIds),
-        primaryTaxonomyId: state.primaryId
+        taxonomyIds,
+        primaryTaxonomyId: singleSelect
+          ? (taxonomyIds[0] ?? null)
+          : state.primaryId
       };
+    },
+    /** Replace the current selection and re-render (e.g. autofill from a linked lesson). */
+    setSelection(next = {}) {
+      const ids = next.taxonomyIds || [];
+      state.selectedIds = new Set(singleSelect ? ids.slice(0, 1) : ids);
+      state.primaryId = singleSelect
+        ? (ids[0] ?? null)
+        : (next.primaryTaxonomyId ?? null);
+      if (singleSelect && state.selectedIds.size === 1 && state.primaryId == null) {
+        state.primaryId = Array.from(state.selectedIds)[0];
+      }
+      render();
     }
   };
 }
