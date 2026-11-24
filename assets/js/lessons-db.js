@@ -1,5 +1,7 @@
 import { supabase, getCurrentUser } from './lessons-supabase-client.js';
 import { flattenLessonMathTopics, setLessonMathTopics } from './taxonomy-db.js';
+import { normalizeGalleries, serializeGalleries } from './lesson-gallery-model.mjs';
+import { publicLessonImageUrl } from './lesson-gallery-storage.mjs';
 
 // Nested select fragment pulling each lesson's tagged Math Topics
 // (Grade/Course + Domain + Math Topic, via the taxonomy table) along
@@ -17,7 +19,12 @@ const MATH_CONTENT_SELECT = `lesson_math_topics(
 function withMathContent(lesson) {
   if (!lesson) return lesson;
   const { lesson_math_topics, ...rest } = lesson;
-  return { ...rest, mathContent: flattenLessonMathTopics(lesson_math_topics) };
+  const { lessonImages } = normalizeGalleries(lesson);
+  return {
+    ...rest,
+    diagram_url: lessonImages.length ? publicLessonImageUrl(lessonImages[0]) : null,
+    mathContent: flattenLessonMathTopics(lesson_math_topics)
+  };
 }
 
 /**
@@ -76,15 +83,22 @@ export async function getLessonById(lessonId) {
 export async function createLesson(lesson) {
   try {
     const user = await getCurrentUser();
+    const galleryData = lesson.galleries ? serializeGalleries(lesson.galleries) : {};
+    const firstImage = lesson.galleries?.lessonImages[0];
+    const diagramUrl = lesson.galleries
+      ? (firstImage ? publicLessonImageUrl(firstImage) : null)
+      : lesson.diagramUrl || null;
 
     const { data, error } = await supabase
       .from('math_lessons')
       .insert([{
+        ...(lesson.id ? { id: lesson.id } : {}),
         title: lesson.title,
         lesson_content_name: lesson.lessonContentName || null,
         learning_goal: lesson.learningGoal,
         task: lesson.task,
-        diagram_url: lesson.diagramUrl || null,
+        diagram_url: diagramUrl,
+        ...galleryData,
         launch_details: lesson.launchDetails || null,
         anticipated_strategies: lesson.anticipatedStrategies || [],
         questions: lesson.questions || [],
@@ -140,6 +154,11 @@ export async function updateLesson(lessonId, updates) {
     if (updates.questions !== undefined) updateData.questions = updates.questions;
     if (updates.author !== undefined) updateData.author = updates.author;
     if (updates.districtId !== undefined) updateData.district_id = updates.districtId;
+    if (updates.galleries !== undefined) {
+      Object.assign(updateData, serializeGalleries(updates.galleries));
+      const first = updates.galleries.lessonImages[0];
+      updateData.diagram_url = first ? publicLessonImageUrl(first) : null;
+    }
 
     const { data, error } = await supabase
       .from('math_lessons')
