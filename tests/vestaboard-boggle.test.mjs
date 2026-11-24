@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { DICE, rollBoard, renderBoard, timerStep, buildTrie, solveBoard } from '../src/assets/js/vestaboard-boggle/game.mjs';
+import { DICE, rollBoard, renderBoard, timerStep, buildTrie, solveBoard, hardestWords, REVEAL_WIDTH, REVEAL_TITLE } from '../src/assets/js/vestaboard-boggle/game.mjs';
 import { createHandler, zonedNow } from '../supabase/functions/vestaboard-send/handler.mjs';
+import { finishWordsForBoard } from '../supabase/functions/vestaboard-send/finish.mjs';
 
 test('all sixteen supplied dice retain their six faces and multiplicities', () => {
   assert.deepEqual(DICE, [
@@ -41,12 +42,54 @@ test('every 20-second timer boundary renders exactly two more red tiles; finish 
     assert.equal(grid[5].filter(x => x === 63).length, step === 9 ? 0 : step * 2);
     assert.equal(grid[5].filter(x => x === 66).length, step === 9 ? 0 : 18 - step * 2);
     assert.equal(grid[5].filter(x => x === 70).length, step === 9 ? 18 : 0);
+    const bar = grid[5].slice(2, 20);
+    assert.deepEqual(bar, [...bar].reverse(), 'the bar shrinks symmetrically');
+    if (step < 9) {
+      assert.deepEqual(bar.slice(0, step), Array(step).fill(63));
+      assert.deepEqual(bar.slice(step, 18 - step), Array(18 - step * 2).fill(66));
+      assert.deepEqual(bar.slice(18 - step), Array(step).fill(63));
+    }
   }
   assert.equal(timerStep(start, Date.parse(start) - 100), 0);
   assert.equal(timerStep(start, Date.parse(start) + 999999), 9);
   assert.equal(timerStep(null), 0);
   assert.throws(() => renderBoard(['A']));
   assert.throws(() => renderBoard(board, 10));
+});
+
+test('physical letters occupy the rightmost four columns with no intervening blanks', () => {
+  const board = 'ABCDEFGHIJKLMNOP'.split('');
+  const grid = renderBoard(board);
+  for (let row = 0; row < 4; row++) {
+    assert.deepEqual(grid[row].slice(18), board.slice(row * 4, row * 4 + 4).map(letter => letter.charCodeAt(0) - 64));
+    assert.deepEqual(grid[row].slice(0, 18), Array(18).fill(0));
+  }
+  assert.deepEqual(grid[4], Array(22).fill(0));
+});
+
+test('hardest words are longest first, alphabetically tied, unique, and never truncated', () => {
+  assert.deepEqual(hardestWords(['cat', 'HOUSES', 'house', 'queen', 'HOUSE', 'bad-word', 'a', null]),
+    ['HOUSES', 'HOUSE', 'QUEEN']);
+  assert.deepEqual(hardestWords(['cat']), ['CAT']);
+  assert.deepEqual(hardestWords([]), []);
+  assert.deepEqual(hardestWords(['A'.repeat(REVEAL_WIDTH + 1), 'B'.repeat(REVEAL_WIDTH)]),
+    ['B'.repeat(REVEAL_WIDTH)]);
+});
+
+test('finish reveal fits left of the intact grid and never leaks before the final frame', () => {
+  const board = 'ABCDEFGHIJKLMNOP'.split('');
+  const words = ['A'.repeat(17), 'HOUSE', 'CAT'];
+  const final = renderBoard(board, 9, { finishWords: words });
+  const read = row => row.slice(0, 17).map(code => code === 0 ? ' ' : code === 60 ? '?' : String.fromCharCode(code + 64)).join('').trimEnd();
+  assert.equal(read(final[0]), REVEAL_TITLE);
+  assert.deepEqual(final.slice(1, 4).map(read), words);
+  assert.ok(final.slice(0, 4).every(row => row[17] === 0), 'one-column separator remains blank');
+  assert.deepEqual(final.slice(0, 4).map(row => row.slice(18)), renderBoard(board).slice(0, 4).map(row => row.slice(18)));
+  assert.deepEqual(final[5].slice(2, 20), Array(18).fill(70));
+  for (let step = 0; step < 9; step++) assert.deepEqual(renderBoard(board, step, { finishWords: words }), renderBoard(board, step));
+  assert.equal(read(renderBoard(board, 9)[0]), '', 'cancellation can use black frame without answers');
+  assert.equal(read(renderBoard(board, 9, { finishWords: [] })[0]), REVEAL_TITLE);
+  assert.deepEqual(renderBoard(board, 9, { finishWords: [] }).slice(1, 4).map(read), ['', '', '']);
 });
 
 test('solver permits diagonals, deduplicates, forbids wraparound and tile reuse', () => {
@@ -77,14 +120,18 @@ test('pinned dictionary is lowercase, unique, licensed and contains everyday wor
   assert.match(await readFile(new URL('../src/assets/data/boggle/SCOWL-LICENSE.txt', import.meta.url), 'utf8'), /Permission to use/);
   const suggestions = solveBoard('CATSDOGEHOUSTRIN'.split(''), buildTrie(data.words));
   for (const word of ['CAT', 'CATS', 'DOG', 'HOUSE']) assert.ok(suggestions.some(x => x.word === word), word);
+  assert.deepEqual(finishWordsForBoard('CATSDOGEHOUSTRIN'.split('')), hardestWords(suggestions.map(result => result.word)));
+  assert.deepEqual(finishWordsForBoard(Array(16).fill('Q')), []);
 });
 
 const USER = '10000000-0000-0000-0000-000000000001';
 const ROUND = '20000000-0000-0000-0000-000000000002';
 const ITEM = '30000000-0000-0000-0000-000000000003';
 const BOARD = 'CATSDOGEHOUSTRIN'.split('');
-function fixture({ auth = true, claim, sendStatus = 200, rpcFailure, upstream = { status: 'ok' }, itemMissing = false, schedules = [] } = {}) {
-  const calls = [], sends = [];
+const FINISH_GRID = renderBoard(BOARD, 9, { finishWords: finishWordsForBoard(BOARD) });
+function fixture({ auth = true, claim, sendStatus = 200, rpcFailure, upstream = { status: 'ok' },
+  upstreamRaw, readback = {}, readbackStatus = 200, itemMissing = false, schedules = [] } = {}) {
+  const calls = [], sends = [], requests = [];
   const time = new Date('2026-11-24T12:00:00Z');
   const defaultClaim = { token: ITEM, leaseUntil: new Date(time.getTime() + 90000).toISOString(), round: { id: ROUND, board: BOARD }, step: 9 };
   const db = {
@@ -113,8 +160,10 @@ function fixture({ auth = true, claim, sendStatus = 200, rpcFailure, upstream = 
       auth: { getUser: async () => ({ data: { user: auth ? { id: USER } : null } }) },
     } : db,
     fetchImpl: async (_url, options) => {
+      requests.push(options);
+      if (options.method === 'GET') return new Response(JSON.stringify(readback), { status: readbackStatus });
       sends.push(JSON.parse(options.body));
-      return new Response(JSON.stringify(upstream), { status: sendStatus });
+      return new Response(sendStatus === 204 ? null : upstreamRaw ?? JSON.stringify(upstream), { status: sendStatus });
     },
   });
   async function request(body, headers = { Authorization: 'Bearer test-user' }) {
@@ -123,7 +172,7 @@ function fixture({ auth = true, claim, sendStatus = 200, rpcFailure, upstream = 
     }));
     return { status: response.status, body: await response.json() };
   }
-  return { handler, request, calls, sends };
+  return { handler, request, calls, sends, requests };
 }
 
 test('all user actions require a verified JWT; worker actions require the cron secret', async () => {
@@ -153,9 +202,21 @@ test('launch persists a generated round before any physical delivery', async () 
 test('worker sends the black finish frame and only then acknowledges success', async () => {
   const f = fixture();
   assert.equal((await f.request({ action: 'game-tick' }, { 'X-Cron-Secret': 'test-worker-secret' })).status, 200);
-  assert.deepEqual(f.sends[0].characters, renderBoard(BOARD, 9));
+  assert.deepEqual(f.sends[0].characters, FINISH_GRID);
   assert.equal(f.calls.at(-1).params.p_round, ROUND);
   assert.equal(f.calls.at(-1).params.p_error, null);
+});
+
+test('cancelled rounds turn black without revealing words; running rounds never reveal them', async () => {
+  for (const [step, cancel_requested] of [[9, true], [8, false]]) {
+    const f = fixture({ claim: {
+      token: ITEM, leaseUntil: '2026-11-24T12:01:30Z',
+      round: { id: ROUND, board: BOARD, cancel_requested }, step,
+    } });
+    assert.equal((await f.request({ action: 'game-tick' }, { 'X-Cron-Secret': 'test-worker-secret' })).status, 200);
+    assert.deepEqual(f.sends[0].characters, renderBoard(BOARD, step));
+    assert.deepEqual(f.requests.map(request => request.method), ['POST'], 'bundled dictionary needs no network fetch');
+  }
 });
 
 test('upstream failures remain retryable; upstream response bodies are never exposed', async () => {
@@ -166,6 +227,43 @@ test('upstream failures remain retryable; upstream response bodies are never exp
   assert.ok(!JSON.stringify(result).includes('do-not-return'));
   const rejected = fixture({ upstream: { status: 'error' } });
   assert.equal((await rejected.request({ action: 'game-tick' }, { 'X-Cron-Secret': 'test-worker-secret' })).status, 502);
+});
+
+test('HTTP success does not require the documentation example status field', async () => {
+  for (const options of [
+    { upstream: { id: ITEM, created: 123 } },
+    { upstream: { status: 'success' } },
+    { upstreamRaw: 'ok' },
+    { sendStatus: 204 },
+  ]) {
+    const f = fixture(options);
+    assert.equal((await f.request({ action: 'game-tick' }, { 'X-Cron-Secret': 'test-worker-secret' })).status, 200);
+    assert.equal(f.calls.at(-1).params.p_error, null);
+    assert.equal(f.requests.length, 1);
+  }
+});
+
+test('a duplicate grid is acknowledged only when board readback matches exactly', async () => {
+  for (const layout of [FINISH_GRID, JSON.stringify(FINISH_GRID)]) {
+    const f = fixture({ sendStatus: 409, readback: { currentMessage: { layout } } });
+    assert.equal((await f.request({ action: 'game-tick' }, { 'X-Cron-Secret': 'test-worker-secret' })).status, 200);
+    assert.equal(f.calls.at(-1).params.p_error, null);
+    assert.deepEqual(f.requests.map(r => r.method), ['POST', 'GET']);
+    assert.equal(f.requests[0].signal, f.requests[1].signal);
+  }
+});
+
+test('different, missing, malformed or inaccessible readback never turns a conflict into success', async () => {
+  for (const options of [
+    { readback: { currentMessage: { layout: renderBoard(BOARD, 0) } } },
+    { readback: {} },
+    { readback: { currentMessage: { layout: 'invalid JSON' } } },
+    { readbackStatus: 503 },
+  ]) {
+    const f = fixture({ sendStatus: 409, ...options });
+    assert.equal((await f.request({ action: 'game-tick' }, { 'X-Cron-Secret': 'test-worker-secret' })).status, 502);
+    assert.match(f.calls.at(-1).params.p_error, /could not be verified/);
+  }
 });
 
 test('manual sends are owner-scoped and cannot bypass the game lock', async () => {

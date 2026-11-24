@@ -1,4 +1,5 @@
 import { rollBoard, renderBoard } from '../../../src/assets/js/vestaboard-boggle/game.mjs';
+import { finishWordsForBoard } from './finish.mjs';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -38,24 +39,50 @@ export function createHandler({ createClient, env, fetchImpl = fetch, now = () =
   async function sendToBoard(item) {
     const key = env('VESTABOARD_API_KEY');
     if (!key) throw new Error('Vestaboard API is not configured.');
+    const headers = { 'Content-Type': 'application/json', 'X-Vestaboard-Token': key };
+    const signal = AbortSignal.timeout(8000);
     let response;
     try {
       response = await fetchImpl('https://cloud.vestaboard.com/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Vestaboard-Token': key },
+        headers,
         body: JSON.stringify(item.mode === 'grid' ? { characters: item.grid_content } : { text: item.text_content || '' }),
-        signal: AbortSignal.timeout(8000),
+        signal,
       });
     } catch (_) {
       throw new Error('Vestaboard connection failed or timed out.');
     }
-    // Never pass upstream bodies (which may contain sensitive context) to clients.
+    if (response.status === 409) {
+      // A previous attempt may already have reached the board. A conflict is
+      // success only when readback confirms the exact intended display.
+      try {
+        const readback = await fetchImpl('https://cloud.vestaboard.com/', {
+          method: 'GET', headers, signal,
+        });
+        if (readback.ok) {
+          const current = (await readback.json())?.currentMessage;
+          let layout = current?.layout;
+          if (typeof layout === 'string') layout = JSON.parse(layout);
+          const matches = item.mode === 'grid'
+            ? Array.isArray(layout) && JSON.stringify(layout) === JSON.stringify(item.grid_content)
+            : typeof current?.text === 'string' && current.text === (item.text_content || '');
+          if (matches) {
+            console.info('Vestaboard delivery acknowledged', { httpStatus: 409, verifiedReadback: true });
+            return;
+          }
+        }
+      } catch (_) { /* Unverifiable conflicts remain retryable failures. */ }
+      throw new Error('Vestaboard reported a conflict (HTTP 409); the requested display could not be verified.');
+    }
+    // HTTP success is the contract; the example status property is not always
+    // present. Never expose upstream response bodies to clients or logs.
     if (!response.ok) throw new Error(`Vestaboard rejected the message (HTTP ${response.status}).`);
     let result;
-    try { result = await response.json(); } catch (_) {
-      throw new Error('Vestaboard returned an unreadable response.');
-    }
-    if (result.status !== 'ok') throw new Error('Vestaboard did not accept the message.');
+    try { result = await response.json(); } catch (_) { /* Empty/text 2xx bodies are valid. */ }
+    if (result?.status === 'error' || result?.error) throw new Error('Vestaboard did not accept the message.');
+    console.info('Vestaboard delivery acknowledged', {
+      httpStatus: response.status, hasStatusField: typeof result?.status === 'string',
+    });
   }
 
   async function deliver(db, claim, item) {
@@ -75,7 +102,9 @@ export function createHandler({ createClient, env, fetchImpl = fetch, now = () =
   async function tick(db) {
     const claim = await rpc(db, 'boggle_claim', { p_kind: 'tick' });
     if (!claim.token) return { success: true, skipped: claim.skip };
-    const item = { mode: 'grid', grid_content: renderBoard(claim.round.board, claim.step) };
+    const finishWords = claim.step === 9 && !claim.round.cancel_requested
+      ? finishWordsForBoard(claim.round.board) : null;
+    const item = { mode: 'grid', grid_content: renderBoard(claim.round.board, claim.step, { finishWords }) };
     const error = await deliver(db, claim, item);
     return error ? { error } : { success: true };
   }
