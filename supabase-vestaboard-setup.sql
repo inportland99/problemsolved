@@ -17,8 +17,8 @@
 --   3. Set its VESTABOARD_API_KEY secret (your Vestaboard Cloud API
 --      token) with:
 --      supabase secrets set VESTABOARD_API_KEY=...
---      VESTABOARD_CRON_SECRET has already been generated and set on
---      this project, and is already filled in below.
+--      Store the cron credential in Edge Function secrets AND Supabase
+--      Vault, never in this file. See WARP.md for deployment ordering.
 -- =============================================================
 
 -- 1. VESTABOARD_ITEMS TABLE
@@ -130,24 +130,5 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA cron TO postgres;
 -- "net" schema for net.http_post() etc. regardless of where it's installed.
 CREATE EXTENSION IF NOT EXISTS pg_net WITH SCHEMA extensions;
 
--- Remove any previous registration of this job before re-creating it,
--- so this file is safe to re-run.
-SELECT cron.unschedule('vestaboard-schedule-check')
-WHERE EXISTS (
-  SELECT 1 FROM cron.job WHERE jobname = 'vestaboard-schedule-check'
-);
-
-SELECT cron.schedule(
-  'vestaboard-schedule-check',
-  '* * * * *', -- every minute
-  $$
-  SELECT net.http_post(
-    url := 'https://skgqvheszlquwflignze.supabase.co/functions/v1/vestaboard-send',
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json',
-      'X-Cron-Secret', 'd0542c41ad4b1513647923fac919d4a7f5dec498cd3c7200331d1e562cdccf2c'
-    ),
-    body := jsonb_build_object('action', 'run-schedule')
-  );
-  $$
-);
+-- Scheduler registration now lives in supabase-vestaboard-boggle-upgrade.sql.
+-- Apply that migration after configuring Vault, then deploy the updated function.

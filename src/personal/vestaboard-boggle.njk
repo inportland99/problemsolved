@@ -1,0 +1,61 @@
+---
+layout: minimal.njk
+title: Vestaboard Boggle
+description: A paper-and-pencil word game on the Vestaboard
+permalink: /personal/vestaboard/boggle/index.html
+pageCss: /assets/css/vestaboard-boggle.css
+---
+<main id="boggle-app" class="boggle-page">
+  <nav class="boggle-nav" aria-label="Game navigation">
+    <a href="/personal/vestaboard/" class="btn btn-ghost btn-sm">← Vestaboard</a>
+    <button id="boggle-logout" class="btn btn-outline btn-sm" hidden>Log out</button>
+  </nav>
+  <header>
+    <p class="boggle-eyebrow">PAPER · PENCIL · THREE MINUTES</p>
+    <h1 class="text-3xl font-bold">Vestaboard Boggle</h1>
+    <p>Find words in the letters. Your phone launches the round; the board takes it from there.</p>
+  </header>
+  <p id="boggle-message" role="alert" class="boggle-message" hidden></p>
+  <section class="boggle-card" aria-labelledby="boggle-status">
+    <h2 id="boggle-status" class="text-xl font-bold" aria-live="polite">Checking login…</h2>
+    <p id="boggle-detail">Loading your latest round.</p>
+    <div id="boggle-grid" class="boggle-grid" aria-label="Four by four letter grid"></div>
+    <div id="boggle-progress" class="boggle-progress" role="img" aria-label="Timer not started"></div>
+    <p id="boggle-clock" class="boggle-clock">Approximately 3 minutes per round</p>
+    <div class="boggle-controls">
+      <button id="boggle-start" class="btn btn-primary" disabled>Start new game</button>
+      <button id="boggle-cancel" class="btn btn-outline" hidden>Cancel round</button>
+      <button id="boggle-refresh" class="btn btn-ghost" disabled>Refresh status</button>
+    </div>
+    <details class="boggle-preview-details">
+      <summary>Physical board layout · last accepted frame</summary>
+      <div id="boggle-preview" class="boggle-preview" aria-label="Six by twenty-two Vestaboard preview"></div>
+    </details>
+  </section>
+  <section id="boggle-words-section" class="boggle-card" hidden aria-labelledby="boggle-words-title">
+    <h2 id="boggle-words-title" class="text-xl font-bold">Words you might have found</h2>
+    <p>Suggestions, not an exhaustive ruling. Tap a word to trace it above; nothing is sent to the board.</p>
+    <button id="boggle-reveal" class="btn btn-outline">Show suggested words</button>
+    <p id="boggle-word-status" role="status"></p>
+    <p id="boggle-path" aria-live="polite"></p>
+    <div id="boggle-words"></div>
+  </section>
+  <details class="boggle-card">
+    <summary>How to play &amp; dictionary</summary>
+    <ul class="boggle-rules">
+      <li>Write words of at least three letters. Connect neighboring tiles horizontally, vertically, or diagonally. Do not reuse a tile within one word.</li>
+      <li>Q represents QU and counts as two letters. Plurals and ordinary word endings are included.</li>
+      <li>Two green timer tiles turn red about every 20 seconds. All 18 turn black at the end; the letters stay for discussion.</li>
+      <li>After the board is launched, your phone can lock. Wait for the physical letters to settle before playing. Internet and the backend scheduler must remain available.</li>
+      <li>Approximate timing only. A network failure can delay the ending sound. If status reports failure, agree an end to the round yourselves.</li>
+      <li>Scheduled quotes are skipped during the game. Other apps controlling the Vestaboard are outside this tool's control.</li>
+      <li>Suggestions use SCOWL size 35, American English (2020.12.07), excluding names, abbreviations, and source-listed taboo words. This is a smaller vocabulary, not an official Boggle dictionary or a guarantee of family-safe results.</li>
+    </ul>
+    <a href="/assets/data/boggle/SCOWL-LICENSE.txt" class="link">Dictionary source license and credits</a>
+  </details>
+</main>
+<script type="module">
+import { mountBoggle } from '/assets/js/vestaboard-boggle/controller.mjs';
+import { api } from '/assets/js/vestaboard-boggle/api.mjs';
+mountBoggle(document, api);
+</script>

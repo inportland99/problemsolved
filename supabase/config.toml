@@ -1,0 +1,6 @@
+# Local CLI identifier only; deploy with an explicitly verified --project-ref.
+project_id = "problemsolved"
+
+# Both cron and browser requests are authenticated explicitly in the handler.
+[functions.vestaboard-send]
+verify_jwt = false
