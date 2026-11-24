@@ -39,11 +39,7 @@ description: View math lesson details
         <!-- Math Content tags (Grade · Domain · Topic, primary starred) -->
         <div id="taxonomy-container" class="hidden flex flex-wrap gap-1.5 mb-4 text-sm"></div>
 
-        <!-- Diagram -->
-        <div id="diagram-container" class="my-4 hidden">
-          <img id="lesson-diagram" src="" alt="Lesson diagram" class="max-w-full h-auto rounded-lg shadow cursor-zoom-in hover:opacity-90 transition" />
-          <p class="text-xs text-gray-500 mt-1">Click the image to view it full screen</p>
-        </div>
+        <div id="lesson-images-gallery" class="my-4"></div>
 
         <!-- Description -->
         <div class="mb-6 mt-4">
@@ -73,6 +69,11 @@ description: View math lesson details
           <ul id="lesson-questions" class="space-y-2 p-4 bg-base-200 rounded-lg"></ul>
         </div>
 
+        <section id="student-work-section" class="hidden mb-6">
+          <h2 class="text-xl font-semibold mb-4">Student Work</h2>
+          <div id="student-work-galleries" class="space-y-6"></div>
+        </section>
+
         <!-- Author & Date -->
         <div class="text-sm text-gray-500 border-t pt-4">
           <span id="lesson-author"></span> · <span id="lesson-date"></span>
@@ -82,23 +83,12 @@ description: View math lesson details
   </div>
 </div>
 
-<!-- Fullscreen image lightbox -->
-<dialog id="image-lightbox" class="modal p-0">
-  <div class="modal-box max-w-none w-screen h-screen max-h-screen rounded-none bg-black/95 flex items-center justify-center p-4">
-    <div class="absolute top-4 right-4 flex gap-2 z-10">
-      <button id="fullscreen-btn" type="button" class="btn btn-sm btn-outline text-white border-white/40 hover:bg-white/10 hover:text-white">Fullscreen</button>
-      <button id="close-lightbox-btn" type="button" class="btn btn-sm btn-circle btn-outline text-white border-white/40 hover:bg-white/10 hover:text-white">✕</button>
-    </div>
-    <img id="lightbox-img" src="" alt="Lesson diagram (full screen)" class="max-w-full max-h-full object-contain" />
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
 
 <script type="module">
 import { requireAuth, logout, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
 import { getLessonById } from '/assets/js/lessons-db.js';
+import { normalizeGalleries } from '/assets/js/lesson-gallery-model.mjs';
+import { createGalleryLightbox, renderCarousel } from '/assets/js/lesson-gallery-ui.mjs';
 
 await requireAuth();
 renderUserBadge('user-badge');
@@ -163,37 +153,7 @@ function renderQuestions(questions) {
   }).join('');
 }
 
-// Fullscreen image lightbox
-const lightbox = document.getElementById('image-lightbox');
-const lightboxImg = document.getElementById('lightbox-img');
-const fullscreenBtn = document.getElementById('fullscreen-btn');
-
-document.getElementById('lesson-diagram').addEventListener('click', () => {
-  lightboxImg.src = document.getElementById('lesson-diagram').src;
-  lightbox.showModal();
-});
-
-document.getElementById('close-lightbox-btn').addEventListener('click', () => {
-  lightbox.close();
-});
-
-fullscreenBtn.addEventListener('click', () => {
-  if (document.fullscreenElement) {
-    document.exitFullscreen();
-  } else {
-    lightboxImg.requestFullscreen?.().catch(() => {});
-  }
-});
-
-document.addEventListener('fullscreenchange', () => {
-  fullscreenBtn.textContent = document.fullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
-});
-
-lightbox.addEventListener('close', () => {
-  if (document.fullscreenElement) {
-    document.exitFullscreen();
-  }
-});
+const openLightbox = createGalleryLightbox();
 
 document.getElementById('edit-link').href = `/teacherportal/lesson-edit/?id=${lessonId}`;
 document.getElementById('edit-link').classList.remove('hidden');
@@ -215,9 +175,27 @@ if (!result.success) {
 
   document.getElementById('lesson-task').textContent = lesson.task;
 
-  if (lesson.diagram_url) {
-    document.getElementById('lesson-diagram').src = lesson.diagram_url;
-    document.getElementById('diagram-container').classList.remove('hidden');
+  const galleries = normalizeGalleries(lesson);
+  renderCarousel(document.getElementById('lesson-images-gallery'), galleries.lessonImages, { openLightbox });
+  const studentGroups = galleries.studentWork.filter(group => group.images.length);
+  if (studentGroups.length) {
+    document.getElementById('student-work-section').classList.remove('hidden');
+    const container = document.getElementById('student-work-galleries');
+    studentGroups.forEach(group => {
+      const section = document.createElement('section');
+      const heading = document.createElement('h3');
+      heading.className = 'font-semibold mb-3';
+      const date = group.date
+        ? new Date(`${group.date}T00:00:00`).toLocaleDateString('en-US', {
+            month: 'long', day: 'numeric', year: 'numeric'
+          })
+        : '';
+      heading.textContent = [group.label, date].filter(Boolean).join(' · ');
+      const gallery = document.createElement('div');
+      section.append(heading, gallery);
+      container.append(section);
+      renderCarousel(gallery, group.images, { student: true, openLightbox });
+    });
   }
 
   if (lesson.launch_details) {

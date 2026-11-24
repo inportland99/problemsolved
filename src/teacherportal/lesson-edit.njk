@@ -70,22 +70,18 @@ description: Create or edit a math lesson
           placeholder="Describe the problem or activity..." required></textarea>
       </div>
 
-      <!-- Diagram Upload -->
+      <!-- Lesson images -->
       <div class="form-control">
-        <label class="label">
-          <span class="label-text font-semibold">Diagram</span>
-        </label>
-        <input type="file" id="diagram-upload" class="file-input file-input-bordered w-full" accept="image/*">
-        <label class="label">
-          <span class="label-text-alt">Upload an image (max 5MB)</span>
-        </label>
-        <div id="diagram-preview" class="mt-2 hidden">
-          <div class="relative inline-block">
-            <img id="diagram-img" src="" alt="Diagram preview" class="max-w-full h-auto max-h-64 rounded-lg shadow">
-            <button type="button" id="remove-diagram" class="btn btn-circle btn-sm btn-error absolute top-2 right-2">✕</button>
-          </div>
-        </div>
-        <input type="hidden" id="diagram-url">
+        <h2 class="font-semibold mb-2">Lesson Images</h2>
+        <p class="text-sm text-base-content/60 mb-2">Add diagrams or task images. The first image is the library thumbnail. Changes take effect when you save the lesson.</p>
+        <div id="lesson-images-editor"></div>
+      </div>
+
+      <div class="form-control">
+        <h2 class="font-semibold mb-2">Student Work</h2>
+        <p class="text-sm text-base-content/60 mb-2">Group student work by implementation. Give each group a date or class/implementation label. Images are visible to anyone who can view this lesson.</p>
+        <p class="text-sm text-warning mb-3">Remove student names and other identifying information before uploading.</p>
+        <div id="student-work-editor"></div>
       </div>
 
       <!-- Launch Details -->
@@ -174,26 +170,37 @@ description: Create or edit a math lesson
 
 <script type="module">
 import { requireAuth, logout, isAdmin, renderUserBadge } from '/assets/js/teacher-portal-auth-guard.js';
-import { getLessonById, createLesson, updateLesson, uploadLessonImage } from '/assets/js/lessons-db.js';
+import { getLessonById, createLesson, updateLesson } from '/assets/js/lessons-db.js';
+import { createGalleryEditor } from '/assets/js/lesson-gallery-ui.mjs';
+import { uploadGalleries, cleanupRemovedImages, publicLessonImageUrl } from '/assets/js/lesson-gallery-storage.mjs';
 import { getAllDistricts } from '/assets/js/districts-db.js';
 import { getCurrentTeacher } from '/assets/js/teachers-db.js';
 import { getTaxonomy } from '/assets/js/taxonomy-db.js';
 import { renderTaxonomyPicker } from '/assets/js/math-taxonomy-picker.js';
 
 // Auth guard — redirects to login if not authenticated
-await requireAuth();
+const user = await requireAuth();
 renderUserBadge('user-badge');
 
 // Logout button
 document.getElementById('logout-btn').addEventListener('click', logout);
 
 let isEditMode = false;
-let existingDiagramUrl = null;
-let pendingImageFile = null;
+let recoveryNeeded = false;
+let saving = false;
 
 // Get lesson ID from URL if editing
 const urlParams = new URLSearchParams(window.location.search);
 const lessonId = urlParams.get('id');
+const saveId = lessonId || crypto.randomUUID();
+const galleryEditor = createGalleryEditor(
+  document.getElementById('lesson-images-editor'),
+  document.getElementById('student-work-editor'),
+  message => showAlert(message, 'error')
+);
+window.addEventListener('pagehide', event => {
+  if (!event.persisted) galleryEditor.dispose();
+});
 
 // Set up the District field based on role
 const adminUser = await isAdmin();
@@ -245,7 +252,9 @@ function showAlert(message, type = 'info') {
   const container = document.getElementById('alert-container');
   const alert = document.createElement('div');
   alert.className = `alert alert-${type} shadow-lg`;
-  alert.innerHTML = `<span>${message}</span>`;
+  const span = document.createElement('span');
+  span.textContent = message;
+  alert.appendChild(span);
   container.appendChild(alert);
   
   setTimeout(() => {
@@ -341,6 +350,7 @@ async function loadLesson(id) {
   
   if (!result.success) {
     showAlert(result.error?.message || 'Failed to load lesson', 'error');
+    document.getElementById('lesson-form').inert = true;
     return;
   }
   
@@ -365,13 +375,7 @@ async function loadLesson(id) {
     renderAdminDistrictSelect(lesson.district_id || '');
   }
   
-  // Diagram
-  if (lesson.diagram_url) {
-    existingDiagramUrl = lesson.diagram_url;
-    document.getElementById('diagram-url').value = lesson.diagram_url;
-    document.getElementById('diagram-img').src = lesson.diagram_url;
-    document.getElementById('diagram-preview').classList.remove('hidden');
-  }
+  galleryEditor.setLesson(lesson);
   
   // Strategies
   if (lesson.anticipated_strategies?.length > 0) {
@@ -400,40 +404,6 @@ async function loadLesson(id) {
   );
 }
 
-// Handle image file selection
-document.getElementById('diagram-upload').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  // Validate
-  if (!file.type.startsWith('image/')) {
-    showAlert('Please select an image file', 'error');
-    return;
-  }
-  
-  if (file.size > 5 * 1024 * 1024) {
-    showAlert('Image must be less than 5MB', 'error');
-    return;
-  }
-  
-  // Preview
-  pendingImageFile = file;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    document.getElementById('diagram-img').src = e.target.result;
-    document.getElementById('diagram-preview').classList.remove('hidden');
-  };
-  reader.readAsDataURL(file);
-});
-
-// Remove diagram
-document.getElementById('remove-diagram').addEventListener('click', () => {
-  pendingImageFile = null;
-  existingDiagramUrl = null;
-  document.getElementById('diagram-url').value = '';
-  document.getElementById('diagram-upload').value = '';
-  document.getElementById('diagram-preview').classList.add('hidden');
-});
 
 // Strategy preset buttons
 document.querySelectorAll('.strategy-preset').forEach(btn => {
@@ -450,6 +420,8 @@ document.getElementById('add-question').addEventListener('click', () => {
 // Form submission
 document.getElementById('lesson-form').addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (saving) return;
+  saving = true;
   
   const submitBtn = document.getElementById('submit-btn');
   const submitText = document.getElementById('submit-text');
@@ -459,6 +431,7 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitText.classList.add('hidden');
   submitLoading.classList.remove('hidden');
+  document.getElementById('lesson-form').inert = true;
   
   try {
     // Get form values
@@ -479,29 +452,20 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
       return;
     }
     
-    // Handle image upload if needed
-    let diagramUrl = existingDiagramUrl || null;
-    
-    if (pendingImageFile) {
-      // Generate a temporary ID for new lessons
-      const tempId = isEditMode ? document.getElementById('lesson-id').value : `temp-${Date.now()}`;
-      const uploadResult = await uploadLessonImage(pendingImageFile, tempId);
-      
-      if (!uploadResult.success) {
-        showAlert(uploadResult.error?.message || 'Failed to upload image', 'error');
-        return;
-      }
-      
-      diagramUrl = uploadResult.url;
-    }
+    const galleries = galleryEditor.getState();
+    await uploadGalleries(galleries, saveId, user.id);
+    const firstImage = galleries.lessonImages[0];
+    const diagramUrl = firstImage ? publicLessonImageUrl(firstImage) : null;
     
     // Create or update lesson
     const lessonData = {
+      id: saveId,
       title,
       lessonContentName,
       learningGoal,
       task,
       diagramUrl,
+      galleries,
       launchDetails,
       anticipatedStrategies,
       questions,
@@ -511,14 +475,36 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
     };
     
     let result;
+    // A previous create may have committed even if its response was lost.
+    // Reuse its fixed UUID rather than creating a duplicate on retry.
+    if (recoveryNeeded && !isEditMode) {
+      const recovered = await getLessonById(saveId);
+      if (recovered.success) isEditMode = true;
+    }
     if (isEditMode) {
-      result = await updateLesson(document.getElementById('lesson-id').value, lessonData);
+      result = await updateLesson(saveId, lessonData);
     } else {
+      recoveryNeeded = true;
       result = await createLesson(lessonData);
+    }
+
+    // A taxonomy failure can follow a successfully saved lesson row.
+    // Keep retrying that same row, and never delete files on an uncertain save.
+    if (result.data) {
+      isEditMode = true;
+      document.getElementById('lesson-id').value = saveId;
+      document.getElementById('submit-text').textContent = 'Save Changes';
     }
     
     if (result.success) {
-      showAlert(isEditMode ? 'Lesson updated!' : 'Lesson created!', 'success');
+      const warnings = await cleanupRemovedImages(galleryEditor.getCleanupBaseline(), galleries);
+      if (warnings.length) {
+        showAlert(`Lesson saved. ${warnings.join(' ')} You can leave this page.`, 'warning');
+        return;
+      }
+      showAlert('Lesson saved!', 'success');
+      // Keep the form locked until navigation completes.
+      document.getElementById('lesson-form').dataset.saved = '1';
       // Redirect after short delay
       setTimeout(() => {
         window.location.href = '/teacherportal/lesson-index/';
@@ -526,16 +512,24 @@ document.getElementById('lesson-form').addEventListener('submit', async (e) => {
     } else {
       showAlert(result.error?.message || 'Failed to save lesson', 'error');
     }
+  } catch (error) {
+    showAlert(error.message || 'Failed to save lesson. Your draft is still available to retry.', 'error');
   } finally {
     // Reset button
     submitBtn.disabled = false;
     submitText.classList.remove('hidden');
     submitLoading.classList.add('hidden');
+    saving = false;
+    document.getElementById('lesson-form').inert =
+      document.getElementById('lesson-form').dataset.saved === '1';
   }
 });
 
 // Initialize
 if (lessonId) {
-  loadLesson(lessonId);
+  document.getElementById('lesson-form').inert = true;
+  await loadLesson(lessonId);
+  // Failed loads deliberately leave the editor locked.
+  if (isEditMode) document.getElementById('lesson-form').inert = false;
 }
 </script>

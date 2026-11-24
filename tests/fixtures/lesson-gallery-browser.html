@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/_site/styles/output.css">
+  <script type="importmap">
+    {"imports":{"/src/assets/js/lesson-gallery-storage.mjs":"/tests/fixtures/gallery-storage-stub.mjs"}}
+  </script>
+</head>
+<body>
+  <div id="lesson"></div><div id="student"></div>
+  <div id="carousel"></div><div id="other-carousel"></div>
+  <pre id="result">RUNNING</pre>
+  <script type="module">
+    import { createGalleryEditor, renderCarousel, createGalleryLightbox } from '/src/assets/js/lesson-gallery-ui.mjs';
+    import { prepareGalleryUploads, serializeGalleries } from '/src/assets/js/lesson-gallery-model.mjs';
+    const result = document.getElementById('result');
+    function assert(ok, message) { if (!ok) throw new Error(message); }
+    const click = (root, label) => {
+      const node = [...root.querySelectorAll('button')].find(button => button.textContent === label);
+      assert(node, `Missing button: ${label}`);
+      node.click();
+    };
+    const tick = () => new Promise(resolve => setTimeout(resolve, 0));
+    function addFiles(root, names) {
+      const input = root.querySelector('input[type=file]');
+      const transfer = new DataTransfer();
+      names.forEach(name => transfer.items.add(new File(['image'], name, { type: 'image/png' })));
+      input.files = transfer.files;
+      input.dispatchEvent(new Event('change'));
+    }
+    try {
+      const lesson = document.getElementById('lesson');
+      const student = document.getElementById('student');
+      const errors = [];
+      const editor = createGalleryEditor(lesson, student, message => errors.push(message));
+      editor.setLesson({ diagram_url: 'https://example.com/legacy.png' });
+      assert(editor.getState().lessonImages.length === 1, 'legacy diagram not loaded');
+      assert(!lesson.querySelector('textarea'), 'lesson images must not have captions');
+      addFiles(lesson, ['first.png', 'second.png']);
+      assert(editor.getState().lessonImages.length === 3, 'multiple files not added');
+      click(lesson, 'Move down');
+      assert(editor.getState().lessonImages[1].id === 'legacy-diagram', 'reorder failed');
+      click(lesson, 'Remove image');
+      assert(editor.getState().lessonImages.length === 2, 'individual removal failed');
+      click(student, 'Add implementation');
+      const label = student.querySelector('input[type=text]');
+      label.value = '<Class A>';
+      label.dispatchEvent(new Event('input'));
+      addFiles(student, ['work-a.png', 'work-b.png']);
+      const caption = student.querySelector('textarea');
+      caption.value = '<img src=x onerror=alert(1)> strategy';
+      caption.dispatchEvent(new Event('input'));
+      click(student, 'Add implementation');
+      const labels = student.querySelectorAll('input[type=text]');
+      labels[1].value = 'Class B';
+      labels[1].dispatchEvent(new Event('input'));
+      const groups = editor.getState().studentWork;
+      assert(groups.length === 2 && groups[0].images.length === 2, 'implementation grouping failed');
+      await prepareGalleryUploads(editor.getState(), async (bucket, file, id) => `${bucket}/${id}.png`);
+      const saved = serializeGalleries(editor.getState());
+      assert(saved.student_work[0].images[0].caption.startsWith('<img'), 'caption not retained');
+      const carousel = document.getElementById('carousel');
+      const other = document.getElementById('other-carousel');
+      const lightbox = createGalleryLightbox();
+      renderCarousel(carousel, [], { openLightbox: lightbox });
+      assert(carousel.children.length === 0, 'empty carousel should have no controls');
+      renderCarousel(carousel, [saved.lesson_images[0]], { openLightbox: lightbox });
+      assert(carousel.querySelector('button').getAttribute('aria-label') === 'Enlarge image', 'accessible enlarge label');
+      assert(getComputedStyle(carousel.querySelector('div')).display === 'none', 'single image controls not hidden');
+      renderCarousel(carousel, saved.student_work[0].images, { student: true, openLightbox: lightbox });
+      renderCarousel(other, saved.lesson_images, { openLightbox: lightbox });
+      await tick();
+      assert(carousel.querySelector('figcaption').textContent.startsWith('<img'), 'caption is not rendered as text');
+      assert(!carousel.querySelector('figcaption img'), 'caption HTML injection');
+      click(carousel, 'Previous');
+      await tick();
+      assert(carousel.textContent.includes('2 / 2'), 'backward wrap failed');
+      assert(other.textContent.includes('1 / 2'), 'independent carousel index changed');
+      carousel.querySelector('[aria-label="Enlarge image"]').click();
+      const dialog = document.querySelector('dialog');
+      assert(dialog.open, 'lightbox did not open');
+      assert(dialog.textContent.includes('2 / 2'), 'lightbox did not preserve index');
+      click(dialog, 'Next');
+      await tick();
+      assert(dialog.textContent.includes('1 / 2'), 'lightbox forward navigation failed');
+      click(dialog, 'Close');
+      await tick();
+      assert(!dialog.open && !dialog.querySelector('img'), 'lightbox cleanup failed');
+      window.confirm = () => true;
+      click(student, 'Remove implementation');
+      assert(editor.getState().studentWork.length === 1, 'group removal failed');
+      assert(editor.getCleanupBaseline().studentWork[0].images.length === 2, 'removed files lost cleanup references');
+      assert(errors.length === 0, 'unexpected upload errors');
+      editor.dispose();
+      result.textContent = 'PASS: editor uploads/order/removal, grouping/captions, zero/one/multiple images, independent navigation, and lightbox';
+      result.dataset.status = 'passed';
+    } catch (error) {
+      result.textContent = `FAIL: ${error.stack}`;
+      result.dataset.status = 'failed';
+    }
+  </script>
+</body>
+</html>

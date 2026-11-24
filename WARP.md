@@ -24,7 +24,10 @@ npm run build:css      # Build and minify CSS only
 ```
 
 ### Testing
-No test suite is configured for this project.
+`npm test` runs focused teacher-portal gallery tests using Node's built-in test runner.
+`python3 tests/lesson-gallery-schema-test.py` checks the gallery SQL and storage RLS in an isolated temporary PostgreSQL cluster (requires `initdb`, `pg_ctl`, and `psql`).
+After `npm run build`, `python3 tests/lesson-gallery-browser-test.py` exercises editor/carousel interactions in headless Google Chrome on macOS, with stubbed storage and a temporary browser profile.
+There is no broader application test suite.
 
 ## Architecture
 
@@ -193,7 +196,7 @@ A private, authenticated teacher portal at `/teacherportal/` for managing math l
 - `index.njk` (`/teacherportal/`) — dashboard with links to Lessons, Observations, and (admin-only) Teachers
 - `login.njk` (`/teacherportal/login/`) — email/password login form, with a "Forgot password?" link that triggers `resetPasswordForEmail`
 - `reset-password.njk` (`/teacherportal/reset-password/`) — lets a user set a password after a password-recovery link (or legacy invite link)
-- `lesson-index.njk` / `lesson-edit.njk` / `lesson-show.njk` — browse, create, edit, view, delete math lessons (with diagram image upload)
+- `lesson-index.njk` / `lesson-edit.njk` / `lesson-show.njk` — browse, create, edit, view, delete math lessons, with ordered lesson images and student-work galleries grouped by implementation
 - `observation-index.njk` / `observation-edit.njk` / `observation-show.njk` — create, edit, list, and view classroom lesson observations (scored 0–5 across Planning/Launch/Problem Solving/Closing)
 - `teacher-index.njk` / `teacher-edit.njk` — admin-only teacher account management (list/edit/remove; add with temporary password)
 
@@ -268,6 +271,31 @@ A lesson's Math Content is a many-to-many relationship to specific, valid (Grade
 - `src/assets/js/taxonomy-db.js` — `getTaxonomy()` fetches all ~192 active taxonomy rows joined to their names in one query (cheap enough to fetch once per page and filter/group client-side); `flattenLessonMathTopics()` normalizes a lesson's nested `lesson_math_topics` select result; `setLessonMathTopics(lessonId, { taxonomyIds, primaryTaxonomyId })` replaces a lesson's tags via delete-then-reinsert.
 - `src/assets/js/math-taxonomy-picker.js` — `renderTaxonomyPicker(container, taxonomy, initialSelection, options?)`, used on `lesson-edit.njk` (multi-select) and `observation-edit.njk` (`{ singleSelect: true }`). Renders Grade/Course and Domain filter chips (filter-only), a Grade/Domain-grouped Math Topic checklist, topic search, and a removable selected list. Multi-select exposes ★/☆ primary; single-select uses radios, hides stars, and caps selection at one. Returns `{ getSelection, setSelection }`. `lesson-index.njk` and `lesson-show.njk` also call `getTaxonomy()`/read `lesson.mathContent` directly for filtering and display, without using the picker UI.
 - `src/_data/grades.json` — legacy grade/course list (KG through Calculus). No longer used by the observation form (taxonomy supplies Grade/Course); kept only if other pages still reference it.
+
+### Lesson Images and Student Work
+- Apply `supabase-teacherportal-image-galleries-upgrade.sql` to the **math-lessons** project (`ffwljxasdsgtzbwwvxyi`) **before deploying the gallery UI**. The upgrade requires the existing districts/RLS upgrade and `lesson-images` bucket. It adds/backfills gallery JSONB columns and creates the private bucket/policies; it is safe to rerun. No Edge Function change is required.
+- `math_lessons.lesson_images`: ordered array of `{ id, path }` (new public `lesson-images` uploads) or `{ id, url }` (legacy public diagrams). Old `diagram_url` values are backfilled as the first image. The gallery is the source of truth; an explicitly empty array must not fall back to `diagram_url`. Saves also update `diagram_url` to the first image URL for compatibility.
+- `math_lessons.student_work`: ordered implementation groups `{ id, date, label, images: [{ id, path, caption }] }`. Date and label are individually optional; at least one is required per group. Captions are optional and only supported for student work.
+- `src/assets/js/lesson-gallery-model.mjs` holds metadata normalization, validation, ordering, serialization, and upload orchestration. `lesson-gallery-storage.mjs` handles upload, public URL resolution, signed private URLs, and cleanup. `lesson-gallery-ui.mjs` provides multi-file editors, implementation groups, independent carousels, and the shared lightbox.
+- Lesson images remain in the **public** `lesson-images` bucket. Student work goes only to **private** `student-work-images`; read access requires an authenticated session and follows the lesson's district visibility. Upload/removal follows lesson-edit rights, not uploader-only ownership. New object paths are `uploader-auth-id/lesson-id/image-id.extension`.
+- Signed student-work URLs last 10 minutes and are refreshed whenever an image is selected/viewed. A signed URL is a temporary bearer link: anyone holding it can use it until expiry. The UI warns against uploading identifying student information.
+- Both upload controls accept JPEG, PNG, WebP, GIF, and AVIF images, up to 5 MB each. The upgrade applies matching limits to the buckets. Phone HEIC images must be exported as JPEG/PNG first.
+- Images upload on lesson save. The two gallery metadata fields are saved with the lesson row; taxonomy saves remain a separate pre-existing operation. A failed upload/save retains the draft for retry; a fixed UUID prevents duplicate lessons on retry. Do not delete referenced files on an uncertain save.
+- Removing/reordering images in the editor does not immediately delete storage files. After a confirmed save, removed new-format objects are cleaned up; legacy URL-only diagrams are deliberately left alone. Restrictive private-bucket policies guard against overly broad older storage policies and prevent deletion while an object is still referenced.
+- Cancelled/abandoned drafts, uncertain network failures, and deleting a whole lesson can leave unreferenced objects. There is no automatic orphan sweep; future cleanup must check references and age before deleting anything. Existing public-bucket policies are not replaced by this upgrade.
+- After applying SQL and deploying, manually verify legacy diagrams, zero/one/multiple lesson images, library thumbnail order, multiple implementation groups and captions, editing/removal, and same-district/other-district/admin/unauthenticated storage access against the actual Supabase project.
+
+### Deferred Teacher Portal Backlog
+Retain these findings from the November 2026 source review. The owner explicitly deferred them; do not silently expand gallery work to fix unrelated items. Live configuration has not been verified.
+- Discovery/reporting: no lesson title/body search, observation filters, pagination, teacher progress charts, or aggregate reporting.
+- Form safety/scoring: no autosave, drafts, or unsaved-changes warning; observation scores default to zero, without a distinct "not observed" state or rubric guidance.
+- Lesson display: required learning goals are saved but have no dedicated display section.
+- Permission-aware controls: Edit is shown for all visible lessons, including all-district lessons regular teachers cannot edit; observed teachers see observation Edit even if they did not create the observation.
+- Peer observations: authenticated users may insert observations about another teacher, but cannot read them afterward unless admin; the insert's returned-row request conflicts with that read policy.
+- Existing partial operations: lesson fields and taxonomy save separately, tags use delete-then-reinsert, and teacher Auth/record creation/removal have no rollback.
+- Error handling/output safety: detail-page load errors are inside hidden containers; observation cards interpolate database text into HTML without escaping.
+- Privacy: the existing all-district lesson SELECT policy lacks an explicit authentication condition; legacy diagrams/public URLs are not protected by portal login. Verify intended access and live RLS/storage configuration.
+- Account administration remains basic: login email changes and a dedicated profile/settings UI are absent; `district_admin` has no distinct management workflow.
 
 ## Vestaboard Tool (/personal/vestaboard)
 
