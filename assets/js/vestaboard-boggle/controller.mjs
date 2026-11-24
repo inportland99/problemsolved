@@ -1,4 +1,4 @@
-import { renderBoard, buildTrie, solveBoard, DURATION_MS } from './game.mjs';
+import { renderBoard, buildTrie, solveBoard, hardestWords, DURATION_MS } from './game.mjs';
 
 const color = { 66: '#39b54a', 63: '#c1272d', 70: '#000000' };
 const active = round => round && ['launching', 'running'].includes(round.status);
@@ -7,10 +7,55 @@ export async function mountBoggle(doc, api, { pollMs = 5000 } = {}) {
   const el = id => doc.getElementById(`boggle-${id}`);
   let user, round = null, busy = false, refreshing = false, connected = false;
   let trie = null, revealedId = null, disposed = false, interval;
+  let dictionaryPromise = null, finishRoundId = null, finishWords = null;
   const message = text => {
     el('message').textContent = text || '';
     el('message').hidden = !text;
   };
+
+  async function getTrie() {
+    if (trie) return trie;
+    dictionaryPromise ??= api.dictionary().then(data => {
+      trie = buildTrie(data.words);
+      return trie;
+    }).catch(error => {
+      dictionaryPromise = null;
+      throw error;
+    });
+    return dictionaryPromise;
+  }
+
+  function physicalGrid() {
+    if (!round) return Array.from({ length: 6 }, () => Array(22).fill(0));
+    return renderBoard(round.board, Math.max(0, round.last_step ?? 0), {
+      finishWords: round.status === 'finished' && finishRoundId === round.id ? finishWords : null,
+    });
+  }
+
+  function renderPreview(grid = physicalGrid()) {
+    el('preview').replaceChildren();
+    grid.flat().forEach(code => {
+      const cell = doc.createElement('span');
+      cell.textContent = code >= 1 && code <= 26 ? String.fromCharCode(code + 64) : code === 60 ? '?' : '';
+      if (color[code]) cell.style.backgroundColor = color[code];
+      el('preview').append(cell);
+    });
+  }
+
+  async function syncFinishPreview() {
+    if (round?.status !== 'finished' || round.last_step !== 9 || finishRoundId === round.id) return;
+    const selectedRound = round;
+    try {
+      const dictionary = await getTrie();
+      if (disposed || round?.id !== selectedRound.id || round.status !== 'finished') return;
+      finishWords = hardestWords(solveBoard(selectedRound.board, dictionary).map(result => result.word));
+      finishRoundId = selectedRound.id;
+      renderPreview();
+    } catch (_) {
+      // A local preview failure must never stop the physical timer or controls.
+      message('The round finished, but its word preview could not load. Refresh to try again.');
+    }
+  }
 
   function controls() {
     el('start').disabled = !connected || busy || refreshing || !!active(round);
@@ -31,11 +76,11 @@ export async function mountBoggle(doc, api, { pollMs = 5000 } = {}) {
       : round?.status === 'launching' ? 'Waiting to send the letters. This can take a few seconds while the board cools down.'
       : active(round) ? 'You can lock your phone. Use the physical timer; this page shows the last accepted frame.'
       : round?.status === 'failed' ? 'Check board connectivity and backend setup before starting again. The physical display may be stale.'
+      : round?.status === 'finished' ? 'The board shows “DID YOU FIND?” with up to three longest words. Compare your lists, then explore all suggestions below.'
       : round ? 'The letters remain on the board. Compare your paper lists, then reveal suggestions.'
       : 'Have paper and pencils ready. The grid is different every round.';
     el('grid').replaceChildren();
     el('progress').replaceChildren();
-    el('preview').replaceChildren();
     const board = round?.board || Array(16).fill(' ');
     board.forEach((letter, i) => {
       const cell = doc.createElement('div');
@@ -46,13 +91,8 @@ export async function mountBoggle(doc, api, { pollMs = 5000 } = {}) {
       el('grid').append(cell);
     });
     const step = Math.max(0, round?.last_step ?? 0);
-    const grid = round ? renderBoard(board, step) : Array.from({ length: 6 }, () => Array(22).fill(0));
-    grid.flat().forEach(code => {
-      const cell = doc.createElement('span');
-      cell.textContent = code >= 1 && code <= 26 ? String.fromCharCode(code + 64) : '';
-      if (color[code]) cell.style.backgroundColor = color[code];
-      el('preview').append(cell);
-    });
+    const grid = physicalGrid();
+    renderPreview(grid);
     for (let i = 0; i < 18; i++) {
       const tile = doc.createElement('span');
       tile.style.backgroundColor = !round ? '#d4ded8' : color[grid[5][i + 2]];
@@ -90,6 +130,7 @@ export async function mountBoggle(doc, api, { pollMs = 5000 } = {}) {
       if (changed || recovered) { revealedId = null; render(); }
       else controls();
       if (round?.last_error) message(`Delivery issue: ${round.last_error} ${active(round) ? 'The backend will retry.' : 'Check connectivity before starting again.'}`);
+      await syncFinishPreview();
     } catch (error) {
       connected = false;
       message(error.message);
@@ -132,8 +173,7 @@ export async function mountBoggle(doc, api, { pollMs = 5000 } = {}) {
     el('reveal').disabled = true;
     el('word-status').textContent = 'Finding words…';
     try {
-      if (!trie) trie = buildTrie((await api.dictionary()).words);
-      const words = solveBoard(selectedRound.board, trie);
+      const words = solveBoard(selectedRound.board, await getTrie());
       if (round?.id !== selectedRound.id || disposed) return;
       revealedId = round.id;
       el('words').replaceChildren();
