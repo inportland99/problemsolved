@@ -6,11 +6,11 @@
 .boggle-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .16em; margin-bottom: 8px; }
 .boggle-card { padding: 22px; margin: 18px 0; border: 1px solid #d4ded8; border-radius: 18px; background: #f7faf8; }
 .boggle-card p { margin: 10px 0; }
-.boggle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; width: min(100%, 224px); margin: 24px 0 24px auto; }
+.boggle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; width: min(100%, 224px); margin: 24px 0 24px auto; border: 12px solid #f7941d; box-sizing: border-box; }
 .boggle-letter { position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 0; background: #17231f; color: white; font: 700 clamp(24px, 6vw, 38px) monospace; }
 .boggle-letter[data-path] { background: #5741ac; outline: 3px solid #bfb1ef; }
 .boggle-letter[data-path]::after { content: attr(data-path); position: absolute; top: 3px; right: 6px; font-size: 12px; }
-.boggle-progress { display: grid; grid-template-columns: repeat(18, 1fr); gap: 3px; margin: 14px 0; }
+.boggle-progress { display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; margin: 14px 0; }
 .boggle-progress span { height: 18px; border-radius: 2px; }
 .boggle-clock { text-align: center; font-size: 14px; }
 .boggle-message { background: #fff0d7; border-left: 4px solid #b87900; padding: 14px; overflow-wrap: anywhere; }

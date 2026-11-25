@@ -1,4 +1,4 @@
-import { rollBoard, renderBoard } from '../../../src/assets/js/vestaboard-boggle/game.mjs';
+import { rollBoard, renderBoard, FINAL_STEP } from '../../../src/assets/js/vestaboard-boggle/game.mjs';
 import { finishWordsForBoard } from './finish.mjs';
 
 const corsHeaders = {
@@ -102,7 +102,7 @@ export function createHandler({ createClient, env, fetchImpl = fetch, now = () =
   async function tick(db) {
     const claim = await rpc(db, 'boggle_claim', { p_kind: 'tick' });
     if (!claim.token) return { success: true, skipped: claim.skip };
-    const finishWords = claim.step === 9 && !claim.round.cancel_requested
+    const finishWords = claim.step === FINAL_STEP && !claim.round.cancel_requested
       ? finishWordsForBoard(claim.round.board) : null;
     const item = { mode: 'grid', grid_content: renderBoard(claim.round.board, claim.step, { finishWords }) };
     const error = await deliver(db, claim, item);

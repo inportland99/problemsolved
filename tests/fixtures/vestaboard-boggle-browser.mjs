@@ -47,6 +47,7 @@ try {
   check(el('grid').children.length === 16, 'Sixteen letter tiles');
   const gridStyle = getComputedStyle(el('grid'));
   check(gridStyle.columnGap === '0px' && gridStyle.rowGap === '0px', 'Main phone grid has no gaps');
+  check(gridStyle.borderTopWidth === '12px' && gridStyle.borderTopColor === 'rgb(247, 148, 29)', 'Phone grid has an orange frame');
   const card = el('grid').closest('.boggle-card');
   const cardStyle = getComputedStyle(card);
   const contentRight = card.getBoundingClientRect().right - parseFloat(cardStyle.paddingRight) - parseFloat(cardStyle.borderRightWidth);
@@ -57,20 +58,25 @@ try {
   check(el('preview').children.length === 132, 'Full Vestaboard preview');
   const previewRow = row => [...el('preview').children].slice(row * 22, row * 22 + 22)
     .map(cell => cell.textContent || ' ').join('');
-  check(previewRow(0).slice(18) === 'CATS', 'Compact grid is on the far right');
-  check(previewRow(0).slice(0, 18).trim() === '', 'No answer text before finish');
+  check(previewRow(1).slice(17, 21) === 'CATS', 'Compact grid is inside the right-hand frame');
+  check(previewRow(0).slice(0, 16).trim() === 'PLAY BOGGLE', 'Centered play heading appears before finish');
+  check(previewRow(2).slice(0, 16).trim() === '3+ LETTERS', 'Rule digits and punctuation are rendered');
+  const orange = el('preview').children[16].style.backgroundColor;
+  check(orange === 'rgb(247, 148, 29)', 'Physical frame is orange');
+  check([...el('preview').children].slice(16, 22).every(cell => cell.style.backgroundColor === orange), 'Top of frame matches image');
   check(el('start').disabled, 'Cannot replace an active game accidentally');
 
   // Backend changes without any browser timer or command, as when phone locks.
   stored.status = 'running';
-  stored.started_at = new Date(Date.now() - 40000).toISOString();
+  stored.started_at = new Date(Date.now() - 45000).toISOString();
   stored.last_step = 2;
   el('refresh').click();
   await wait(() => el('status').textContent === 'Find your words');
-  check(el('progress').getAttribute('aria-label') === '14 green tiles, 4 red tiles', 'Reconnected timer step');
+  check(el('progress').children.length === 16, 'Sixteen progress tiles');
+  check(el('progress').getAttribute('aria-label') === '12 green tiles, 4 red tiles', 'Reconnected timer step');
   const bar = [...el('progress').children].map(cell => cell.style.backgroundColor);
   check(JSON.stringify(bar) === JSON.stringify([...bar].reverse()), 'Timer shrinks from both ends');
-  check(bar[0] !== bar[2] && bar[1] === bar[0] && bar[17] === bar[0], 'Both ends turn red');
+  check(bar[0] !== bar[2] && bar[1] === bar[0] && bar[15] === bar[0], 'Both ends turn red');
   check(el('words-section').hidden, 'No spoilers during play');
 
   confirmed = false;
@@ -85,7 +91,7 @@ try {
   el('refresh').click();
   await wait(() => !el('words-section').hidden);
   check(el('progress').getAttribute('aria-label').includes('all black'), 'Final frame is black');
-  check(previewRow(0).slice(0, 17).trim() === '', 'Cancel does not show finish answers');
+  check([0, 1, 2, 3, 4].every(row => previewRow(row).slice(0, 16).trim() === ''), 'Cancel clears rules and does not show finish answers');
   const before = commandCount;
   el('reveal').click();
   await wait(() => el('words').querySelectorAll('button').length > 0);
@@ -106,9 +112,10 @@ try {
   check(el('message').hidden, 'Connection warning clears after recovery');
   stored = { ...stored, id: 'finished-round', status: 'finished', cancel_requested: false };
   el('refresh').click();
-  await wait(() => previewRow(0).slice(0, 17).trimEnd() === 'DID YOU FIND?' && !el('start').disabled);
-  check([1, 2, 3].every(row => /^[A-Z]+$/.test(previewRow(row).slice(0, 17).trim())), 'Three finish words appear automatically');
-  check(previewRow(0).slice(18) === 'CATS', 'Finish title does not move the right-hand grid');
+  await wait(() => previewRow(0).slice(0, 16).trim() === 'DID YOU FIND?' && !el('start').disabled);
+  check(previewRow(0).slice(0, 16) === ' DID YOU FIND?  ', 'Finish title is horizontally centered');
+  check([1, 2, 3].every(row => /^[A-Z]+$/.test(previewRow(row).slice(0, 16).trim())), 'Three finish words appear automatically');
+  check(previewRow(1).slice(17, 21) === 'CATS', 'Finish title does not move the framed grid');
   check(dictionaryCount === 1, 'Finish preview reuses the suggestions dictionary');
   check(document.documentElement.scrollWidth <= window.innerWidth, 'No horizontal overflow');
   check(document.getElementById('boggle-app').scrollWidth <= document.getElementById('boggle-app').clientWidth, '360px phone layout does not overflow');

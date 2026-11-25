@@ -1,6 +1,9 @@
-import { renderBoard, buildTrie, solveBoard, hardestWords, DURATION_MS } from './game.mjs';
+import {
+  renderBoard, buildTrie, solveBoard, hardestWords, displayCharacter,
+  DURATION_MS, TIMER_TILES, TIMER_STAGES, FINAL_STEP,
+} from './game.mjs';
 
-const color = { 66: '#39b54a', 63: '#c1272d', 70: '#000000' };
+const color = { 64: '#f7941d', 66: '#39b54a', 63: '#c1272d', 70: '#000000' };
 const active = round => round && ['launching', 'running'].includes(round.status);
 
 export async function mountBoggle(doc, api, { pollMs = 5000 } = {}) {
@@ -36,14 +39,14 @@ export async function mountBoggle(doc, api, { pollMs = 5000 } = {}) {
     el('preview').replaceChildren();
     grid.flat().forEach(code => {
       const cell = doc.createElement('span');
-      cell.textContent = code >= 1 && code <= 26 ? String.fromCharCode(code + 64) : code === 60 ? '?' : '';
+      cell.textContent = displayCharacter(code);
       if (color[code]) cell.style.backgroundColor = color[code];
       el('preview').append(cell);
     });
   }
 
   async function syncFinishPreview() {
-    if (round?.status !== 'finished' || round.last_step !== 9 || finishRoundId === round.id) return;
+    if (round?.status !== 'finished' || round.last_step !== FINAL_STEP || finishRoundId === round.id) return;
     const selectedRound = round;
     try {
       const dictionary = await getTrie();
@@ -93,13 +96,15 @@ export async function mountBoggle(doc, api, { pollMs = 5000 } = {}) {
     const step = Math.max(0, round?.last_step ?? 0);
     const grid = physicalGrid();
     renderPreview(grid);
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < TIMER_TILES; i++) {
       const tile = doc.createElement('span');
-      tile.style.backgroundColor = !round ? '#d4ded8' : color[grid[5][i + 2]];
+      tile.style.backgroundColor = !round ? '#d4ded8' : color[grid[5][i]];
       el('progress').append(tile);
     }
+    const progress = Math.min(step, TIMER_STAGES - 1);
     el('progress').setAttribute('aria-label', !round ? 'Timer not started'
-      : step === 9 ? 'Timer all black: round ended' : `${18 - step * 2} green tiles, ${step * 2} red tiles`);
+      : step === FINAL_STEP ? 'Timer all black: round ended'
+      : `${TIMER_TILES - progress * 2} green tiles, ${progress * 2} red tiles`);
     if (active(round) && round.started_at) {
       const seconds = Math.max(0, Math.ceil((DURATION_MS - (Date.now() - Date.parse(round.started_at))) / 1000));
       el('clock').textContent = seconds ? `About ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')} remaining`

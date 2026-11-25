@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { DICE, rollBoard, renderBoard, timerStep, buildTrie, solveBoard, hardestWords, REVEAL_WIDTH, REVEAL_TITLE } from '../src/assets/js/vestaboard-boggle/game.mjs';
+import {
+  DICE, rollBoard, renderBoard, timerStep, buildTrie, solveBoard, hardestWords,
+  REVEAL_WIDTH, REVEAL_TITLE, RULE_LINES, TIMER_TILES, TIMER_STAGES, STEP_MS, FINAL_STEP, displayCharacter,
+} from '../src/assets/js/vestaboard-boggle/game.mjs';
 import { createHandler, zonedNow } from '../supabase/functions/vestaboard-send/handler.mjs';
 import { finishWordsForBoard } from '../supabase/functions/vestaboard-send/finish.mjs';
 
@@ -28,26 +31,28 @@ test('a worker resuming after its write lease expires never sends', async () => 
   assert.equal(f.sends.length, 0);
 });
 
-test('every 20-second timer boundary renders exactly two more red tiles; finish flips all black', () => {
+test('eight 22.5-second stages shrink the sixteen-tile bar; finish flips all black', () => {
   const board = rollBoard(() => 0.5);
   const start = '2026-01-01T00:00:00.000Z';
-  for (let step = 0; step <= 9; step++) {
-    const ms = Date.parse(start) + step * 20000;
+  assert.equal(STEP_MS, 22500);
+  for (let stage = 0; stage <= TIMER_STAGES; stage++) {
+    const step = stage === TIMER_STAGES ? FINAL_STEP : stage;
+    const ms = Date.parse(start) + stage * STEP_MS;
     assert.equal(timerStep(start, ms), step);
-    if (step) assert.equal(timerStep(start, ms - 1), step - 1);
+    if (stage) assert.equal(timerStep(start, ms - 1), stage - 1);
     const grid = renderBoard(board, step);
     assert.equal(grid.length, 6);
     assert.ok(grid.every(row => row.length === 22));
-    assert.deepEqual(grid.slice(0, 5), renderBoard(board, 0).slice(0, 5));
-    assert.equal(grid[5].filter(x => x === 63).length, step === 9 ? 0 : step * 2);
-    assert.equal(grid[5].filter(x => x === 66).length, step === 9 ? 0 : 18 - step * 2);
-    assert.equal(grid[5].filter(x => x === 70).length, step === 9 ? 18 : 0);
-    const bar = grid[5].slice(2, 20);
+    assert.deepEqual(grid.map(row => row.slice(16)), renderBoard(board).map(row => row.slice(16)), 'frame and letters never change');
+    assert.equal(grid[5].filter(x => x === 63).length, step === FINAL_STEP ? 0 : step * 2);
+    assert.equal(grid[5].filter(x => x === 66).length, step === FINAL_STEP ? 0 : TIMER_TILES - step * 2);
+    assert.equal(grid[5].filter(x => x === 70).length, step === FINAL_STEP ? TIMER_TILES : 0);
+    const bar = grid[5].slice(0, TIMER_TILES);
     assert.deepEqual(bar, [...bar].reverse(), 'the bar shrinks symmetrically');
-    if (step < 9) {
+    if (step !== FINAL_STEP) {
       assert.deepEqual(bar.slice(0, step), Array(step).fill(63));
-      assert.deepEqual(bar.slice(step, 18 - step), Array(18 - step * 2).fill(66));
-      assert.deepEqual(bar.slice(18 - step), Array(step).fill(63));
+      assert.deepEqual(bar.slice(step, TIMER_TILES - step), Array(TIMER_TILES - step * 2).fill(66));
+      assert.deepEqual(bar.slice(TIMER_TILES - step), Array(step).fill(63));
     }
   }
   assert.equal(timerStep(start, Date.parse(start) - 100), 0);
@@ -57,14 +62,32 @@ test('every 20-second timer boundary renders exactly two more red tiles; finish 
   assert.throws(() => renderBoard(board, 10));
 });
 
-test('physical letters occupy the rightmost four columns with no intervening blanks', () => {
+test('physical layout matches the orange six-column frame and compact letters in the image', () => {
   const board = 'ABCDEFGHIJKLMNOP'.split('');
   const grid = renderBoard(board);
-  for (let row = 0; row < 4; row++) {
-    assert.deepEqual(grid[row].slice(18), board.slice(row * 4, row * 4 + 4).map(letter => letter.charCodeAt(0) - 64));
-    assert.deepEqual(grid[row].slice(0, 18), Array(18).fill(0));
+  for (let row = 0; row < 6; row++) {
+    for (let col = 16; col < 22; col++) {
+      if (row === 0 || row === 5 || col === 16 || col === 21) assert.equal(grid[row][col], 64, `orange border ${row},${col}`);
+      else assert.equal(grid[row][col], board[(row - 1) * 4 + col - 17].charCodeAt(0) - 64);
+    }
   }
-  assert.deepEqual(grid[4], Array(22).fill(0));
+  assert.deepEqual(grid[5].slice(0, 16), Array(16).fill(66), 'bar starts at the left edge');
+});
+
+test('play rules are centered, including supported digit and plus glyphs', () => {
+  const grid = renderBoard('ABCDEFGHIJKLMNOP'.split(''));
+  for (let row = 0; row < 5; row++) {
+    const line = grid[row].slice(0, 16).map(code => displayCharacter(code) || ' ').join('');
+    const text = RULE_LINES[row];
+    assert.equal(line.trim(), text);
+    assert.equal(line.indexOf(text), Math.floor((16 - text.length) / 2));
+  }
+  assert.equal(displayCharacter(29), '3');
+  assert.equal(displayCharacter(46), '+');
+  assert.equal(displayCharacter(60), '?');
+  assert.equal(displayCharacter(0), '');
+  assert.deepEqual(renderBoard('ABCDEFGHIJKLMNOP'.split(''), 8)[5].slice(0, 16),
+    renderBoard('ABCDEFGHIJKLMNOP'.split(''), 7)[5].slice(0, 16), 'legacy step 8 never creates an all-red frame');
 });
 
 test('hardest words are longest first, alphabetically tied, unique, and never truncated', () => {
@@ -78,18 +101,22 @@ test('hardest words are longest first, alphabetically tied, unique, and never tr
 
 test('finish reveal fits left of the intact grid and never leaks before the final frame', () => {
   const board = 'ABCDEFGHIJKLMNOP'.split('');
-  const words = ['A'.repeat(17), 'HOUSE', 'CAT'];
+  const words = ['A'.repeat(REVEAL_WIDTH), 'HOUSE', 'CAT'];
   const final = renderBoard(board, 9, { finishWords: words });
-  const read = row => row.slice(0, 17).map(code => code === 0 ? ' ' : code === 60 ? '?' : String.fromCharCode(code + 64)).join('').trimEnd();
+  const read = row => row.slice(0, REVEAL_WIDTH).map(code => displayCharacter(code) || ' ').join('').trim();
   assert.equal(read(final[0]), REVEAL_TITLE);
   assert.deepEqual(final.slice(1, 4).map(read), words);
-  assert.ok(final.slice(0, 4).every(row => row[17] === 0), 'one-column separator remains blank');
-  assert.deepEqual(final.slice(0, 4).map(row => row.slice(18)), renderBoard(board).slice(0, 4).map(row => row.slice(18)));
-  assert.deepEqual(final[5].slice(2, 20), Array(18).fill(70));
+  [REVEAL_TITLE, ...words].forEach((text, row) => {
+    const line = final[row].slice(0, 16).map(code => displayCharacter(code) || ' ').join('');
+    assert.equal(line.indexOf(text), Math.floor((16 - text.length) / 2), 'finish text is centered');
+  });
+  assert.deepEqual(final.map(row => row.slice(16)), renderBoard(board).map(row => row.slice(16)));
+  assert.deepEqual(final[5].slice(0, 16), Array(16).fill(70));
   for (let step = 0; step < 9; step++) assert.deepEqual(renderBoard(board, step, { finishWords: words }), renderBoard(board, step));
-  assert.equal(read(renderBoard(board, 9)[0]), '', 'cancellation can use black frame without answers');
-  assert.equal(read(renderBoard(board, 9, { finishWords: [] })[0]), REVEAL_TITLE);
-  assert.deepEqual(renderBoard(board, 9, { finishWords: [] }).slice(1, 4).map(read), ['', '', '']);
+  assert.ok(renderBoard(board, 9).slice(0, 5).every(row => read(row) === ''), 'cancellation clears rules without answers');
+  const empty = renderBoard(board, 9, { finishWords: [] });
+  assert.equal(read(empty[2]), REVEAL_TITLE, 'title is vertically centered when there are no words');
+  assert.deepEqual([0, 1, 3, 4].map(row => read(empty[row])), ['', '', '', '']);
 });
 
 test('solver permits diagonals, deduplicates, forbids wraparound and tile reuse', () => {

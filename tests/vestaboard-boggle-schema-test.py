@@ -44,6 +44,25 @@ $$;
 """
 
 CHECKS = f"""
+DO $$
+DECLARE stage integer; start_time timestamptz := '2026-01-01 00:00:00+00';
+BEGIN
+  PERFORM public.check_test(public.boggle_frame_step(NULL, start_time)=0, 'unstarted clock');
+  PERFORM public.check_test(public.boggle_frame_step(start_time, start_time-interval '1 second')=0, 'negative elapsed');
+  FOR stage IN 0..7 LOOP
+    PERFORM public.check_test(
+      public.boggle_frame_step(start_time, start_time + stage * interval '22.5 seconds')=stage,
+      'exact 22.5-second boundary');
+    IF stage > 0 THEN
+      PERFORM public.check_test(
+        public.boggle_frame_step(start_time, start_time + stage * interval '22.5 seconds' - interval '1 millisecond')=stage-1,
+        'immediately before boundary');
+    END IF;
+  END LOOP;
+  PERFORM public.check_test(public.boggle_frame_step(start_time, start_time+interval '179.999 seconds')=7, 'last running stage');
+  PERFORM public.check_test(public.boggle_frame_step(start_time, start_time+interval '180 seconds')=9, 'terminal marker at three minutes');
+END;
+$$;
 SELECT public.check_test((SELECT count(*) = 3 FROM cron.job), 'idempotent cron registration');
 SELECT public.check_test(NOT public.boggle_tick_due(), 'no idle worker invocations');
 SELECT public.vestaboard_enqueue('game-tick');
@@ -71,7 +90,7 @@ BEGIN
   PERFORM public.check_test(NOT public.boggle_tick_due(), 'cooldown enforced');
   UPDATE public.vestaboard_control SET next_write_at = now() - interval '1 second';
   PERFORM public.check_test(public.boggle_claim('tick') ? 'skip', 'unchanged frame suppressed');
-  UPDATE public.vestaboard_rounds SET started_at = now() - interval '65 seconds' WHERE id=rid;
+  UPDATE public.vestaboard_rounds SET started_at = now() - interval '70 seconds' WHERE id=rid;
   c := public.boggle_claim('tick');
   PERFORM public.check_test((c->>'step')::int = 3, 'delayed tick skips obsolete frames');
   PERFORM public.boggle_complete((c->>'token')::uuid,rid,3,'test offline');
@@ -159,15 +178,26 @@ def main():
                         "-o", f"-k {temp} -p 55481 -c listen_addresses=''", "-w", "start"],
                        env=env, check=True, capture_output=True, text=True)
         try:
-            def sql(text):
+            def sql(text, expected_error=None):
                 result = subprocess.run(["psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1",
                                          "-h", temp, "-p", "55481", "-U", "boggle_test", "-d", "postgres"],
                                         input=text, env=env, capture_output=True, text=True)
+                if expected_error:
+                    assert result.returncode and expected_error in result.stderr, result.stderr
+                    return
                 if result.returncode:
                     raise RuntimeError(result.stderr + result.stdout)
                 return result.stdout.strip()
             migration = (ROOT / "supabase-vestaboard-boggle-upgrade.sql").read_text()
-            sql(FIXTURE + migration + migration + CHECKS)
+            design = (ROOT / "supabase-vestaboard-boggle-design-upgrade.sql").read_text()
+            sql(FIXTURE + migration + migration)
+            historical_id = sql(
+                f"INSERT INTO public.vestaboard_rounds(user_id,board,status,last_step) "
+                f"VALUES('{USER}','{BOARD}','finished',9) RETURNING id;")
+            sql(design + design)
+            assert sql(f"SELECT last_step=9 AND status='finished' FROM public.vestaboard_rounds WHERE id='{historical_id}';") == "t"
+            sql(f"DELETE FROM public.vestaboard_rounds WHERE id='{historical_id}';")
+            sql(CHECKS)
             with ThreadPoolExecutor(max_workers=8) as executor:
                 results = list(executor.map(lambda _: sql(
                     f"SELECT public.boggle_start('{USER}', '{BOARD}') ? 'round';"), range(8)))
@@ -177,7 +207,9 @@ def main():
                 results = list(executor.map(lambda _: sql(
                     "SELECT public.boggle_claim('tick') ? 'token';"), range(8)))
             assert results.count("t") == 1, results
-            print("Boggle SQL passed: rerun, RLS, RPC permissions, timer/retry/cancel/expiry, Vault wiring, and concurrent starts/writes.")
+            sql(design, expected_error="Wait until the Vestaboard is idle")
+            assert sql("SELECT count(*) FROM public.vestaboard_rounds;") == "1"
+            print("Boggle SQL passed: 22.5-second boundaries, historical rounds, idle-only upgrade, rerun, RLS, retry/cancel/expiry, and concurrency.")
         finally:
             subprocess.run(["pg_ctl", "-D", data, "-m", "fast", "-w", "stop"],
                            env=env, check=True, capture_output=True, text=True)
